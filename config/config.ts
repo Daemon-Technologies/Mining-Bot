@@ -2,7 +2,9 @@
 import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
+
 const { REACT_APP_ENV } = process.env;
+
 export default defineConfig({
   hash: true,
   antd: {},
@@ -11,8 +13,9 @@ export default defineConfig({
   },
   layout: {
     name: 'Mining Bot',
+    locale: true,
     siderWidth: 208,
-    logo: '../../header.png',
+    logo: '../../header.png'
   },
   locale: {
     default: 'en-US',
@@ -52,6 +55,12 @@ export default defineConfig({
       name: 'wallet',
       icon: 'TeamOutlined',
       component: './wallet',
+    },
+    {
+      path: '/client',
+      name: 'client',
+      icon: 'FundProjectionScreenOutlined',
+      component: './client',
     },
     {
       path: '/',
