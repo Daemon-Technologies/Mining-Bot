@@ -1,5 +1,6 @@
 export default {
   'menu.publicData': 'Public Data',
+  'menu.wallet': 'Wallet',
 
   'menu.welcome': 'Welcome',
   'menu.more-blocks': 'More Blocks',
