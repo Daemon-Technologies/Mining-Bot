@@ -30,3 +30,7 @@ Mining Bot includes a **stacks-blockchain node** which provides the feature to p
 - frontend client
     - @umijs-plugin-dva => global data management(public data to mining client)
     - Ant-design Pro => UI Component
+
+## Reference
+- Blockstack 2.0 RPC => https://blockstack.github.io/stacks-blockchain-api/
+- Binance API => https://binance-docs.github.io/apidocs/spot/cn/#ed913b7357
