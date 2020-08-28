@@ -11,16 +11,16 @@ export default defineConfig({
   },
   layout: {
     name: 'Mining Bot',
-    locale: true,
     siderWidth: 208,
     logo: '../../header.png',
   },
   locale: {
-    // default zh-CN
     default: 'en-US',
-    // default true, when it is true, will use `navigator.language` overwrite default
+    // default zh-CN
     antd: true,
-    baseNavigator: true,
+    // default true, when it is true, will use `navigator.language` overwrite default
+    baseNavigator: false,
+    
   },
   dynamicImport: {
     loading: '@/components/PageLoading/index',
@@ -44,13 +44,20 @@ export default defineConfig({
     {
       path: '/publicData',
       name: 'publicData',
-      icon: 'table',
+      icon: 'LineChartOutlined',
       component: './publicData',
+    },
+    {
+      path: '/wallet',
+      name: 'wallet',
+      icon: 'TeamOutlined',
+      component: './wallet',
     },
     {
       path: '/',
       redirect: '/publicData',
     },
+    
     {
       component: './404',
     },
