@@ -12,16 +12,18 @@ export default defineConfig({
     hmr: true,
   },
   layout: {
-    name: 'Ant Design Pro',
+    name: 'Mining Bot',
     locale: true,
     siderWidth: 208,
+    logo: '../../header.png'
   },
   locale: {
+    default: 'en-US',
     // default zh-CN
-    default: 'zh-CN',
-    // default true, when it is true, will use `navigator.language` overwrite default
     antd: true,
-    baseNavigator: true,
+    // default true, when it is true, will use `navigator.language` overwrite default
+    baseNavigator: false,
+    
   },
   dynamicImport: {
     loading: '@/components/PageLoading/index',
@@ -43,36 +45,28 @@ export default defineConfig({
       ],
     },
     {
-      path: '/welcome',
-      name: 'welcome',
-      icon: 'smile',
-      component: './Welcome',
+      path: '/publicData',
+      name: 'publicData',
+      icon: 'LineChartOutlined',
+      component: './publicData',
     },
     {
-      path: '/admin',
-      name: 'admin',
-      icon: 'crown',
-      access: 'canAdmin',
-      component: './Admin',
-      routes: [
-        {
-          path: '/admin/sub-page',
-          name: 'sub-page',
-          icon: 'smile',
-          component: './Welcome',
-        },
-      ],
+      path: '/wallet',
+      name: 'wallet',
+      icon: 'TeamOutlined',
+      component: './wallet',
     },
     {
-      name: 'list.table-list',
-      icon: 'table',
-      path: '/list',
-      component: './ListTableList',
+      path: '/client',
+      name: 'client',
+      icon: 'FundProjectionScreenOutlined',
+      component: './client',
     },
     {
       path: '/',
-      redirect: '/welcome',
+      redirect: '/publicData',
     },
+    
     {
       component: './404',
     },
