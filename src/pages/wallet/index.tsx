@@ -12,7 +12,7 @@ import { Account } from '@/services/wallet/data'
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: TableListItem) => {
+const handleAdd = async (fields: Account) => {
   const hide = message.loading('正在添加');
   try {
     hide();
@@ -47,7 +47,7 @@ const TableList: React.FC<{}> = () => {
   return (
     <PageContainer>
         <ProTable<Account>
-          headerTitle="Token Price Info"
+          headerTitle="Account Info"
           actionRef={actionRef}
           rowKey="tradingPair"
           columns={accountColomns}
