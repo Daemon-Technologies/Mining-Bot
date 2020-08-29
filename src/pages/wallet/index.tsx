@@ -1,7 +1,7 @@
-import React, { useRef , useState  } from 'react';
+import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { Button, message} from 'antd';
+import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType } from '@ant-design/pro-table';
+import { Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 
@@ -46,21 +46,26 @@ const TableList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
-        <ProTable<Account>
-          headerTitle="Account Info"
-          actionRef={actionRef}
-          rowKey="tradingPair"
-          columns={accountColomns}
-          search={false}
-          pagination={false}
-          toolBarRender={() => [
-            <Button type="primary" onClick={() => handleModalVisible(true)}>
-              <PlusOutlined /> Add
+      <ProTable<Account>
+        headerTitle="Account Info"
+        actionRef={actionRef}
+        rowKey="tradingPair"
+        columns={accountColomns}
+        search={false}
+        pagination={false}
+        toolBarRender={() => [
+          <Button type="primary" onClick={() => handleModalVisible(true)}>
+            <PlusOutlined /> Add
             </Button>,
-          ]}
-        />
-    
-        <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
+        ]}
+      />
+
+      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
+        <ConfigProvider
+          value={{
+            intl: enUSIntl,
+          }}
+        >
           <ProTable<Account, Account>
             onSubmit={async (value) => {
               const success = await handleAdd(value);
@@ -76,7 +81,8 @@ const TableList: React.FC<{}> = () => {
             columns={accountColomns}
             rowSelection={{}}
           />
-        </CreateForm>
+        </ConfigProvider>
+      </CreateForm>
     </PageContainer >
   );
 };
