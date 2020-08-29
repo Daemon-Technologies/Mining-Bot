@@ -6,24 +6,44 @@ import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 
 import { Account } from '@/services/wallet/data'
-
+import { addAccount , queryAccount } from './service';
 
 /**
  * 添加节点
  * @param fields
  */
 const handleAdd = async (fields: Account) => {
-  const hide = message.loading('正在添加');
+  const hide = message.loading('Adding');
   try {
+    await addAccount({ ...fields });
     hide();
-    message.success('添加成功');
+    message.success('Adding success!');
     return true;
   } catch (error) {
     hide();
-    message.error('添加失败请重试！');
+    message.error('Adding fail!');
     return false;
   }
 };
+
+/**
+ * 添加节点
+ * @param fields
+ */
+const handleQuery = async () => {
+  try {
+    
+    const resp = await queryAccount();
+    console.log(resp)
+    message.success('Getting Account Success!');
+    return resp
+  } catch (error) {
+    message.error('Getting Account fail!');
+    return {'data':''};
+  }
+};
+
+//
 
 const TableList: React.FC<{}> = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
@@ -53,6 +73,7 @@ const TableList: React.FC<{}> = () => {
           columns={accountColomns}
           search={false}
           pagination={false}
+          request={(params, sorter, filter) => queryAccount({ ...params, sorter, filter })}
           toolBarRender={() => [
             <Button type="primary" onClick={() => handleModalVisible(true)}>
               <PlusOutlined /> Add
@@ -64,6 +85,7 @@ const TableList: React.FC<{}> = () => {
           <ProTable<Account, Account>
             onSubmit={async (value) => {
               const success = await handleAdd(value);
+              console.log(success)
               if (success) {
                 handleModalVisible(false);
                 if (actionRef.current) {
