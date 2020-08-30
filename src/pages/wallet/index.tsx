@@ -3,9 +3,8 @@ import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType } from '@ant-design/pro-table';
 import { Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import CreateForm from './components/CreateForm';
-
 import { Account } from '@/services/wallet/data'
+import CreateForm from './components/CreateForm';
 import { addAccount, queryAccount  } from './service';
 
 /**
@@ -71,7 +70,6 @@ const TableList: React.FC<{}> = () => {
           <ProTable<Account, Account>
             onSubmit={async (value) => {
               const success = await handleAdd(value);
-              console.log(success)
               if (success) {
                 handleModalVisible(false);
                 if (actionRef.current) {
@@ -89,5 +87,5 @@ const TableList: React.FC<{}> = () => {
     </PageContainer >
   );
 };
-
+// TODO => importing privkey
 export default TableList;

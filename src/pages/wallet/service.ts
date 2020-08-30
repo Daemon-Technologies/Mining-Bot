@@ -11,10 +11,9 @@ export async function addAccount( params: Account ) {
   else if (type === "BTC"){
     localStorage.setItem('BTC', JSON.stringify({'address':address, 'type': 'BTC'}));
   }
-  console.log(params)
   return {'data' : params}
 }
-
+// TODO => adding localstorage getting and setting module
 
 export async function queryAccount() {
   const account = getAccount()
@@ -30,4 +29,8 @@ export async function queryAccount() {
     return { 'data': [{'address':address, 'type': 'STX', 'balance': resp.stx.balance}] as Account[]}
   })
 }
+
+// TODO => request fail resp
+// TODO => adding STX/BTC Account Status Checking Module(Address valid)
+// TODO => importing privkey service
 
