@@ -6,7 +6,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 
 import { Account } from '@/services/wallet/data'
-import { addAccount , queryAccount } from './service';
+import { addAccount, queryAccount  } from './service';
 
 /**
  * 添加节点
@@ -26,32 +26,13 @@ const handleAdd = async (fields: Account) => {
   }
 };
 
-/**
- * 添加节点
- * @param fields
- */
-const handleQuery = async () => {
-  try {
-    
-    const resp = await queryAccount();
-    console.log(resp)
-    message.success('Getting Account Success!');
-    return resp
-  } catch (error) {
-    message.error('Getting Account fail!');
-    return {'data':''};
-  }
-};
-
-//
-
 const TableList: React.FC<{}> = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const accountColomns: ProColumns<Account>[] = [
     {
       title: 'Address',
-      dataIndex: 'address'
+      dataIndex: 'address',
     },
     {
       title: 'Type',
@@ -60,7 +41,7 @@ const TableList: React.FC<{}> = () => {
     {
       title: 'Balance',
       dataIndex: 'balance',
-      hideInForm: true
+      hideInForm: true,
     },
   ];
 
@@ -69,11 +50,11 @@ const TableList: React.FC<{}> = () => {
         <ProTable<Account>
           headerTitle="Account Info"
           actionRef={actionRef}
-          rowKey="tradingPair"
+          rowKey="id"
           columns={accountColomns}
           search={false}
           pagination={false}
-          request={(params, sorter, filter) => queryAccount({ ...params, sorter, filter })}
+          request={()=>queryAccount()}
           toolBarRender={() => [
             <Button type="primary" onClick={() => handleModalVisible(true)}>
               <PlusOutlined /> Add
@@ -98,7 +79,7 @@ const TableList: React.FC<{}> = () => {
                 }
               }
             }}
-            rowKey="key"
+            rowKey="id"
             type="form"
             columns={accountColomns}
             rowSelection={{}}

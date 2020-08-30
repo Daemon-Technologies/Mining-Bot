@@ -20,6 +20,11 @@ export interface MiningInfo {
     burnBTCAmount: number
 }
 
+export interface BinanceTokenInfo{
+    min: string;
+    price: number;
+}
+
 /*
 STX address - actual wins/total wins/total mined - % won - % actual wins - burn satoshis
 ST1ZFAP71CCAHCM54VSRN8AWTZ29M8R6WYE4YA3WW 105/656/1859 35.29% 2.40% 18590000
