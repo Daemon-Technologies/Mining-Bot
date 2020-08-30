@@ -84,7 +84,7 @@ const TableList: React.FC<{}> = () => {
         <ProTable<TokenPrice>
           headerTitle="Token Price Info"
           actionRef={actionRef}
-          rowKey="tradingPair"
+          rowKey="id"
           request={() => getTokenPrice()}
           columns={tokenPriceColumns}
           search={false}
@@ -94,7 +94,7 @@ const TableList: React.FC<{}> = () => {
         <ProTable<ChainInfo>
           headerTitle="BlockStack Chain Info"
           actionRef={actionRef}
-          rowKey="stacksChainHeight"
+          rowKey="id"
           request={() =>
             getBlockChainInfo()
           }
@@ -107,7 +107,7 @@ const TableList: React.FC<{}> = () => {
         <ProTable<MiningInfo>
           headerTitle="BlockStack Mining Info"
           actionRef={actionRef}
-          rowKey="miningInfo"
+          rowKey="id"
           request={() =>
             getMiningInfo()
           }

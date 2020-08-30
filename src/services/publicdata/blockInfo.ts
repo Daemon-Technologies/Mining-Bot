@@ -5,7 +5,7 @@ export async function getBlockChainInfo() {
     return request('https://status.test-blockstack.com/json', {
         method: 'GET',
     }).then((resp: { lastStacksChainTipHeight: string; lastBurnBlockHeight: string; }) => {
-        let chainInfoList: ChainInfo[] = [];
+        const chainInfoList: ChainInfo[] = [];
         chainInfoList.push({
             stacksChainHeight: resp.lastStacksChainTipHeight,
             burnChainHeight: resp.lastBurnBlockHeight,
