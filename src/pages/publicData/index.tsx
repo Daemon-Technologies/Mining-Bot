@@ -9,7 +9,7 @@ import { getMiningInfo } from '@/services/publicdata/miningInfo'
 import { Divider } from 'antd';
 
 const TableList: React.FC<{}> = () => {
-  const actionRef = useRef<ActionType>();
+  const actionRef = useRef<ActionType>(); 
   const tokenPriceColumns: ProColumns<TokenPrice>[] = [
     {
       title: 'Trading Pair',
@@ -119,5 +119,9 @@ const TableList: React.FC<{}> = () => {
     </PageContainer >
   );
 };
+
+// TODO => InitialState store
+// TODO => Add Block TX Info
+
 
 export default TableList;
