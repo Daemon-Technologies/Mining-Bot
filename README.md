@@ -32,5 +32,8 @@ Mining Bot includes a **stacks-blockchain node** which provides the feature to p
     - Ant-design Pro => UI Component
 
 ## Reference
-- Blockstack 2.0 RPC => https://blockstack.github.io/stacks-blockchain-api/
-- Binance API => https://binance-docs.github.io/apidocs/spot/cn/#ed913b7357
+- [stacks-blockchain-api websites](https://blockstack.github.io/stacks-blockchain-api/)
+- [blockstack 2.0 explorer](https://testnet-explorer.now.sh/)
+- [blockstack 2.0 explorer source code](https://github.com/blockstack/explorer/)
+- [stacks node RPC](https://docs.blockstack.org/references/stacks-rpc-api)
+- [Binance API](https://binance-docs.github.io/apidocs/spot/cn)
