@@ -20,6 +20,38 @@ export interface MiningInfo {
     burnBTCAmount: number
 }
 
+export interface BlockInfo{
+    canonical: boolean,
+    height: number,
+    hash: string,
+    parent_block_hash: string,
+    burn_block_time: number,
+    burn_block_time_iso: string,
+    txs: string[]
+}
+
+export interface TxInfo {
+    tx_id: string,
+    tx_status: string,
+    tx_type: string,
+    fee_rate: string,
+    sender_address: string,
+    sponsored: boolean,
+    post_condition_mode: string,
+    block_hash: string,
+    block_height: number,
+    burn_block_time: number,
+    canonical: boolean,
+    tx_index: number,
+    tx_result: {
+        hex: string,
+        repr: string
+    },
+    coinbase_payload: {
+        data: string
+    }
+}
+
 /*
 STX address - actual wins/total wins/total mined - % won - % actual wins - burn satoshis
 ST1ZFAP71CCAHCM54VSRN8AWTZ29M8R6WYE4YA3WW 105/656/1859 35.29% 2.40% 18590000
