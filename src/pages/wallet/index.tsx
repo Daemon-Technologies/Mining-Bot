@@ -5,7 +5,9 @@ import { Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Account } from '@/services/wallet/data'
 import CreateForm from './components/CreateForm';
-import { addAccount, queryAccount  } from './service';
+import { addAccount, queryAccount } from './service';
+import { Select } from 'antd';
+import { Input } from 'antd';
 
 /**
  * 添加节点
@@ -32,31 +34,58 @@ const TableList: React.FC<{}> = () => {
     {
       title: 'Address',
       dataIndex: 'address',
+      hideInForm: true,
     },
     {
       title: 'Type',
       dataIndex: 'type',
+      hideInForm: true,
     },
     {
       title: 'Balance',
       dataIndex: 'balance',
       hideInForm: true,
     },
+    {
+      title: 'Mnemonic',
+      dataIndex: 'mnemonic',
+      hideInTable: true,
+      // renderFormItem: () => {
+      //   function handleChange(value) {
+      //     console.log(`selected ${value}`);
+      //   }
+      //   return (
+      //     <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode" onChange={handleChange}>
+      //       <></>
+      //     </Select>
+      //   )
+      // },
+    },
+    {
+      title: 'Password',
+      dataIndex: 'password',
+      hideInTable: true,
+      // renderFormItem: () => {
+      //   return (
+      //     <Input type="password" placeholder="Please type your password" ></Input>
+      //   );
+      // },
+    },
   ];
 
   return (
     <PageContainer>
-        <ProTable<Account>
-          headerTitle="Account Info"
-          actionRef={actionRef}
-          rowKey="id"
-          columns={accountColomns}
-          search={false}
-          pagination={false}
-          request={()=>queryAccount()}
-          toolBarRender={() => [
-            <Button type="primary" onClick={() => handleModalVisible(true)}>
-              <PlusOutlined /> Add
+      <ProTable<Account>
+        headerTitle="Account Info"
+        actionRef={actionRef}
+        rowKey="address"
+        columns={accountColomns}
+        search={false}
+        pagination={false}
+        request={() => queryAccount()}
+        toolBarRender={() => [
+          <Button type="primary" onClick={() => handleModalVisible(true)}>
+            <PlusOutlined /> Add
             </Button>,
         ]}
       />
@@ -77,7 +106,7 @@ const TableList: React.FC<{}> = () => {
                 }
               }
             }}
-            rowKey="id"
+            rowKey="password"
             type="form"
             columns={accountColomns}
             rowSelection={{}}
