@@ -1,19 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType } from '@ant-design/pro-table';
-import { Button, message } from 'antd';
+import { Button, message, Input, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Account } from '@/services/wallet/data'
+import { Account, NewAccount } from '@/services/wallet/data'
 import CreateForm from './components/CreateForm';
 import { addAccount, queryAccount } from './service';
-import { Select } from 'antd';
-import { Input } from 'antd';
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: Account) => {
+const handleAdd = async (fields: NewAccount) => {
   const hide = message.loading('Adding');
   try {
     await addAccount({ ...fields });
@@ -46,31 +44,6 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'balance',
       hideInForm: true,
     },
-    {
-      title: 'Mnemonic',
-      dataIndex: 'mnemonic',
-      hideInTable: true,
-      // renderFormItem: () => {
-      //   function handleChange(value) {
-      //     console.log(`selected ${value}`);
-      //   }
-      //   return (
-      //     <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode" onChange={handleChange}>
-      //       <></>
-      //     </Select>
-      //   )
-      // },
-    },
-    {
-      title: 'Password',
-      dataIndex: 'password',
-      hideInTable: true,
-      // renderFormItem: () => {
-      //   return (
-      //     <Input type="password" placeholder="Please type your password" ></Input>
-      //   );
-      // },
-    },
   ];
 
   return (
@@ -90,28 +63,19 @@ const TableList: React.FC<{}> = () => {
         ]}
       />
 
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-        <ConfigProvider
-          value={{
-            intl: enUSIntl,
-          }}
-        >
-          <ProTable<Account, Account>
-            onSubmit={async (value) => {
-              const success = await handleAdd(value);
-              if (success) {
-                handleModalVisible(false);
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
-              }
-            }}
-            rowKey="password"
-            type="form"
-            columns={accountColomns}
-            rowSelection={{}}
-          />
-        </ConfigProvider>
+      <CreateForm
+        onSubmit={async (value) => {
+          const success = await handleAdd(value);
+          if (success) {
+            handleModalVisible(false);
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+      >
       </CreateForm>
     </PageContainer >
   );
