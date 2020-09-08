@@ -28,10 +28,21 @@ export async function getBlockInfo(){
 }
 
 export async function getTxInfo(tx_id){
-    console.log("in")
     return request(`https://stacks-node-api-latest.argon.blockstack.xyz/extended/v1/tx/${tx_id}`,{
         method: "GET"
     }).then((resp:TxInfo)=>{
         console.log(resp)
+        return {'data' : resp} 
     })
+}
+
+export async function getTxsInfo(txs){
+    const data : TxInfo = [];
+    for (let i = 0 ;i < txs.length; i+=1){
+        const t = await getTxInfo(txs[i])
+        
+    }
+    return Promise.resolve({
+        
+           });
 }

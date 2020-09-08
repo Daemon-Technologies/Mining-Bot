@@ -4,7 +4,7 @@ import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType } from '@ant
 
 import { TokenPrice, ChainInfo, MiningInfo, BlockInfo, TxInfo } from '@/services/publicdata/data'
 import { getTokenPrice } from '@/services/publicdata/tokenInfo';
-import { getChainInfo, getBlockInfo, getTxInfo } from '@/services/publicdata/chainInfo';
+import { getChainInfo, getBlockInfo, getTxsInfo } from '@/services/publicdata/chainInfo';
 import { getMiningInfo } from '@/services/publicdata/miningInfo'
 import { Divider} from 'antd';
 
@@ -56,21 +56,31 @@ const TableList: React.FC<{}> = () => {
 
   
 
-  const TxTable = async (record) => {
-    
-    console.log("in")
+  const TxTable = (record) => {
     const TXs = record.txs;
     console.log(record.txs)
-    const data : TxInfo[] = [];
-    const a = await getTxInfo(TXs[0])
-    
+    const data = [
+                  {
+                      tx_id:"1234567",
+                      tx_status:"success",
+                      tx_type:"coinbase", 
+                      fee_rate:"100",
+                      key: 1
+                  }
+                 ];
+    /*  for (let i = 0 ;i < TXs.length; i+=1){
+      const a = await getTxInfo(TXs[i])
+      //console.log(a)
+      data.push(a)
+    } */
+    console.log(data)
     return (
-      <ProTable<TxInfo>
+      <ProTable
         columns={txInfoColumns}
-        headerTitle={false}
         search={false}
         options={false}
-        dataSource={[a]}
+        request={() => getTxsInfo(TXs)}
+        dataSource={data}
         pagination={false}
         key="tx_id"
       />
@@ -114,7 +124,7 @@ const TableList: React.FC<{}> = () => {
           actionRef={actionRef}
           rowKey="hash"
           request={() => getBlockInfo()}
-          expandable={{expandedRowRender:TxTable, defaultExpandAllRows:true}}
+          expandable={{expandedRowRender:TxTable}}
           columns={blockInfoColumns}
           pagination={false}
           dateFormatter="string"
@@ -142,46 +152,3 @@ const TableList: React.FC<{}> = () => {
 
 
 export default TableList;
-
-/*
-    <ProTable
-      columns={[
-        { title: 'Date', dataIndex: 'date', key: 'date' },
-        { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Upgrade Status', dataIndex: 'upgradeNum', key: 'upgradeNum' },
-        {
-          title: 'Action',
-          dataIndex: 'operation',
-          key: 'operation',
-          valueType: 'option',
-          render: () => [<a>Pause</a>, <a>Stop</a>],
-        },
-      ]}
-      headerTitle={false}
-      search={false}
-      options={false}
-      dataSource={data}
-      pagination={false}
-    />
-  );
-};
-export default () => {
-  const [dataSource, setDataSource] = useState<TableListItem[]>([]);
-  useEffect(() => {
-    setDataSource(tableListDataSource);
-  }, []);
-  return (
-    <ProTable<TableListItem>
-      columns={columns}
-      rowKey="key"
-      pagination={{
-        showSizeChanger: true,
-      }}
-      dataSource={dataSource}
-      expandable={{ expandedRowRender }}
-      dateFormatter="string"
-      headerTitle="嵌套表格"
-    />
-  );
-};
-*/
