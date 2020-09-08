@@ -4,7 +4,7 @@ import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType } from '@ant
 
 import { TokenPrice, ChainInfo, MiningInfo, BlockInfo, TxInfo } from '@/services/publicdata/data'
 import { getTokenPrice } from '@/services/publicdata/tokenInfo';
-import { getChainInfo, getBlockInfo } from '@/services/publicdata/chainInfo';
+import { getChainInfo, getBlockInfo, getTxInfo } from '@/services/publicdata/chainInfo';
 import { getMiningInfo } from '@/services/publicdata/miningInfo'
 import { Divider} from 'antd';
 
@@ -56,24 +56,21 @@ const TableList: React.FC<{}> = () => {
 
   
 
-  const TxTable = (record) => {
-    console.log(record)
+  const TxTable = async (record) => {
+    
+    console.log("in")
+    const TXs = record.txs;
+    console.log(record.txs)
     const data : TxInfo[] = [];
-    for (let i = 0; i < 1; i += 1) {
-      data.push({
-        tx_id: "0xb7c445c7e9ec51e3e75e9c062d8c332900fa04d579065e43973b88eb9518f3f7",
-        tx_status: 'success',
-        tx_type: 'coinbase',
-        fee_rate: '0',
-      } as TxInfo);
-    }
+    const a = await getTxInfo(TXs[0])
+    
     return (
       <ProTable<TxInfo>
         columns={txInfoColumns}
         headerTitle={false}
         search={false}
         options={false}
-        dataSource={data}
+        dataSource={[a]}
         pagination={false}
         key="tx_id"
       />
@@ -98,6 +95,7 @@ const TableList: React.FC<{}> = () => {
           pagination={false}
         />
         <Divider type="horizontal" />
+
         <ProTable<ChainInfo>
           headerTitle="Chain Info"
           actionRef={actionRef}
