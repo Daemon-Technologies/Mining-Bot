@@ -98,7 +98,7 @@ const TableList: React.FC<{}> = () => {
         <ProTable<TokenPrice>
           headerTitle="Token Price Info"
           actionRef={actionRef}
-          rowKey="tradingPair"
+          rowKey="id"
           request={() => getTokenPrice()}
           columns={tokenPriceColumns}
           search={false}
@@ -109,7 +109,7 @@ const TableList: React.FC<{}> = () => {
         <ProTable<ChainInfo>
           headerTitle="Chain Info"
           actionRef={actionRef}
-          rowKey="stacksChainHeight"
+          rowKey="id"
           request={() =>
             getChainInfo()
           }
