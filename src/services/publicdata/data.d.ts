@@ -20,15 +20,16 @@ export interface MiningInfo {
     burnBTCAmount: number
 }
 
-<<<<<<< HEAD
 export interface BlockInfo{
-    canonical: boolean;
+    results: any;
+    canonical: boolean | string;
     height: number;
     hash: string;
     parent_block_hash: string;
     burn_block_time: number;
     burn_block_time_iso: string;
     txs: string[];
+    total_fee? : number;
 }
 
 export interface TxInfo {
@@ -51,11 +52,6 @@ export interface TxInfo {
     coinbase_payload?: {
         data: string
     };
-=======
-export interface BinanceTokenInfo{
-    min: string;
-    price: number;
->>>>>>> b52861ca4a4b235af7267652d7f676bc9c91581c
 }
 
 /*

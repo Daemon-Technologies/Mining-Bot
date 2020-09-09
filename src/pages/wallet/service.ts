@@ -56,7 +56,7 @@ export async function queryAccount() {
     const accountInfo: Account = {
       address: row.address,
       type: row.type,
-      balance: balance,
+      balance,
     };
     newAccounts.push(accountInfo)
   }));
@@ -67,7 +67,7 @@ export async function queryAccount() {
     const accountInfo: Account = {
       address: row.address,
       type: row.type,
-      balance: balance,
+      balance,
     };
     newAccounts.push(accountInfo);
   }));

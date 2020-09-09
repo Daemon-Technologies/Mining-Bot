@@ -6,7 +6,7 @@ import { TokenPrice, ChainInfo, MiningInfo, BlockInfo, TxInfo } from '@/services
 import { getTokenPrice } from '@/services/publicdata/tokenInfo';
 import { getChainInfo, getBlockInfo, getTxsInfo } from '@/services/publicdata/chainInfo';
 import { getMiningInfo } from '@/services/publicdata/miningInfo'
-import { Divider} from 'antd';
+import { Divider, Tag} from 'antd';
 
 const TableList: React.FC<{}> = () => {
   const actionRef = useRef<ActionType>(); 
@@ -31,56 +31,59 @@ const TableList: React.FC<{}> = () => {
   ];
 
   const blockInfoColumns: ProColumns<BlockInfo>[] = [
-    { title: 'height', dataIndex: 'height' },
-    { title: 'hash', dataIndex: 'hash' },
-    { title: 'canonical', dataIndex: 'canonical',
-      initialValue: 'all',
-      valueEnum: {
-        all: { text: '全部', status: 'Default' },
-        close: { text: '关闭', status: 'Default' },
-        running: { text: '运行中', status: 'Processing' },
-        online: { text: '已上线', status: 'Success' },
-        error: { text: '异常', status: 'Error' },
-      },
+    { title: 'Height', 
+      dataIndex: 'height',
+      render: (_) => <Tag color="blue">{_}</Tag>,
       width: 100,
+      align: 'center'
+    },
+    { 
+      title: 'Block Hash', 
+      dataIndex: 'hash', 
+      width : 200
       
+    },
+    { 
+      title: 'Total Gas', 
+      dataIndex: 'total_fee', 
+      width : 80
+    },
+    { title: 'Status', dataIndex: 'canonical',
+      initialValue: 'success',
+      valueEnum: {
+        success: { text: 'Success', status: 'Success' },
+        pending: { text: 'Pending', status: 'Processing' }
+      },
+      width: 150
     }
   ];
 
   const txInfoColumns: ProColumns<TxInfo>[] = [
-    { title: 'tx_id', dataIndex: 'tx_id', key:'tx_id'},
-    { title: 'tx_status', dataIndex: 'tx_status', key:'tx_status'},
-    { title: 'fee_rate', dataIndex: 'fee_rate', key:'fee_rate' },
-    { title: 'tx_type', dataIndex: 'tx_type', key:'tx_type' }
+    { title: 'TX Hash', dataIndex: 'tx_id', key:'tx_id'},
+    { 
+        title: 'Status', 
+        dataIndex: 'tx_status', 
+        key:'tx_status',
+        initialValue: 'success',
+        valueEnum: {
+          success: { text: 'Success', status: 'Success' },
+          pending: { text: 'Pending', status: 'Processing' }
+        },
+    },
+    { title: 'Fee Rate', dataIndex: 'fee_rate', key:'fee_rate' },
+    { title: 'TX Type', dataIndex: 'tx_type', key:'tx_type' }
   ];
 
   
 
-  const TxTable = (record) => {
+  const TxTable = (record: { txs: any; }) => {
     const TXs = record.txs;
-    console.log(record.txs)
-    const data = [
-                  {
-                      tx_id:"1234567",
-                      tx_status:"success",
-                      tx_type:"coinbase", 
-                      fee_rate:"100",
-                      key: 1
-                  }
-                 ];
-    /*  for (let i = 0 ;i < TXs.length; i+=1){
-      const a = await getTxInfo(TXs[i])
-      //console.log(a)
-      data.push(a)
-    } */
-    console.log(data)
     return (
       <ProTable
         columns={txInfoColumns}
         search={false}
         options={false}
         request={() => getTxsInfo(TXs)}
-        dataSource={data}
         pagination={false}
         key="tx_id"
       />
@@ -110,9 +113,7 @@ const TableList: React.FC<{}> = () => {
           headerTitle="Chain Info"
           actionRef={actionRef}
           rowKey="id"
-          request={() =>
-            getChainInfo()
-          }
+          request={() => getChainInfo()}
           columns={chainInfoColumns}
           search={false}
           pagination={false}
@@ -122,7 +123,7 @@ const TableList: React.FC<{}> = () => {
         <ProTable<BlockInfo>
           headerTitle="Block Info"
           actionRef={actionRef}
-          rowKey="hash"
+          rowKey="height"
           request={() => getBlockInfo()}
           expandable={{expandedRowRender:TxTable}}
           columns={blockInfoColumns}
