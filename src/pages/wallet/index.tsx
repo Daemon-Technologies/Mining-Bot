@@ -1,17 +1,17 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType } from '@ant-design/pro-table';
-import { Button, message } from 'antd';
+import { Button, message, Input, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Account } from '@/services/wallet/data'
+import { Account, NewAccount } from '@/services/wallet/data'
 import CreateForm from './components/CreateForm';
-import { addAccount, queryAccount  } from './service';
+import { addAccount, queryAccount } from './service';
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: Account) => {
+const handleAdd = async (fields: NewAccount) => {
   const hide = message.loading('Adding');
   try {
     await addAccount({ ...fields });
@@ -32,10 +32,12 @@ const TableList: React.FC<{}> = () => {
     {
       title: 'Address',
       dataIndex: 'address',
+      hideInForm: true,
     },
     {
       title: 'Type',
       dataIndex: 'type',
+      hideInForm: true,
     },
     {
       title: 'Balance',
@@ -46,43 +48,34 @@ const TableList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
-        <ProTable<Account>
-          headerTitle="Account Info"
-          actionRef={actionRef}
-          rowKey="id"
-          columns={accountColomns}
-          search={false}
-          pagination={false}
-          request={()=>queryAccount()}
-          toolBarRender={() => [
-            <Button type="primary" onClick={() => handleModalVisible(true)}>
-              <PlusOutlined /> Add
+      <ProTable<Account>
+        headerTitle="Account Info"
+        actionRef={actionRef}
+        rowKey="address"
+        columns={accountColomns}
+        search={false}
+        pagination={false}
+        request={() => queryAccount()}
+        toolBarRender={() => [
+          <Button type="primary" onClick={() => handleModalVisible(true)}>
+            <PlusOutlined /> Add
             </Button>,
         ]}
       />
 
-      <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-        <ConfigProvider
-          value={{
-            intl: enUSIntl,
-          }}
-        >
-          <ProTable<Account, Account>
-            onSubmit={async (value) => {
-              const success = await handleAdd(value);
-              if (success) {
-                handleModalVisible(false);
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
-              }
-            }}
-            rowKey="id"
-            type="form"
-            columns={accountColomns}
-            rowSelection={{}}
-          />
-        </ConfigProvider>
+      <CreateForm
+        onSubmit={async (value) => {
+          const success = await handleAdd(value);
+          if (success) {
+            handleModalVisible(false);
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+      >
       </CreateForm>
     </PageContainer >
   );

@@ -20,9 +20,38 @@ export interface MiningInfo {
     burnBTCAmount: number
 }
 
-export interface BinanceTokenInfo{
-    min: string;
-    price: number;
+export interface BlockInfo{
+    results: any;
+    canonical: boolean | string;
+    height: number;
+    hash: string;
+    parent_block_hash: string;
+    burn_block_time: number;
+    burn_block_time_iso: string;
+    txs: string[];
+    total_fee? : number;
+}
+
+export interface TxInfo {
+    tx_id: string;
+    tx_status: string;
+    tx_type: string;
+    fee_rate: string;
+    sender_address?: string;
+    sponsored?: boolean;
+    post_condition_mode?: string;
+    block_hash?: string;
+    block_height?: number;
+    burn_block_time?: number;
+    canonical?: boolean;
+    tx_index?: number;
+    tx_result?: {
+        hex: string,
+        repr: string
+    };
+    coinbase_payload?: {
+        data: string
+    };
 }
 
 /*
