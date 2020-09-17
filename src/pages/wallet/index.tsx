@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType } from '@ant-design/pro-table';
-import { Button, message, Input, Select } from 'antd';
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import { Button, message} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Account, NewAccount } from '@/services/wallet/data'
 import CreateForm from './components/CreateForm';
