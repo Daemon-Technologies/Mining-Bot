@@ -39,8 +39,8 @@ export async function getStxBalance(stxAddress: string) {
 }
 
 export async function getBtcBalance(btcAddress: string) {
-    const btcUrl = 'https://api.blockcypher.com/v1/btc/main/addrs/';
-    const btcBalance = await request(`${btcUrl + btcAddress}/balance`).then((resp: { balance: string; }) => {
+    const btcUrl = 'https://stacks-node-api-latest.argon.blockstack.xyz/extended/v1/faucets/btc/';
+    const btcBalance = await request(`${btcUrl + btcAddress}`).then((resp: { balance: string; }) => {
         return resp.balance
     });
     return btcBalance;
@@ -66,6 +66,7 @@ export async function mnemonicToBtcAddress(mnemonic: string) {
     const seed = await bip39.mnemonicToSeed(mnemonic)
 
     const master = bip32.fromSeed(seed)
+    // eslint-disable-next-line no-shadow
     const PATH = `m/44'/5757'/0'/0/0`;
     const child = master.derivePath(PATH)
     const publicKey = child.publicKey
