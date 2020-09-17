@@ -1,6 +1,6 @@
 // import { request } from 'umi';
 import { Account, NewAccount } from '@/services/wallet/data'
-import { getAccount, mnemonicToPrivateKey, mnemonicToStxAddress, mnemonicToBtcAddress, getStxBalance, getBtcBalance } from '@/services/wallet/accountData'
+import { getAccount, mnemonicToPrivateKey, getStxAddress, getBtcAddress, getStxBalance, getBtcBalance, mnemonicToEcPair, getPrivateKeyFromEcPair, getStxAddressFromPriKey } from '@/services/wallet/accountData'
 import * as bip39 from 'bip39';
 import { message } from 'antd';
 
@@ -9,14 +9,29 @@ export async function addAccount(params: NewAccount) {
   if (!bip39.validateMnemonic(mnemonic)) {
     throw message.error('invalid mnemonic');
   }
+  // get ecPair
+  const ecPair = await mnemonicToEcPair(mnemonic);
+  console.log('ecPair:', ecPair)
+  if (ecPair === null) {
+    throw message.error('invalid mnemonic');
+  }
   // get private key
-  const priKey = await mnemonicToPrivateKey(mnemonic);
+  const priKey = await getPrivateKeyFromEcPair(ecPair);
   // get stx address
-  const stxAddress = await mnemonicToStxAddress(mnemonic);
+  const stxAddress = await getStxAddressFromPriKey(priKey);
+  console.log('stxAddress:', stxAddress)
+  if (stxAddress === null) {
+    throw message.error('invalid stx address');
+  }
   // get stx balance
   const stxBalance = await getStxBalance(stxAddress);
+  console.log('stx balance:', stxBalance)
   // get btc address
-  const btcAddress = await mnemonicToBtcAddress(mnemonic);
+  const btcAddress = await getBtcAddress(ecPair);
+  if (btcAddress === undefined || btcAddress === null) {
+    throw message.error('invalid btc address');
+  }
+  console.log('stx address:', stxAddress, " btcAddress:", btcAddress)
   // get btc balance
   const btcBalance = await getBtcBalance(btcAddress);
   let { stxAccounts, btcAccounts } = getAccount();
