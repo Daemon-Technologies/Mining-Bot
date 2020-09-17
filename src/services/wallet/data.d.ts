@@ -10,3 +10,22 @@ export interface NewAccount {
     mnemonic: string;
 }
 
+class CLITransactionSigner implements TransactionSigner {
+  address: string;
+  isComplete: boolean;
+   
+  constructor(address: string = '') {
+    this.address = address;
+    this.isComplete = false;
+  }
+
+  getAddress() : Promise<string> {
+    return Promise.resolve().then(() => this.address);
+  }
+
+  signTransaction(_txIn: bitcoinjs.TransactionBuilder, _signingIndex: number) : Promise<void> {
+    return Promise.resolve().then(() => {});
+  }
+
+  signerVersion() : number { return 0; }
+}
