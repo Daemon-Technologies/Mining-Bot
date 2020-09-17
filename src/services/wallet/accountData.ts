@@ -24,7 +24,7 @@ export function getAccount() {
         const BTC_RES: Account[] = JSON.parse(BTC_STJ);
         btcAccounts.push(...BTC_RES)
     }
-    return { stxAccounts: stxAccounts, btcAccounts: btcAccounts }
+    return { stxAccounts, btcAccounts }
 }
 
 export function updateAccount() {
@@ -40,8 +40,8 @@ export async function getStxBalance(stxAddress: string) {
 }
 
 export async function getBtcBalance(btcAddress: string) {
-    const btcUrl = 'https://api.blockcypher.com/v1/btc/main/addrs/';
-    const btcBalance = await request(`${btcUrl + btcAddress}/balance`).then((resp: { balance: string; }) => {
+    const btcUrl = 'https://stacks-node-api-latest.argon.blockstack.xyz/extended/v1/faucets/btc/';
+    const btcBalance = await request(`${btcUrl + btcAddress}`).then((resp: { balance: string; }) => {
         return resp.balance
     });
     return btcBalance;
