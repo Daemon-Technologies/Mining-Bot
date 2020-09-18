@@ -39,8 +39,50 @@ const TableList: React.FC<{}> = () => {
           }
         >
           <Space>
-            <Button type="primary">Start Mining</Button>
-            <Button type="danger">Stop Mining</Button>
+            <Button
+              type="default"
+              onClick={async () => {
+                    await message.loading({content : "Checking Environment...", duration : 2})
+                    const res = await getNodeStatus()
+                    console.log(res)
+                    if (res === 0){
+                      message.success({content : "There is no stacks node process running in backend", duration : 4})
+                    }
+                    else
+                      message.success({content : `There is a stacks node process running in pid ${res}`, duration : 4})
+
+                }
+              }>
+                Get Node Status
+            </Button>
+            <Button
+              type="primary"
+              loading={startMiningLoading}
+              onClick={async () => {
+                    // TODO check BTC Balance
+                    // TODO choose BTC Address
+                    setStartMiningLoading(true)
+                    await message.loading({content : "Checking Environment...", duration : 2})
+                    message.loading({content : "Launching Stack Blockchain...", duration : 5})
+                    const res = await startMining()
+                    console.log(res)
+                    setStartMiningLoading(!res)
+                    message.success({content : "Launching Successfully!!!", duration : 4})
+                }
+              }>
+                Start Mining
+            </Button>
+            <Button
+              type="danger"
+              onClick={async () => {
+                // TODO check Node Status firstly
+                const res = await stopMining()
+                message.success({content : "Shut Down Successfully", duration : 4})
+                console.log(res)
+              }}
+            >
+              Stop Mining
+            </Button>
           </Space>
         </Card>
         <Divider/>
@@ -52,9 +94,8 @@ const TableList: React.FC<{}> = () => {
           search={false}
           pagination={false}
         />
-
     </PageContainer >
   );
 };
-
+// TODO get BTC burned amount and STX Mined Amount
 export default TableList;
