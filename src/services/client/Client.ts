@@ -4,34 +4,13 @@ import { request } from 'umi';
 
 
 export async function getNodeStatus(){
-  return request('http://127.0.0.1:5000/getNodeStatus', {
-    method: 'GET',
-  }).then((resp) => {
-    console.log(resp);
-    return resp
-  })
+  return "Node Running Status"
 }
 
 export async function startMining(){
-
-  return request('http://127.0.0.1:5000/startMining', {
-    method: 'GET',
-  }).then((resp) => {
-    console.log(resp);
-    if (resp === "success")
-      return true
-    return false
-  })
+  return "Start Mining"
 }
 
-
 export async function stopMining(){
-  return request('http://127.0.0.1:5000/stopMining', {
-    method: 'GET',
-  }).then((resp) => {
-    console.log(resp);
-    if (resp === "success")
-      return true
-    return false
-  })
+  return "Shut Down Mining Node"
 }

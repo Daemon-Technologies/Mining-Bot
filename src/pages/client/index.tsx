@@ -1,14 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import {  Button, Card, Space, Divider, Alert, message} from 'antd';
+import {  Button, Card, Space, Divider} from 'antd';
 import {FormattedMessage} from "umi"
 
 import { Account } from '@/services/wallet/data'
-import {startMining, stopMining, getNodeStatus } from '@/services/client/Client'
+
 
 const TableList: React.FC<{}> = () => {
-  const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
+
 
   const actionRef = useRef<ActionType>();
   const strategyColomns: ProColumns<Account>[] = [
@@ -25,6 +25,7 @@ const TableList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
+
         <Card
           style={{
             height: '100%',
@@ -93,9 +94,6 @@ const TableList: React.FC<{}> = () => {
           search={false}
           pagination={false}
         />
-
-
-
     </PageContainer >
   );
 };
