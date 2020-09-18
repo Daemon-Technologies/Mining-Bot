@@ -58,6 +58,8 @@ const TableList: React.FC<{}> = () => {
               type="primary"
               loading={startMiningLoading}
               onClick={async () => {
+                    // TODO check BTC Balance
+                    // TODO choose BTC Address
                     setStartMiningLoading(true)
                     await message.loading({content : "Checking Environment...", duration : 2})
                     message.loading({content : "Launching Stack Blockchain...", duration : 5})
@@ -72,6 +74,7 @@ const TableList: React.FC<{}> = () => {
             <Button
               type="danger"
               onClick={async () => {
+                // TODO check Node Status firstly
                 const res = await stopMining()
                 message.success({content : "Shut Down Successfully", duration : 4})
                 console.log(res)
@@ -92,8 +95,9 @@ const TableList: React.FC<{}> = () => {
         />
 
 
+
     </PageContainer >
   );
 };
-
+// TODO get BTC burned amount and STX Mined Amount
 export default TableList;
