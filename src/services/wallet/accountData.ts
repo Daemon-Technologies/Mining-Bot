@@ -1,14 +1,6 @@
 // import { request } from 'umi';
 import { Account } from "./data";
-import * as bip39 from 'bip39';
-import * as bip32 from 'bip32';
-import * as bitcoin from "bitcoinjs-lib";
-import * as blockstack from "blockstack";
-import * as c32check from 'c32check';
 import request from "umi-request";
-import { coerceAddress } from "@/utils/utils";
-
-const PATH = 'm/44\'/5757\'/0\'/0/0';
 
 export function getAccount() {
     const stxAccounts: Account[] = [];
@@ -47,56 +39,30 @@ export async function getBtcBalance(btcAddress: string) {
     return btcBalance;
 }
 
-export async function mnemonicToEcPair(mnemonic: string) {
-    const seed = await bip39.mnemonicToSeed(mnemonic);
-    const master = bip32.fromSeed(seed);
-    const child = master.derivePath(PATH);     // taken from stacks-wallet. See https://github.com/blockstack/stacks-wallet
-    if (child === undefined || child.privateKey === undefined) {
-        return null;
-    }
-    const ecPair = bitcoin.ECPair.fromPrivateKey(child.privateKey);
-    return ecPair;
+export async function queryAccount() {
+  const { btcAccounts, stxAccounts } = getAccount();
+  const newAccounts: Account[] = [];
+  // update btc account balance
+  await Promise.all(btcAccounts.map(async (row) => {
+    const btcAddress = row.address;
+    const balance = await getBtcBalance(btcAddress);
+    const accountInfo: Account = {
+      address: row.address,
+      type: row.type,
+      balance,
+    };
+    newAccounts.push(accountInfo)
+  }));
+  // update stx account balance
+  await Promise.all(stxAccounts.map(async (row) => {
+    const stxAddress = row.address;
+    const balance = await getStxBalance(stxAddress);
+    const accountInfo: Account = {
+      address: row.address,
+      type: row.type,
+      balance,
+    };
+    newAccounts.push(accountInfo);
+  }));
+  return { 'data': newAccounts }
 }
-
-export async function mnemonicToPrivateKey(mnemonic: string) {
-    const ecPair = await mnemonicToEcPair(mnemonic);
-    if (ecPair === null) {
-        return null;
-    }
-    const priKey = blockstack.ecPairToHexString(ecPair);
-    return priKey;
-}
-
-export async function getPrivateKeyFromEcPair(ecPair: bitcoin.ECPair.ECPairInterface) {
-    const priKey = blockstack.ecPairToHexString(ecPair);
-    return priKey;
-}
-
-export async function getStxAddressFromEcPair(ecPair: bitcoin.ECPair.ECPairInterface) {
-    if (ecPair === undefined || ecPair.privateKey === undefined) {
-        return null;
-    }
-    const priKey = ecPair.privateKey.toString();
-    const ecKeyPair = blockstack.hexStringToECPair(priKey);
-    const addr = blockstack.ecPairToAddress(ecKeyPair);
-    const stxAddr = coerceAddress(addr);
-    return c32check.b58ToC32(stxAddr);
-}
-
-export async function getStxAddressFromPriKey(priKey: string) {
-    const ecKeyPair = blockstack.hexStringToECPair(priKey);
-    const addr = blockstack.ecPairToAddress(ecKeyPair);
-    const stxAddr = coerceAddress(addr);
-    return c32check.b58ToC32(stxAddr);
-}
-
-export async function getBtcAddress(ecPair: bitcoin.ECPair.ECPairInterface) {
-    if (ecPair === undefined || ecPair.privateKey === undefined) {
-        return null;
-    }
-    const pubKey = ecPair.publicKey;
-    const { address } = bitcoin.payments.p2pkh({ pubkey: pubKey, network: bitcoin.networks.regtest });
-    return address;
-}
-
-
