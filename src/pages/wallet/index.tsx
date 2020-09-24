@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { Button, message} from 'antd';
+import { Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Account, NewAccount } from '@/services/wallet/data'
 import CreateForm from './components/CreateForm';
-import { addAccount, queryAccount } from './service';
+import { Account, NewAccount } from '@/services/wallet/data'
+import { queryAccount } from '@/services/wallet/accountData'
+import { addAccount} from './service';
 
 /**
  * 添加节点
@@ -75,8 +76,7 @@ const TableList: React.FC<{}> = () => {
         }}
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-      >
-      </CreateForm>
+       />
     </PageContainer >
   );
 };
