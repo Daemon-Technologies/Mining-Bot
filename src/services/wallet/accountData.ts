@@ -2,6 +2,8 @@
 import { Account } from "./data";
 import request from "umi-request";
 
+const { sidecarURL } = require('@/services/constants')
+
 export function getAccount() {
     const stxAccounts: Account[] = [];
     const btcAccounts: Account[] = [];
@@ -24,7 +26,7 @@ export function updateAccount() {
 }
 
 export async function getStxBalance(stxAddress: string) {
-    const baseUrl = 'https://stacks-node-api-latest.argon.blockstack.xyz/extended/v1/address/';
+    const baseUrl = `${sidecarURL}/v1/address/`;
     const stxBalance = await request(`${baseUrl + stxAddress}/balances`).then((resp: { stx: { balance: string; }; }) => {
         return resp.stx.balance
     });
@@ -32,7 +34,7 @@ export async function getStxBalance(stxAddress: string) {
 }
 
 export async function getBtcBalance(btcAddress: string) {
-    const btcUrl = 'https://stacks-node-api-latest.argon.blockstack.xyz/extended/v1/faucets/btc/';
+    const btcUrl = `${sidecarURL}/v1/faucets/btc/`;
     const btcBalance = await request(`${btcUrl + btcAddress}`).then((resp: { balance: string; }) => {
         return resp.balance
     });

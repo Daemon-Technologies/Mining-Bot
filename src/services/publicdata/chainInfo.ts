@@ -38,8 +38,7 @@ export async function getBlockInfo(){
                     totalFee += parseInt(respTxInfo.data.fee_rate as string, 10);
                     return itemTxInfo
                 }))
-                const t:BlockInfo = {...item, total_fee:totalFee, canonical:item.canonical ? "success" : "pending"}
-                return t
+                return {...item, total_fee:totalFee, canonical:item.canonical ? "success" : "pending"} as BlockInfo
             })
         )
         console.log({'data':results})

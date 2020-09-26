@@ -1,4 +1,10 @@
 // wrapped token price entity
+
+export interface BinanceResp {
+  symbol: string,
+  price: string
+}
+
 export interface TokenPrice {
     tradingPair: string; // such as STX/USDT
     price: number; // such as 0.23493812
