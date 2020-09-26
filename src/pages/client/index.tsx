@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import {  Button, Card, Space, Divider, message} from 'antd';
@@ -43,6 +43,7 @@ const TableList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
+
         <Card
           style={{
             height: '100%',
@@ -127,8 +128,6 @@ const TableList: React.FC<{}> = () => {
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
        />
-
-
     </PageContainer >
   );
 };
