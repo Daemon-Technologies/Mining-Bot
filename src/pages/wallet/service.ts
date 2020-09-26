@@ -8,12 +8,14 @@ export async function addAccount(params: NewAccount) {
   const { mnemonic} = params;
 
   if (isMnemonicValid(mnemonic)) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw message.error('invalid mnemonic');
   }
   // get ecPair
   const ecPair = await mnemonicToEcPair(mnemonic);
   console.log('ecPair:', ecPair)
   if (ecPair === null) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw message.error('invalid mnemonic');
   }
 
@@ -24,6 +26,7 @@ export async function addAccount(params: NewAccount) {
   const stxAddress = await getStxAddressFromPriKey(priKey);
   console.log('stxAddress:', stxAddress)
   if (stxAddress === null) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw message.error('invalid stx address');
   }
   // get stx balance
@@ -32,6 +35,7 @@ export async function addAccount(params: NewAccount) {
   // get btc address
   const btcAddress = await getBtcAddress(ecPair);
   if (btcAddress === undefined || btcAddress === null) {
+    // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw message.error('invalid btc address');
   }
   console.log('stx address:', stxAddress, " btcAddress:", btcAddress)

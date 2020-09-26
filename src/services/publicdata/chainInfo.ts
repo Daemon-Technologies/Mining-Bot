@@ -1,8 +1,15 @@
 import { request } from 'umi';
-import { ChainInfo, BlockInfo, TxInfo } from './data'
+import { ChainInfo, BlockInfo, TxInfo } from './data';
+
+const {
+  nodeStatusURL,
+  sidecarURL,
+  sidecarTxURL
+} = require('@/services/constants')
+
 
 export async function getChainInfo() {
-    return request('https://status.test-blockstack.com/json', {
+    return request(`${nodeStatusURL}/json`, {
         method: 'GET',
     }).then((resp: { lastStacksChainTipHeight: string; lastBurnBlockHeight: string; }) => {
         const chainInfoList: ChainInfo[] = [];
@@ -18,7 +25,7 @@ export async function getChainInfo() {
 }
 
 export async function getBlockInfo(){
-    return request('https://stacks-node-api-latest.argon.blockstack.xyz/extended/v1/block?limit=3',{
+    return request(`${sidecarURL}/v1/block?limit=5`,{
         method: "GET"
     }).then(async (resp) =>{
         console.log(resp)
@@ -41,10 +48,10 @@ export async function getBlockInfo(){
 }
 
 export async function getTxInfo(tx_id: any){
-    return request(`https://stacks-node-api-latest.argon.blockstack.xyz/extended/v1/tx/${tx_id}`,{
+    return request(`${sidecarTxURL}/${tx_id}`,{
         method: "GET"
     }).then((resp:TxInfo)=>{
-        return {'data' : resp} 
+        return {'data' : resp}
     })
 }
 

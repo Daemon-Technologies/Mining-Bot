@@ -12,7 +12,7 @@ export async function getInitialState(): Promise<{
   currentUser?: API.CurrentUser;
   settings?: LayoutSettings;
 }> {
-  // 如果是登录页面，不执行
+  // if it is *login page*, do not execute
   if (history.location.pathname !== '/user/login') {
     try {
       const currentUser = await queryCurrent();
@@ -39,7 +39,7 @@ export const layout = ({
     disableContentMargin: false,
     footerRender: () => <Footer />,
     onPageChange: () => {
-      // 如果没有登录，重定向到 login
+      // if not login，redirect to *login*
       if (!initialState?.currentUser?.userid && history.location.pathname !== '/user/login') {
         history.push('/user/login');
       }
@@ -78,15 +78,15 @@ const errorHandler = (error: ResponseError) => {
     const { status, url } = response;
 
     notification.error({
-      message: `请求错误 ${status}: ${url}`,
+      message: `Request Error ${status}: ${url}`,
       description: errorText,
     });
   }
 
   if (!response) {
     notification.error({
-      description: '您的网络发生异常，无法连接服务器',
-      message: '网络异常',
+      description: 'Network Error, Cannot Connect to The Server',
+      message: 'Network Error',
     });
   }
   throw error;

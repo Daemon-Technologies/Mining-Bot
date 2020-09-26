@@ -1,15 +1,33 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import {  Button, Card, Space, Divider, Alert, message} from 'antd';
+import {  Button, Card, Space, Divider, message} from 'antd';
 import {FormattedMessage} from "umi"
 
 import { Account } from '@/services/wallet/data'
 import {startMining, stopMining, getNodeStatus } from '@/services/client/Client'
+import CreateForm from './component/CreateForm'
+
+
+/**
+ * @param fields
+ */
+const handleAdd = async (fields) => {
+  const hide = message.loading('Adding');
+  try {
+    hide();
+    message.success('Adding success!');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('Adding fail!');
+    return false;
+  }
+};
 
 const TableList: React.FC<{}> = () => {
   const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
-
+  const [createModalVisible, handleModalVisible] = useState<boolean>(false)
   const actionRef = useRef<ActionType>();
   const strategyColomns: ProColumns<Account>[] = [
     {
@@ -60,13 +78,7 @@ const TableList: React.FC<{}> = () => {
               onClick={async () => {
                     // TODO check BTC Balance
                     // TODO choose BTC Address
-                    setStartMiningLoading(true)
-                    await message.loading({content : "Checking Environment...", duration : 2})
-                    message.loading({content : "Launching Stack Blockchain...", duration : 5})
-                    const res = await startMining()
-                    console.log(res)
-                    setStartMiningLoading(!res)
-                    message.success({content : "Launching Successfully!!!", duration : 4})
+                    handleModalVisible(true)
                 }
               }>
                 Start Mining
@@ -94,6 +106,27 @@ const TableList: React.FC<{}> = () => {
           pagination={false}
         />
 
+      <CreateForm
+        onSubmit={async () => {
+
+          setStartMiningLoading(true)
+          await message.loading({content : "Checking Environment...", duration : 2})
+          message.loading({content : "Launching Stack Blockchain...", duration : 5})
+          const res = await startMining()
+          console.log(res)
+          setStartMiningLoading(!res)
+          message.success({content : "Launching Successfully!!!", duration : 4})
+          // const success = await handleAdd(value);
+          // if (success) {
+          //   handleModalVisible(false);
+          //   if (actionRef.current) {
+          //     actionRef.current.reload();
+          //   }
+          // }
+        }}
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+       />
 
 
     </PageContainer >
