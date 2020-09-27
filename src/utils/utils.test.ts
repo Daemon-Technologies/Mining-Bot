@@ -33,5 +33,6 @@ describe('isUrl tests', (): void => {
     expect(isUrl('https://www.example.com/test/123')).toBeTruthy();
     expect(isUrl('http://www.example.com/test/123?foo=bar')).toBeTruthy();
     expect(isUrl('https://www.example.com/test/123?foo=bar')).toBeTruthy();
+    
   });
 });

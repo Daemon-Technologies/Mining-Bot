@@ -1,26 +1,27 @@
-import React, { useRef , useState  } from 'react';
+import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { Button, message} from 'antd';
+import { Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
-
-import { Account } from '@/services/wallet/data'
-
+import { Account, NewAccount } from '@/services/wallet/data'
+import { queryAccount } from '@/services/wallet/accountData'
+import { addAccount} from './service';
 
 /**
  * 添加节点
  * @param fields
  */
-const handleAdd = async (fields: Account) => {
-  const hide = message.loading('正在添加');
+const handleAdd = async (fields: NewAccount) => {
+  const hide = message.loading('Adding');
   try {
+    await addAccount({ ...fields });
     hide();
-    message.success('添加成功');
+    message.success('Adding success!');
     return true;
   } catch (error) {
     hide();
-    message.error('添加失败请重试！');
+    message.error('Adding fail!');
     return false;
   }
 };
@@ -31,52 +32,51 @@ const TableList: React.FC<{}> = () => {
   const accountColomns: ProColumns<Account>[] = [
     {
       title: 'Address',
-      dataIndex: 'address'
+      dataIndex: 'address',
+      hideInForm: true,
     },
     {
       title: 'Type',
       dataIndex: 'type',
+      hideInForm: true,
     },
     {
       title: 'Balance',
       dataIndex: 'balance',
-      hideInForm: true
+      hideInForm: true,
     },
   ];
 
   return (
     <PageContainer>
-        <ProTable<Account>
-          headerTitle="Account Info"
-          actionRef={actionRef}
-          rowKey="tradingPair"
-          columns={accountColomns}
-          search={false}
-          pagination={false}
-          toolBarRender={() => [
-            <Button type="primary" onClick={() => handleModalVisible(true)}>
-              <PlusOutlined /> Add
+      <ProTable<Account>
+        headerTitle="Account Info"
+        actionRef={actionRef}
+        rowKey="address"
+        columns={accountColomns}
+        search={false}
+        pagination={false}
+        request={() => queryAccount()}
+        toolBarRender={() => [
+          <Button type="primary" onClick={() => handleModalVisible(true)}>
+            <PlusOutlined /> Add
             </Button>,
-          ]}
-        />
-    
-        <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-          <ProTable<Account, Account>
-            onSubmit={async (value) => {
-              const success = await handleAdd(value);
-              if (success) {
-                handleModalVisible(false);
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
-              }
-            }}
-            rowKey="key"
-            type="form"
-            columns={accountColomns}
-            rowSelection={{}}
-          />
-        </CreateForm>
+        ]}
+      />
+
+      <CreateForm
+        onSubmit={async (value) => {
+          const success = await handleAdd(value);
+          if (success) {
+            handleModalVisible(false);
+            if (actionRef.current) {
+              actionRef.current.reload();
+            }
+          }
+        }}
+        onCancel={() => handleModalVisible(false)}
+        modalVisible={createModalVisible}
+       />
     </PageContainer >
   );
 };

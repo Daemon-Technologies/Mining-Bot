@@ -1,4 +1,5 @@
 import { parse } from 'querystring';
+import * as bitcoin from 'bitcoinjs-lib';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
@@ -36,3 +37,10 @@ export const getPageQuery = () => {
 
   return {};
 };
+
+export function coerceAddress(address: string) {
+  // TODO now it is testnet
+  const { hash} = bitcoin.address.fromBase58Check(address);
+  let coercedVersion = bitcoin.networks.testnet.pubKeyHash;
+  return bitcoin.address.toBase58Check(hash, coercedVersion);
+}

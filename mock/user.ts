@@ -33,7 +33,7 @@ export default {
       return;
     }
     res.send({
-      name: 'Serati Ma',
+      name: 'Stacker',
       avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
       userid: '00000001',
       email: 'antdesign@alipay.com',
@@ -107,7 +107,7 @@ export default {
   ],
   'POST /api/login/account': (req: Request, res: Response) => {
     const { password, username, type } = req.body;
-    if (password === 'ant.design' && username === 'admin') {
+    if (password === 'stacksminingbot' && username === 'admin') {
       res.send({
         status: 'ok',
         type,
@@ -116,7 +116,7 @@ export default {
       access = 'admin';
       return;
     }
-    if (password === 'ant.design' && username === 'user') {
+    if (password === 'user' && username === 'user') {
       res.send({
         status: 'ok',
         type,

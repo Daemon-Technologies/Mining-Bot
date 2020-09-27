@@ -12,7 +12,7 @@ export default defineConfig({
     hmr: true,
   },
   layout: {
-    name: 'Mining Bot',
+    name: 'Stack Mining Bot',
     locale: true,
     siderWidth: 208,
     logo: '../../header.png'
@@ -23,7 +23,7 @@ export default defineConfig({
     antd: true,
     // default true, when it is true, will use `navigator.language` overwrite default
     baseNavigator: false,
-    
+
   },
   dynamicImport: {
     loading: '@/components/PageLoading/index',
@@ -66,7 +66,7 @@ export default defineConfig({
       path: '/',
       redirect: '/publicData',
     },
-    
+
     {
       component: './404',
     },

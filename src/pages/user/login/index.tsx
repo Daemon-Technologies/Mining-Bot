@@ -60,7 +60,7 @@ const Login: React.FC<{}> = () => {
       // 登录
       const msg = await fakeAccountLogin({ ...values, type });
       if (msg.status === 'ok') {
-        message.success('登录成功！');
+        message.success('Login Successfully！');
         replaceGoto();
         setTimeout(() => {
           refresh();
@@ -87,94 +87,44 @@ const Login: React.FC<{}> = () => {
           <div className={styles.header}>
             <Link to="/">
               <img alt="logo" className={styles.logo} src={logo} />
-              <span className={styles.title}>Ant Design</span>
+              <span className={styles.title}>Stacks Mining Bot</span>
             </Link>
           </div>
-          <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+          <div className={styles.desc}>Stacks Mining Bot is an interesting tool!</div>
         </div>
 
         <div className={styles.main}>
           <LoginFrom activeKey={type} onTabChange={setType} onSubmit={handleSubmit}>
-            <Tab key="account" tab="账户密码登录">
+            <Tab key="account" tab="username/password login">
               {status === 'error' && loginType === 'account' && !submitting && (
-                <LoginMessage content="账户或密码错误（admin/ant.design）" />
+                <LoginMessage content="username or password error（admin/admin）" />
               )}
 
               <Username
                 name="username"
-                placeholder="用户名: admin or user"
                 rules={[
                   {
                     required: true,
-                    message: '请输入用户名!',
+                    message: 'please input your username!',
                   },
                 ]}
               />
               <Password
                 name="password"
-                placeholder="密码: ant.design"
                 rules={[
                   {
                     required: true,
-                    message: '请输入密码！',
-                  },
-                ]}
-              />
-            </Tab>
-            <Tab key="mobile" tab="手机号登录">
-              {status === 'error' && loginType === 'mobile' && !submitting && (
-                <LoginMessage content="验证码错误" />
-              )}
-              <Mobile
-                name="mobile"
-                placeholder="手机号"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入手机号！',
-                  },
-                  {
-                    pattern: /^1\d{10}$/,
-                    message: '手机号格式错误！',
-                  },
-                ]}
-              />
-              <Captcha
-                name="captcha"
-                placeholder="验证码"
-                countDown={120}
-                getCaptchaButtonText=""
-                getCaptchaSecondText="秒"
-                rules={[
-                  {
-                    required: true,
-                    message: '请输入验证码！',
+                    message: 'please input your password!',
                   },
                 ]}
               />
             </Tab>
             <div>
               <Checkbox checked={autoLogin} onChange={(e) => setAutoLogin(e.target.checked)}>
-                自动登录
+                Auto Login
               </Checkbox>
-              <a
-                style={{
-                  float: 'right',
-                }}
-              >
-                忘记密码
-              </a>
             </div>
-            <Submit loading={submitting}>登录</Submit>
-            <div className={styles.other}>
-              其他登录方式
-              <AlipayCircleOutlined className={styles.icon} />
-              <TaobaoCircleOutlined className={styles.icon} />
-              <WeiboCircleOutlined className={styles.icon} />
-              <Link className={styles.register} to="/user/register">
-                注册账户
-              </Link>
-            </div>
+            <Submit loading={submitting}>Login</Submit>
           </LoginFrom>
         </div>
       </div>
