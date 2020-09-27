@@ -49,5 +49,6 @@ module.exports = {
   historicalDataMax: 72,
   blockRateYellowCount: 18,
   blockRateRedCount: 5,
-  burnChainBlockRate: 30
+  burnChainBlockRate: 30,
+  MIN_MINER_BTC_AMOUNT: 0.05
 }

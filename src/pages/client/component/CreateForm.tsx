@@ -1,61 +1,54 @@
 import React, { useState } from 'react';
-import { Modal, Input, Button } from 'antd';
-import Form from 'antd/es/form';
-import TextArea from 'antd/lib/input/TextArea';
-import { NewAccount } from '@/services/wallet/data';
+import { Modal, Button } from 'antd';
+import ProTable, { ProColumns} from '@ant-design/pro-table';
+import { queryAccount } from '@/services/wallet/accountData'
+import { Account } from '@/services/wallet/data'
 
 interface CreateFormProps {
   modalVisible: boolean;
   onCancel: () => void;
-  onSubmit: (values: FormValueType) => void;
+  onSubmit: (values: Account) => void;
 }
 
-export interface FormValueType extends Partial<NewAccount> {
-  mnemonic?: string;
-  password?: string;
-}
 
-const FormItem = Form.Item;
-
-export interface CreateFormState {
-  formVals: FormValueType;
-}
-
-const formLayout = {
-  labelCol: { span: 7 },
-  wrapperCol: { span: 13 },
-};
+const columns : ProColumns<Account>[]  = [
+  {
+    title: 'BtcAddress',
+    dataIndex: 'address',
+    render: (text) => <a>{text}</a>,
+  },
+  {
+    title: 'Balance',
+    dataIndex: 'balance',
+  }
+];
 
 
 const CreateForm: React.FC<CreateFormProps> = (props) => {
-  const [formVals, setFormVals] = useState<FormValueType>({});
-  const { modalVisible, onCancel, onSubmit: handleAdd } = props;
+  const { modalVisible, onCancel, onSubmit } = props;
+  const [accountSelected, handleAccountSelected] = useState<Account>()
 
-  const [form] = Form.useForm();
-
-  const handleAddNewAccount = async () => {
-    const fieldsValue = await form.validateFields();
-    setFormVals({ ...formVals, ...fieldsValue });
-    handleAdd({ ...formVals, ...fieldsValue })
+  const rowSelection = {
+    onChange : (selectedRowKeys: any, selectedRows: React.SetStateAction<Account | undefined>[]) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}, selectedRows: ${selectedRows}`)
+      console.log(selectedRows)
+      handleAccountSelected(selectedRows[0])
+    }
   }
 
   const renderContent = () => {
     return (
       <>
-        <FormItem
-          name="mnemonic"
-          label="Mnemonic"
-          rules={[{ required: true, message: 'Please type your mnemonic!' }]}
-        >
-          <TextArea rows={3} placeholder="Please type your 24 words." />
-        </FormItem>
-        <FormItem
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: 'Please type your password!' }]}
-        >
-          <Input.Password placeholder="input password" />
-        </FormItem>
+        <ProTable<Account>
+          rowSelection={{
+            type: 'radio',
+            ...rowSelection
+          }}
+          rowKey="address"
+          search={false}
+          columns={columns}
+          request={()=>queryAccount(1)}
+        />
       </>
     )
   };
@@ -64,8 +57,8 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
     return (
       <>
         <Button onClick={() => onCancel()}>Cancel</Button>
-        <Button type="primary" onClick={() => handleAddNewAccount()}>
-          Submit!
+        <Button type="primary" onClick={ ()=> onSubmit(accountSelected)}>
+          Select
         </Button>
       </>
     )
@@ -74,17 +67,12 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   return (
     <Modal
       destroyOnClose
-      title="new account"
+      title="Choose BTC Address"
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={renderFooter()}
     >
-      <Form
-        {...formLayout}
-        form={form}
-      >
-        {renderContent()}
-      </Form>
+      {renderContent()}
     </Modal>
   );
 };

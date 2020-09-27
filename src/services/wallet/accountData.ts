@@ -41,30 +41,40 @@ export async function getBtcBalance(btcAddress: string) {
     return btcBalance;
 }
 
-export async function queryAccount() {
+export async function queryAccount(type? : 0 | 1 | 2 = 0) {
   const { btcAccounts, stxAccounts } = getAccount();
-  const newAccounts: Account[] = [];
-  // update btc account balance
-  await Promise.all(btcAccounts.map(async (row) => {
-    const btcAddress = row.address;
-    const balance = await getBtcBalance(btcAddress);
-    const accountInfo: Account = {
-      address: row.address,
-      type: row.type,
-      balance,
-    };
-    newAccounts.push(accountInfo)
-  }));
-  // update stx account balance
-  await Promise.all(stxAccounts.map(async (row) => {
-    const stxAddress = row.address;
-    const balance = await getStxBalance(stxAddress);
-    const accountInfo: Account = {
-      address: row.address,
-      type: row.type,
-      balance,
-    };
-    newAccounts.push(accountInfo);
-  }));
-  return { 'data': newAccounts }
+  const btcAccountsInfo: Account[] = [];
+  const stxAccountsInfo: Account[] = [];
+  let newAccountsInfo: Account[] = [];
+
+  if (type === 0 || type === 1){
+    // update btc account balance
+    await Promise.all(btcAccounts.map(async (row) => {
+      const btcAddress = row.address;
+      const balance = await getBtcBalance(btcAddress);
+      const accountInfo: Account = {
+        address: row.address,
+        type: row.type,
+        balance,
+      };
+      btcAccountsInfo.push(accountInfo)
+    }));
+  }
+
+  if (type === 0 || type === 2){
+    // update stx account balance
+    await Promise.all(stxAccounts.map(async (row) => {
+      const stxAddress = row.address;
+      const balance = await getStxBalance(stxAddress);
+      const accountInfo: Account = {
+        address: row.address,
+        type: row.type,
+        balance,
+      };
+      stxAccountsInfo.push(accountInfo);
+    }));
+  }
+  newAccountsInfo = btcAccountsInfo.concat(stxAccountsInfo)
+
+  return { 'data': newAccountsInfo }
 }

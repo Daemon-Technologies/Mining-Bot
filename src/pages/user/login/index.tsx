@@ -87,10 +87,10 @@ const Login: React.FC<{}> = () => {
           <div className={styles.header}>
             <Link to="/">
               <img alt="logo" className={styles.logo} src={logo} />
-              <span className={styles.title}>Mining Bot</span>
+              <span className={styles.title}>Stacks Mining Bot</span>
             </Link>
           </div>
-          <div className={styles.desc}>Mining Bot is an interesting tool!</div>
+          <div className={styles.desc}>Stacks Mining Bot is an interesting tool!</div>
         </div>
 
         <div className={styles.main}>
@@ -102,7 +102,6 @@ const Login: React.FC<{}> = () => {
 
               <Username
                 name="username"
-                placeholder="username: admin"
                 rules={[
                   {
                     required: true,
@@ -112,7 +111,6 @@ const Login: React.FC<{}> = () => {
               />
               <Password
                 name="password"
-                placeholder="password: admin"
                 rules={[
                   {
                     required: true,

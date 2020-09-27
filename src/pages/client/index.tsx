@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import {  Button, Card, Space, Divider, message} from 'antd';
@@ -8,6 +8,7 @@ import { Account } from '@/services/wallet/data'
 import {startMining, stopMining, getNodeStatus } from '@/services/client/Client'
 import CreateForm from './component/CreateForm'
 
+const { MIN_MINER_BTC_AMOUNT } = require('@/services/constants')
 
 /**
  * @param fields
@@ -39,11 +40,9 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'time'
     }
   ];
-
-
-  return (
-    <PageContainer>
-
+  const render_OperationBoard = () => {
+    return(
+      <>
         <Card
           style={{
             height: '100%',
@@ -97,6 +96,13 @@ const TableList: React.FC<{}> = () => {
             </Button>
           </Space>
         </Card>
+      </>
+    )
+  }
+
+  const render_StrategyLibrary = () => {
+    return (
+      <>
         <Divider/>
         <ProTable<Account>
           headerTitle="Strategy Library"
@@ -106,28 +112,66 @@ const TableList: React.FC<{}> = () => {
           search={false}
           pagination={false}
         />
+      </>
+    )
+  }
 
-      <CreateForm
-        onSubmit={async () => {
+  const render_Form = () => {
+    return(
+      <>
+        <CreateForm
+            onSubmit={async (value) => {
+              console.log("value", value)
+              if (value.balance < MIN_MINER_BTC_AMOUNT){
+                message.error({content: "Your Bitcoin is not enough to mine", duration : 3})
+              }
+              else{
+                setStartMiningLoading(true)
+                await message.loading({content : "Checking Environment...", duration : 2})
+                message.loading({content : "Launching Stack Blockchain...", duration : 5})
 
-          setStartMiningLoading(true)
-          await message.loading({content : "Checking Environment...", duration : 2})
-          message.loading({content : "Launching Stack Blockchain...", duration : 5})
-          const res = await startMining()
-          console.log(res)
-          setStartMiningLoading(!res)
-          message.success({content : "Launching Successfully!!!", duration : 4})
-          // const success = await handleAdd(value);
-          // if (success) {
-          //   handleModalVisible(false);
-          //   if (actionRef.current) {
-          //     actionRef.current.reload();
-          //   }
-          // }
-        }}
-        onCancel={() => handleModalVisible(false)}
-        modalVisible={createModalVisible}
-       />
+                // Launching stack-blockchain by rpc
+                const res = await startMining()
+                console.log(res)
+                setStartMiningLoading(!res)
+                // Launching Successfully
+                if (res){
+                  message.success({content : "Launching Successfully!!!", duration : 4})
+                  const success = await handleAdd(value);
+                  if (success) {
+                    handleModalVisible(false);
+                    if (actionRef.current) {
+                      actionRef.current.reload();
+                    }
+                  }
+                }
+                // Launching UnSuccessfully
+                else{
+                  message.error({content : "Launching Error, Please Contact With Admin!!!", duration : 4})
+                }
+              }
+            }}
+            onCancel={() => handleModalVisible(false)}
+            modalVisible={createModalVisible}
+        />
+      </>
+    )
+  }
+
+  const render_MinerInfo = () => {
+    return (
+      <>
+
+      </>
+    )
+  }
+
+  return (
+    <PageContainer>
+      {render_OperationBoard()}
+      {render_StrategyLibrary()}
+      {render_MinerInfo()}
+      {render_Form()}
     </PageContainer >
   );
 };
