@@ -59,6 +59,13 @@ export async function getBtcAddress(ecPair: bitcoin.ECPair.ECPairInterface) {
   return address;
 }
 
+export async function getBtcAddressFromPubkey(pubKey: string){
+  const pubkey = Buffer.from( pubKey, 'hex' );
+  const { address } = bitcoin.payments.p2pkh({ pubkey, network: bitcoin.networks.regtest });
+  console.log( address ); // 1PMycacnJaSqwwJqjawXBErnLsZ7RkXUAs
+  return address;
+}
+
 export function isMnemonicValid(mnemonic: string){
   return !bip39.validateMnemonic(mnemonic)
 }
