@@ -1,8 +1,8 @@
 import { request } from 'umi';
-import { getShaValue } from '@/utils/utils';
+import { getShaValue, kdf } from '@/utils/utils';
+import * as crypto from 'crypto';
 
 const { MiningPasswordAuthorization, MiningPassword } = require('@/services/constants')
-
 
 export interface LoginParamsType {
   password: string;
@@ -15,11 +15,18 @@ export interface FirstTimeLoginParams {
 
 // lock your account by your password
 export async function loginByPassword(password: string) {
-  const passwordHash = getPasswordHash();
-  const hashValue = getShaValue(password);
   let result: API.RequestResult = { status: 200 };
+  const userAuth = getUserAuth();
+  if (!userAuth) {
+    result.status = 500;
+    return result;
+  }
+  // parse UserAuth
+  const { passwordHash } = userAuth;
+  const hashValue = getShaValue(password);
   if (passwordHash !== hashValue) {
     result.status = 402;
+    return result;
   }
   // store password in sessionStorage
   sessionStorage.setItem(MiningPassword, password);
@@ -29,9 +36,12 @@ export async function loginByPassword(password: string) {
 // first time to set your password
 export async function setLockPassword(password: string) {
   const hash = getShaValue(password);
-  localStorage.setItem(MiningPasswordAuthorization, hash);
+  const salt = crypto.randomBytes(64);
+  let userAuth: API.UserAuth = { passwordHash: hash, aesSalt: salt };
+  // store password hash and salt
+  localStorage.setItem(MiningPasswordAuthorization, JSON.stringify(userAuth));
   let result: API.RequestResult = {
-    data: hash,
+    data: userAuth,
     status: 200,
   };
   // store password in sessionStorage
@@ -40,8 +50,16 @@ export async function setLockPassword(password: string) {
 }
 
 // get hash from local storage
-export function getPasswordHash() {
-  return localStorage.getItem(MiningPasswordAuthorization);
+export function getUserAuth() {
+  const userAuth = localStorage.getItem(MiningPasswordAuthorization);
+  if (userAuth === undefined || userAuth === null) {
+    return null;
+  }
+  return JSON.parse(userAuth);
+}
+
+export function getPassword() {
+  return sessionStorage.getItem(MiningPassword);
 }
 
 export async function fakeAccountLogin(params: LoginParamsType) {

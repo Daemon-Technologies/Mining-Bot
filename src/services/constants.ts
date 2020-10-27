@@ -58,6 +58,13 @@ module.exports = {
   MiningPassword: 'MiningPassword',
   // sha algorithm
   sha256: 'sha256',
+  sha512: 'sha512',
   shaSecret: 'MiningBot-Client@2020',
   hexToken: 'hex',
+  // aes algorithm
+  aes256Gcm: 'aes-256-gcm',
+  aesKeySize: 32,
+  // address type
+  btcType: 1,
+  stxType: 2,
 }

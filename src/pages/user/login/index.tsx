@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useModel } from 'umi';
 import { getPageQuery } from '@/utils/utils';
 import logo from '@/assets/logo.svg';
-import { LoginParamsType, loginByPassword, getPasswordHash, setLockPassword } from '@/services/login';
+import { LoginParamsType, loginByPassword, getUserAuth, setLockPassword } from '@/services/login';
 import Footer from '@/components/Footer';
 import LoginFrom from './components/Login';
 import styles from './style.less';
@@ -59,7 +59,6 @@ const Login: React.FC<{}> = () => {
       const password = values.password
       const result = await setLockPassword(password);
       if (result.status === 200) {
-        setInitialState({ currentUser: { password: password } });
         message.success('Set your lock password successfully!');
         replaceGoto();
         setTimeout(() => {
@@ -113,8 +112,8 @@ const Login: React.FC<{}> = () => {
   const { status } = userLoginState;
 
   // if the user is the first time to login
-  let passwordHash = getPasswordHash();
-  if (passwordHash) {
+  const userAuth = getUserAuth();
+  if (userAuth) {
     return (
       <div className={styles.container}>
         {/* <div className={styles.lang}>
@@ -160,7 +159,7 @@ const Login: React.FC<{}> = () => {
         <Footer />
       </div>
     );
-  } else { // else just redirect to the unlock page
+  } else { // else just redirect to the set lock password
     return (
       <div className={styles.container}>
         <div className={styles.content}>
@@ -177,9 +176,8 @@ const Login: React.FC<{}> = () => {
           <div className={styles.main}>
             <LoginFrom activeKey={type} onSubmit={handleSetPassword}>
               <Tab key="account" tab="Set Your Lock Password">
-
                 <Password
-                  name="password1"
+                  name="password"
                   placeholder="type your password"
                   onChange={onPasswordChange}
                   rules={[

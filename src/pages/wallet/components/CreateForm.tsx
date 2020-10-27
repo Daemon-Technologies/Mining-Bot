@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Modal, Input, Button } from 'antd';
+import { Modal, Button, Select } from 'antd';
 import Form from 'antd/es/form';
 import TextArea from 'antd/lib/input/TextArea';
 import { NewAccount } from '@/services/wallet/data';
+
+const { btcType, stxType } = require('@/services/constants');
 
 interface CreateFormProps {
   modalVisible: boolean;
@@ -12,7 +14,7 @@ interface CreateFormProps {
 
 export interface FormValueType extends Partial<NewAccount> {
   mnemonic?: string;
-  password?: string;
+  type?: 1 | 2;
 }
 
 const FormItem = Form.Item;
@@ -32,10 +34,16 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
 
   const [form] = Form.useForm();
 
+  const handleCancel = async () => {
+    form.resetFields();
+    onCancel();
+  }
+
   const handleAddNewAccount = async () => {
     const fieldsValue = await form.validateFields();
     setFormVals({ ...formVals, ...fieldsValue });
-    handleAdd({ ...formVals, ...fieldsValue })
+    handleAdd({ ...formVals, ...fieldsValue });
+    form.resetFields();
   }
 
   const renderContent = () => {
@@ -44,16 +52,19 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
         <FormItem
           name="mnemonic"
           label="Mnemonic"
-          rules={[{ required: true, message: 'Please type your mnemonic!' }]}
+          rules={[{ required: true, message: 'Please input your mnemonic!' }]}
         >
-          <TextArea rows={3} placeholder="Please type your 24 words." />
+          <TextArea rows={5} placeholder="Please input your 24 words mnemonic." />
         </FormItem>
         <FormItem
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: 'Please type your password!' }]}
+          name="type"
+          label="Type"
+          rules={[{ required: true, message: 'Please select your address type!' }]}
         >
-          <Input.Password placeholder="input password" />
+          <Select>
+            <Select.Option value={btcType}>BTC</Select.Option>
+            <Select.Option value={stxType}>STX</Select.Option>
+          </Select>
         </FormItem>
       </>
     )
@@ -62,7 +73,7 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   const renderFooter = () => {
     return (
       <>
-        <Button onClick={() => onCancel()}>Cancel</Button>
+        <Button onClick={() => handleCancel()}>Cancel</Button>
         <Button type="primary" onClick={() => handleAddNewAccount()}>
           Submit!
         </Button>
@@ -75,7 +86,7 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
       destroyOnClose
       title="new account"
       visible={modalVisible}
-      onCancel={() => onCancel()}
+      onCancel={() => handleCancel()}
       footer={renderFooter()}
     >
       <Form

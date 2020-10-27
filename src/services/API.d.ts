@@ -8,6 +8,11 @@ declare namespace API {
     status: number;
   }
 
+  export interface UserAuth {
+    passwordHash: string;
+    aesSalt: Buffer;
+  }
+
   export interface LoginStateType {
     status?: number;
     type?: string;
