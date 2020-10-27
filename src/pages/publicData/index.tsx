@@ -9,7 +9,7 @@ import { getMiningInfo } from '@/services/publicdata/miningInfo'
 import { Divider, Tag} from 'antd';
 
 const TableList: React.FC<{}> = () => {
-  const actionRef = useRef<ActionType>(); 
+  const actionRef = useRef<ActionType>();
   const tokenPriceColumns: ProColumns<TokenPrice>[] = [
     { title: 'Trading Pair', dataIndex: 'tradingPair', },
     { title: 'Price', dataIndex: 'price', valueType: 'text', },
@@ -31,21 +31,21 @@ const TableList: React.FC<{}> = () => {
   ];
 
   const blockInfoColumns: ProColumns<BlockInfo>[] = [
-    { title: 'Height', 
+    { title: 'Height',
       dataIndex: 'height',
       render: (_) => <Tag color="blue">{_}</Tag>,
       width: 100,
       align: 'center'
     },
-    { 
-      title: 'Block Hash', 
-      dataIndex: 'hash', 
+    {
+      title: 'Block Hash',
+      dataIndex: 'hash',
       width : 200
-      
+
     },
-    { 
-      title: 'Total Gas', 
-      dataIndex: 'total_fee', 
+    {
+      title: 'Total Gas',
+      dataIndex: 'total_fee',
       width : 80
     },
     { title: 'Status', dataIndex: 'canonical',
@@ -60,9 +60,9 @@ const TableList: React.FC<{}> = () => {
 
   const txInfoColumns: ProColumns<TxInfo>[] = [
     { title: 'TX Hash', dataIndex: 'tx_id', key:'tx_id'},
-    { 
-        title: 'Status', 
-        dataIndex: 'tx_status', 
+    {
+        title: 'Status',
+        dataIndex: 'tx_status',
         key:'tx_status',
         initialValue: 'success',
         valueEnum: {
@@ -74,7 +74,7 @@ const TableList: React.FC<{}> = () => {
     { title: 'TX Type', dataIndex: 'tx_type', key:'tx_type' }
   ];
 
-  
+
 
   const TxTable = (record: { txs: any; }) => {
     const TXs = record.txs;

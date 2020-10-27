@@ -1,23 +1,23 @@
 import React from 'react';
 import { BasicLayoutProps, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { notification } from 'antd';
-import { history, RequestConfig } from 'umi';
+import { history, RequestConfig, useModel } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { ResponseError } from 'umi-request';
-import { queryCurrent } from './services/user';
 import defaultSettings from '../config/defaultSettings';
+import { queryUserInfo } from './services/user';
 
 export async function getInitialState(): Promise<{
-  currentUser?: API.CurrentUser;
+  currentUser?: API.UserInfo;
   settings?: LayoutSettings;
 }> {
   // if it is *login page*, do not execute
   if (history.location.pathname !== '/user/login') {
     try {
-      const currentUser = await queryCurrent();
+      let password = await queryUserInfo();
       return {
-        currentUser,
+        currentUser: { password: password },
         settings: defaultSettings,
       };
     } catch (error) {
@@ -32,7 +32,7 @@ export async function getInitialState(): Promise<{
 export const layout = ({
   initialState,
 }: {
-  initialState: { settings?: LayoutSettings; currentUser?: API.CurrentUser };
+  initialState: { settings?: LayoutSettings; currentUser?: API.UserInfo };
 }): BasicLayoutProps => {
   return {
     rightContentRender: () => <RightContent />,
@@ -40,7 +40,9 @@ export const layout = ({
     footerRender: () => <Footer />,
     onPageChange: () => {
       // if not login，redirect to *login*
-      if (!initialState?.currentUser?.userid && history.location.pathname !== '/user/login') {
+      // if the user is the first time to login our miningbot-client, let him set the password
+      // if not the first time, just redirect to unlock page
+      if (!initialState?.currentUser?.password && history.location.pathname !== '/user/login') {
         history.push('/user/login');
       }
     },
