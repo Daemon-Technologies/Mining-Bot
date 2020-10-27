@@ -1,23 +1,23 @@
 import React from 'react';
 import { BasicLayoutProps, Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { notification } from 'antd';
-import { history, RequestConfig } from 'umi';
+import { history, RequestConfig, useModel } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { ResponseError } from 'umi-request';
-import { queryCurrent } from './services/user';
 import defaultSettings from '../config/defaultSettings';
+import { queryUserInfo } from './services/user';
 
 export async function getInitialState(): Promise<{
-  currentUser?: API.CurrentUser;
+  currentUser?: API.UserInfo;
   settings?: LayoutSettings;
 }> {
-  // 如果是登录页面，不执行
+  // if it is *login page*, do not execute
   if (history.location.pathname !== '/user/login') {
     try {
-      const currentUser = await queryCurrent();
+      let password = await queryUserInfo();
       return {
-        currentUser,
+        currentUser: { password: password },
         settings: defaultSettings,
       };
     } catch (error) {
@@ -32,15 +32,17 @@ export async function getInitialState(): Promise<{
 export const layout = ({
   initialState,
 }: {
-  initialState: { settings?: LayoutSettings; currentUser?: API.CurrentUser };
+  initialState: { settings?: LayoutSettings; currentUser?: API.UserInfo };
 }): BasicLayoutProps => {
   return {
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
     footerRender: () => <Footer />,
     onPageChange: () => {
-      // 如果没有登录，重定向到 login
-      if (!initialState?.currentUser?.userid && history.location.pathname !== '/user/login') {
+      // if not login，redirect to *login*
+      // if the user is the first time to login our miningbot-client, let him set the password
+      // if not the first time, just redirect to unlock page
+      if (!initialState?.currentUser?.password && history.location.pathname !== '/user/login') {
         history.push('/user/login');
       }
     },
@@ -78,15 +80,15 @@ const errorHandler = (error: ResponseError) => {
     const { status, url } = response;
 
     notification.error({
-      message: `请求错误 ${status}: ${url}`,
+      message: `Request Error ${status}: ${url}`,
       description: errorText,
     });
   }
 
   if (!response) {
     notification.error({
-      description: '您的网络发生异常，无法连接服务器',
-      message: '网络异常',
+      description: 'Network Error, Cannot Connect to The Server',
+      message: 'Network Error',
     });
   }
   throw error;

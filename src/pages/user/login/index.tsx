@@ -1,15 +1,14 @@
-import { AlipayCircleOutlined, TaobaoCircleOutlined, WeiboCircleOutlined } from '@ant-design/icons';
-import { Alert, Checkbox, message } from 'antd';
+import { Alert, message } from 'antd';
 import React, { useState } from 'react';
-import { Link, SelectLang, useModel } from 'umi';
+import { Link, useModel } from 'umi';
 import { getPageQuery } from '@/utils/utils';
 import logo from '@/assets/logo.svg';
-import { LoginParamsType, fakeAccountLogin } from '@/services/login';
+import { LoginParamsType, loginByPassword, getPasswordHash, setLockPassword } from '@/services/login';
 import Footer from '@/components/Footer';
 import LoginFrom from './components/Login';
 import styles from './style.less';
 
-const { Tab, Username, Password, Mobile, Captcha, Submit } = LoginFrom;
+const { Tab, Password, Submit } = LoginFrom;
 
 const LoginMessage: React.FC<{
   content: string;
@@ -47,92 +46,176 @@ const replaceGoto = () => {
 };
 
 const Login: React.FC<{}> = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginStateType>({});
+  const [userLoginState, setUserLoginState] = useState<API.LoginStateType>({ status: 200 });
   const [submitting, setSubmitting] = useState(false);
+  const [passwordValue, setPasswordValue] = useState('');
 
-  const { refresh } = useModel('@@initialState');
-  const [autoLogin, setAutoLogin] = useState(true);
+  const { refresh, setInitialState } = useModel('@@initialState');
   const [type, setType] = useState<string>('account');
-
-  const handleSubmit = async (values: LoginParamsType) => {
+  const handleSetPassword = async (values: LoginParamsType) => {
     setSubmitting(true);
     try {
-      // 登录
-      const msg = await fakeAccountLogin({ ...values, type });
-      if (msg.status === 'ok') {
-        message.success('Login Successfully！');
+      // set your lock password
+      const password = values.password
+      const result = await setLockPassword(password);
+      if (result.status === 200) {
+        setInitialState({ currentUser: { password: password } });
+        message.success('Set your lock password successfully!');
         replaceGoto();
         setTimeout(() => {
           refresh();
         }, 0);
         return;
       }
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
     } catch (error) {
-      message.error('登录失败，请重试！');
+      message.error('Set your lock password error, please try it again');
+    }
+    setSubmitting(false);
+  }
+
+  const handleSubmit = async (values: LoginParamsType) => {
+    setSubmitting(true);
+    try {
+      // unlock by password
+      const password = values.password;
+      const result = await loginByPassword(password);
+      if (result.status === 200) {
+        setInitialState({ currentUser: { password: password } });
+        message.success('Unlock Successfully！');
+        replaceGoto();
+        setTimeout(() => {
+          refresh();
+        }, 0);
+        return;
+      }
+      setUserLoginState(result);
+    } catch (error) {
+      message.error('Unlock your account error! Please try it again');
     }
     setSubmitting(false);
   };
 
-  const { status, type: loginType } = userLoginState;
+  // store temp password
+  const onPasswordChange = (e: { target: { value: any; }; }) => {
+    const { value } = e.target;
+    setPasswordValue(value);
+  }
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.lang}>
+  // validate password
+  const checkPassword = (_: any, value: string, callback: any) => {
+    if (value && value !== passwordValue) {
+      callback("Input passwords are inconsistent!");
+    } else {
+      callback();
+    }
+  }
+
+  const { status } = userLoginState;
+
+  // if the user is the first time to login
+  let passwordHash = getPasswordHash();
+  if (passwordHash) {
+    return (
+      <div className={styles.container}>
+        {/* <div className={styles.lang}>
         <SelectLang />
-      </div>
-      <div className={styles.content}>
-        <div className={styles.top}>
-          <div className={styles.header}>
-            <Link to="/">
-              <img alt="logo" className={styles.logo} src={logo} />
-              <span className={styles.title}>Mining Bot</span>
-            </Link>
-          </div>
-          <div className={styles.desc}>Mining Bot is an interesting tool!</div>
-        </div>
-
-        <div className={styles.main}>
-          <LoginFrom activeKey={type} onTabChange={setType} onSubmit={handleSubmit}>
-            <Tab key="account" tab="username/password login">
-              {status === 'error' && loginType === 'account' && !submitting && (
-                <LoginMessage content="username or password error（admin/admin）" />
-              )}
-
-              <Username
-                name="username"
-                placeholder="username: admin"
-                rules={[
-                  {
-                    required: true,
-                    message: 'please input your username!',
-                  },
-                ]}
-              />
-              <Password
-                name="password"
-                placeholder="password: admin"
-                rules={[
-                  {
-                    required: true,
-                    message: 'please input your password!',
-                  },
-                ]}
-              />
-            </Tab>
-            <div>
-              <Checkbox checked={autoLogin} onChange={(e) => setAutoLogin(e.target.checked)}>
-                Auto Login
-              </Checkbox>
+      </div> */}
+        <div className={styles.content}>
+          <div className={styles.top}>
+            <div className={styles.header}>
+              <Link to="/">
+                <img alt="logo" className={styles.logo} src={logo} />
+                <span className={styles.title}>Stacks Mining Bot</span>
+              </Link>
             </div>
-            <Submit loading={submitting}>Login</Submit>
-          </LoginFrom>
+            <div className={styles.desc}>Stacks Mining Bot is an interesting tool!</div>
+          </div>
+
+          <div className={styles.main}>
+            <LoginFrom activeKey={type} onSubmit={handleSubmit}>
+              <Tab key="account" tab="Unlock Your Account">
+                {status !== 200 && !submitting && (
+                  <LoginMessage content="password error" />
+                )}
+
+                <Password
+                  name="password"
+                  onChange={onPasswordChange}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'please input your password!',
+                    },
+                    {
+                      min: 8,
+                      message: 'password should be at least 8 characters! ',
+                    },
+                  ]}
+                />
+              </Tab>
+              <Submit loading={submitting}>Unlock</Submit>
+            </LoginFrom>
+          </div>
         </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
-  );
+    );
+  } else { // else just redirect to the unlock page
+    return (
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.top}>
+            <div className={styles.header}>
+              <Link to="/">
+                <img alt="logo" className={styles.logo} src={logo} />
+                <span className={styles.title}>Stacks Mining Bot</span>
+              </Link>
+            </div>
+            <div className={styles.desc}>Stacks Mining Bot is an interesting tool!</div>
+          </div>
+
+          <div className={styles.main}>
+            <LoginFrom activeKey={type} onSubmit={handleSetPassword}>
+              <Tab key="account" tab="Set Your Lock Password">
+
+                <Password
+                  name="password1"
+                  placeholder="type your password"
+                  onChange={onPasswordChange}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'please input your password!',
+                    },
+                    {
+                      min: 8,
+                      message: 'password should be at least 8 characters! ',
+                    },
+                  ]}
+                />
+
+                <Password
+                  name="password2"
+                  placeholder="type your password again"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'please input your password again!',
+                    },
+                    {
+                      validator: checkPassword,
+                    }
+                  ]}
+                />
+              </Tab>
+              <Submit loading={submitting}>Login</Submit>
+            </LoginFrom>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 };
 
 export default Login;
