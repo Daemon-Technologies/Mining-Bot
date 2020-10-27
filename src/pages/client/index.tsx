@@ -1,23 +1,34 @@
-import React, { useRef, Suspense } from 'react';
+import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { Col, Row, Tooltip, Button, Card, Space, Divider} from 'antd';
+import {  Button, Card, Space, Divider, message} from 'antd';
 import {FormattedMessage} from "umi"
 
 import { Account } from '@/services/wallet/data'
+import {startMining, stopMining, getNodeStatus } from '@/services/client/Client'
+import CreateForm from './component/CreateForm'
 
-const topColResponsiveProps = {
-  xs: 24,
-  sm: 12,
-  md: 12,
-  lg: 12,
-  xl: 6,
-  style: { marginBottom: 24 },
+const { MIN_MINER_BTC_AMOUNT } = require('@/services/constants')
+
+/**
+ * @param fields
+ */
+const handleAdd = async (fields) => {
+  const hide = message.loading('Adding');
+  try {
+    hide();
+    message.success('Adding success!');
+    return true;
+  } catch (error) {
+    hide();
+    message.error('Adding fail!');
+    return false;
+  }
 };
 
 const TableList: React.FC<{}> = () => {
-
-
+  const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
+  const [createModalVisible, handleModalVisible] = useState<boolean>(false)
   const actionRef = useRef<ActionType>();
   const strategyColomns: ProColumns<Account>[] = [
     {
@@ -29,11 +40,9 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'time'
     }
   ];
-
-
-  return (
-    <PageContainer>
-
+  const render_OperationBoard = () => {
+    return(
+      <>
         <Card
           style={{
             height: '100%',
@@ -45,18 +54,55 @@ const TableList: React.FC<{}> = () => {
               defaultMessage="Mining Operation Board"
             />
           }
-        > 
+        >
           <Space>
-            <Button type="primary">Connect Node</Button>
             <Button
-              style={{
-                backgroundColor: '#33FF33'
+              type="default"
+              onClick={async () => {
+                    await message.loading({content : "Checking Environment...", duration : 2})
+                    const res = await getNodeStatus()
+                    console.log(res)
+                    if (res === 0){
+                      message.success({content : "There is no stacks node process running in backend", duration : 4})
+                    }
+                    else
+                      message.success({content : `There is a stacks node process running in pid ${res}`, duration : 4})
+
+                }
+              }>
+                Get Node Status
+            </Button>
+            <Button
+              type="primary"
+              loading={startMiningLoading}
+              onClick={async () => {
+                    // TODO check BTC Balance
+                    // TODO choose BTC Address
+                    handleModalVisible(true)
+                }
+              }>
+                Start Mining
+            </Button>
+            <Button
+              type="danger"
+              onClick={async () => {
+                // TODO check Node Status firstly
+                const res = await stopMining()
+                message.success({content : "Shut Down Successfully", duration : 4})
+                console.log(res)
               }}
-            >Start Mining
-            </Button> 
-            <Button type="danger">Stop Mining</Button> 
+            >
+              Stop Mining
+            </Button>
           </Space>
         </Card>
+      </>
+    )
+  }
+
+  const render_StrategyLibrary = () => {
+    return (
+      <>
         <Divider/>
         <ProTable<Account>
           headerTitle="Strategy Library"
@@ -66,9 +112,68 @@ const TableList: React.FC<{}> = () => {
           search={false}
           pagination={false}
         />
+      </>
+    )
+  }
 
+  const render_Form = () => {
+    return(
+      <>
+        <CreateForm
+            onSubmit={async (value) => {
+              console.log("value", value)
+              if (value.balance < MIN_MINER_BTC_AMOUNT){
+                message.error({content: "Your Bitcoin is not enough to mine", duration : 3})
+              }
+              else{
+                setStartMiningLoading(true)
+                await message.loading({content : "Checking Environment...", duration : 2})
+                message.loading({content : "Launching Stack Blockchain...", duration : 5})
+
+                // Launching stack-blockchain by rpc
+                const res = await startMining()
+                console.log(res)
+                setStartMiningLoading(!res)
+                // Launching Successfully
+                if (res){
+                  message.success({content : "Launching Successfully!!!", duration : 4})
+                  const success = await handleAdd(value);
+                  if (success) {
+                    handleModalVisible(false);
+                    if (actionRef.current) {
+                      actionRef.current.reload();
+                    }
+                  }
+                }
+                // Launching UnSuccessfully
+                else{
+                  message.error({content : "Launching Error, Please Contact With Admin!!!", duration : 4})
+                }
+              }
+            }}
+            onCancel={() => handleModalVisible(false)}
+            modalVisible={createModalVisible}
+        />
+      </>
+    )
+  }
+
+  const render_MinerInfo = () => {
+    return (
+      <>
+
+      </>
+    )
+  }
+
+  return (
+    <PageContainer>
+      {render_OperationBoard()}
+      {render_StrategyLibrary()}
+      {render_MinerInfo()}
+      {render_Form()}
     </PageContainer >
   );
 };
-
+// TODO get BTC burned amount and STX Mined Amount
 export default TableList;

@@ -1,32 +1,33 @@
 import { request } from 'umi';
-
-import { TokenPrice } from './data.d';
+import { TokenPrice, BinanceResp } from './data.d';
+const { binanceAPIURL } = require('@/services/constants')
 
 export async function getTokenPrice() {
     // initialize the response entity
-    let tokenInfo: TokenPrice[] = [];
+    const tokenInfo: TokenPrice[] = [];
     // get price of STXUSDT
-    await request('https://api.binance.com/api/v3/avgPrice?symbol=STXUSDT', {
+    await request(`${binanceAPIURL}/ticker/price?symbol=STXUSDT`, {
         method: 'GET',
-    }).then((resp: { mins: number; price: number; }) => {
+    }).then((resp: BinanceResp) => {
         tokenInfo.push({
             tradingPair: 'STX/USDT',
             price: resp.price,
         })
     });
     // get price of BTCUSDT
-    await request('https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT', {
+    await request(`${binanceAPIURL}/ticker/price?symbol=BTCUSDT`, {
         method: 'GET',
-    }).then((resp: { mins: number; price: number; }) => {
+    }).then((resp: BinanceResp) => {
         tokenInfo.push({
             tradingPair: 'BTC/USDT',
             price: resp.price,
         })
     });
     // get price of STXBTC
-    return await request('https://api.binance.com/api/v3/avgPrice?symbol=STXBTC', {
+    // eslint-disable-next-line no-return-await
+    return await request(`${binanceAPIURL}/ticker/price?symbol=STXBTC`, {
         method: 'GET',
-    }).then((resp: { mins: number; price: number; }) => {
+    }).then((resp: BinanceResp) => {
         tokenInfo.push({
             tradingPair: 'STX/BTC',
             price: resp.price,

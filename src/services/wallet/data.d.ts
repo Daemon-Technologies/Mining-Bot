@@ -5,3 +5,7 @@ export interface Account {
     balance: string; // such as 0.23493812
 }
 
+export interface NewAccount {
+    password: string;
+    mnemonic: string;
+}
