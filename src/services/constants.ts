@@ -50,5 +50,14 @@ module.exports = {
   blockRateYellowCount: 18,
   blockRateRedCount: 5,
   burnChainBlockRate: 30,
-  MIN_MINER_BTC_AMOUNT: 0.05
+  MIN_MINER_BTC_AMOUNT: 0.05,
+
+  // password key
+  MiningPasswordAuthorization: 'MiningPasswordAuthorization',
+  // password value
+  MiningPassword: 'MiningPassword',
+  // sha algorithm
+  sha256: 'sha256',
+  shaSecret: 'MiningBot-Client@2020',
+  hexToken: 'hex',
 }
