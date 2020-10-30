@@ -1,7 +1,7 @@
 import { request } from 'umi';
 const { stackNodeAPIURL } = require('@/services/constants')
 
-export async function getNodeStatus(){
+export async function getNodeStatus() {
   return request(`${stackNodeAPIURL}/getNodeStatus`, {
     method: 'GET',
   }).then((resp) => {
@@ -10,7 +10,7 @@ export async function getNodeStatus(){
   })
 }
 
-export async function startMining(){
+export async function startMining() {
 
   return request(`${stackNodeAPIURL}/startMining`, {
     method: 'GET',
@@ -23,7 +23,7 @@ export async function startMining(){
 }
 
 
-export async function stopMining(){
+export async function stopMining() {
   return request(`${stackNodeAPIURL}/stopMining`, {
     method: 'GET',
   }).then((resp) => {
@@ -32,4 +32,11 @@ export async function stopMining(){
       return true
     return false
   })
+}
+
+export async function getMiningInfo() {
+  return request('http://8.210.105.204:23456/minerList').then((resp) => {
+    console.log('resp:', resp)
+    return { 'data': resp };
+  });
 }
