@@ -195,7 +195,6 @@ const TableList: React.FC<{}> = () => {
           rowKey="stx_address"
           request={async () => {
             const miningInfo = await getMiningInfo();
-            console.log('miningInfo:', miningInfo)
             return miningInfo;
           }}
           columns={miningInfoColumns}
