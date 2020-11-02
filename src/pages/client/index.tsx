@@ -7,7 +7,7 @@ import { FormattedMessage } from "umi"
 import { Account } from '@/services/wallet/data'
 import { startMining, stopMining, getNodeStatus, getMiningInfo } from '@/services/client/Client'
 import CreateForm from './component/CreateForm'
-import { MiningInfo } from '@/services/publicdata/data';
+import { MiningInfo } from '@/services/client/data';
 
 const { MIN_MINER_BTC_AMOUNT } = require('@/services/constants')
 
@@ -193,7 +193,11 @@ const TableList: React.FC<{}> = () => {
           headerTitle="Mining Info"
           actionRef={actionRef}
           rowKey="stx_address"
-          request={() => getMiningInfo()}
+          request={async () => {
+            const miningInfo = await getMiningInfo();
+            console.log('miningInfo:', miningInfo)
+            return miningInfo;
+          }}
           columns={miningInfoColumns}
           search={false}
           pagination={false}

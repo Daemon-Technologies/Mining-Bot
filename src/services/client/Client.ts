@@ -35,8 +35,8 @@ export async function stopMining() {
 }
 
 export async function getMiningInfo() {
-  return request('http://8.210.105.204:23456/minerList').then((resp) => {
-    console.log('resp:', resp)
-    return { 'data': resp };
+  return request('http://8.210.105.204:23456/minerList', {
+    method: 'GET',
+    timeout: 300000,
   });
 }
