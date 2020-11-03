@@ -112,9 +112,6 @@ const Login: LoginType = (props) => {
 Login.Tab = LoginTab;
 Login.Submit = LoginSubmit;
 
-Login.Username = LoginItem.Username;
 Login.Password = LoginItem.Password;
-Login.Mobile = LoginItem.Mobile;
-Login.Captcha = LoginItem.Captcha;
 
 export default Login;

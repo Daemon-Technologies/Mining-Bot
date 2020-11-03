@@ -1,21 +1,20 @@
 declare namespace API {
-  export interface CurrentUser {
-    avatar?: string;
-    name?: string;
-    title?: string;
-    group?: string;
-    signature?: string;
-    tags?: {
-      key: string;
-      label: string;
-    }[];
-    userid?: string;
-    access?: 'user' | 'guest' | 'admin';
-    unreadCount?: number;
+  export interface UserInfo {
+    password?: string;
+  }
+
+  export interface RequestResult {
+    data?: any,
+    status: number;
+  }
+
+  export interface UserAuth {
+    passwordHash: string;
+    aesSalt: Buffer;
   }
 
   export interface LoginStateType {
-    status?: 'ok' | 'error';
+    status?: number;
     type?: string;
   }
 
@@ -33,7 +32,7 @@ declare namespace API {
     status: string;
   }
 
-  export interface TokenInfo{
+  export interface TokenInfo {
     type: string;
     value: string;
   }

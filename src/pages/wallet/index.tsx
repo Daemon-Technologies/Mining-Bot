@@ -6,7 +6,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 import { Account, NewAccount } from '@/services/wallet/data'
 import { queryAccount } from '@/services/wallet/accountData'
-import { addAccount} from './service';
+import { addAccount } from './service';
 
 /**
  * 添加节点
@@ -15,7 +15,10 @@ import { addAccount} from './service';
 const handleAdd = async (fields: NewAccount) => {
   const hide = message.loading('Adding');
   try {
-    await addAccount({ ...fields });
+    const result = await addAccount({ ...fields });
+    if (result.status !== 200) {
+      throw message.error('Adding fail');
+    }
     hide();
     message.success('Adding success!');
     return true;
@@ -76,7 +79,7 @@ const TableList: React.FC<{}> = () => {
         }}
         onCancel={() => handleModalVisible(false)}
         modalVisible={createModalVisible}
-       />
+      />
     </PageContainer >
   );
 };
