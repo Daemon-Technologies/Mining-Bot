@@ -1,15 +1,17 @@
-import { AlipayCircleOutlined, TaobaoCircleOutlined, WeiboCircleOutlined } from '@ant-design/icons';
-import { Alert, Checkbox, message } from 'antd';
+import { Alert, message } from 'antd';
 import React, { useState } from 'react';
-import { Link, SelectLang, useModel } from 'umi';
+import { FormattedMessage, Link, SelectLang, useModel } from 'umi';
 import { getPageQuery } from '@/utils/utils';
 import logo from '@/assets/logo.svg';
-import { LoginParamsType, fakeAccountLogin } from '@/services/login';
+import { LoginParamsType, loginByPassword, getUserAuth, setLockPassword } from '@/services/login';
 import Footer from '@/components/Footer';
 import LoginFrom from './components/Login';
 import styles from './style.less';
+import { getLanguage } from '@ant-design/pro-layout/lib/locales';
 
-const { Tab, Username, Password, Mobile, Captcha, Submit } = LoginFrom;
+const { Tab, Password, Submit } = LoginFrom;
+
+const { CN } = require('@/services/constants')
 
 const LoginMessage: React.FC<{
   content: string;
@@ -47,90 +49,178 @@ const replaceGoto = () => {
 };
 
 const Login: React.FC<{}> = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginStateType>({});
+  const [userLoginState, setUserLoginState] = useState<API.LoginStateType>({ status: 200 });
   const [submitting, setSubmitting] = useState(false);
+  const [passwordValue, setPasswordValue] = useState('');
 
-  const { refresh } = useModel('@@initialState');
-  const [autoLogin, setAutoLogin] = useState(true);
+  const { refresh, setInitialState } = useModel('@@initialState');
   const [type, setType] = useState<string>('account');
-
-  const handleSubmit = async (values: LoginParamsType) => {
+  const handleSetPassword = async (values: LoginParamsType) => {
     setSubmitting(true);
     try {
-      // 登录
-      const msg = await fakeAccountLogin({ ...values, type });
-      if (msg.status === 'ok') {
-        message.success('Login Successfully！');
+      // set your lock password
+      const password = values.password
+      const result = await setLockPassword(password);
+      if (result.status === 200) {
+        message.success(getLanguage() === CN ? '锁定密码成功！' : 'Set your lock password successfully!');
         replaceGoto();
         setTimeout(() => {
           refresh();
         }, 0);
         return;
       }
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
     } catch (error) {
-      message.error('登录失败，请重试！');
+      message.error(getLanguage() === CN ? '设置锁定密码失败，请重试！' : 'Set your lock password error, please try it again');
+    }
+    setSubmitting(false);
+  }
+
+  const handleSubmit = async (values: LoginParamsType) => {
+    setSubmitting(true);
+    try {
+      // unlock by password
+      const password = values.password;
+      const result = await loginByPassword(password);
+      if (result.status === 200) {
+        setInitialState({ currentUser: { password: password } });
+        message.success(getLanguage() === CN ? '解锁成功！' : 'Unlock Successfully！');
+        replaceGoto();
+        setTimeout(() => {
+          refresh();
+        }, 0);
+        return;
+      }
+      setUserLoginState(result);
+    } catch (error) {
+      message.error(getLanguage() === CN ? '解锁账户失败！请重试！' : 'Unlock your account error! Please try it again');
     }
     setSubmitting(false);
   };
 
-  const { status, type: loginType } = userLoginState;
+  // store temp password
+  const onPasswordChange = (e: { target: { value: any; }; }) => {
+    const { value } = e.target;
+    setPasswordValue(value);
+  }
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.lang}>
-        <SelectLang />
-      </div>
-      <div className={styles.content}>
-        <div className={styles.top}>
-          <div className={styles.header}>
-            <Link to="/">
-              <img alt="logo" className={styles.logo} src={logo} />
-              <span className={styles.title}>Stacks Mining Bot</span>
-            </Link>
-          </div>
-          <div className={styles.desc}>Stacks Mining Bot is an interesting tool!</div>
+  // validate password
+  const checkPassword = (_: any, value: string, callback: any) => {
+    if (value && value !== passwordValue) {
+      callback(getLanguage() === CN ? '两次输入密码不一致！' : "Input passwords are inconsistent!");
+    } else {
+      callback();
+    }
+  }
+
+  const { status } = userLoginState;
+
+  // if the user is the first time to login
+  const userAuth = getUserAuth();
+  if (userAuth) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.lang}>
+          <SelectLang />
         </div>
-
-        <div className={styles.main}>
-          <LoginFrom activeKey={type} onTabChange={setType} onSubmit={handleSubmit}>
-            <Tab key="account" tab="username/password login">
-              {status === 'error' && loginType === 'account' && !submitting && (
-                <LoginMessage content="username or password error（admin/admin）" />
-              )}
-
-              <Username
-                name="username"
-                rules={[
-                  {
-                    required: true,
-                    message: 'please input your username!',
-                  },
-                ]}
-              />
-              <Password
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: 'please input your password!',
-                  },
-                ]}
-              />
-            </Tab>
-            <div>
-              <Checkbox checked={autoLogin} onChange={(e) => setAutoLogin(e.target.checked)}>
-                Auto Login
-              </Checkbox>
+        <div className={styles.content}>
+          <div className={styles.top}>
+            <div className={styles.header}>
+              <Link to="/">
+                <img alt="logo" className={styles.logo} src={logo} />
+                <span className={styles.title}><FormattedMessage id='login.title' defaultMessage='Stacks Mining Bot' /></span>
+              </Link>
             </div>
-            <Submit loading={submitting}>Login</Submit>
-          </LoginFrom>
+            <div className={styles.desc}><FormattedMessage id='login.subTitle' defaultMessage='Stacks Mining Bot is an interesting tool!' /></div>
+          </div>
+
+          <div className={styles.main}>
+            <LoginFrom activeKey={type} onSubmit={handleSubmit}>
+              <Tab key="account" tab={<FormattedMessage id='login.unlock' defaultMessage='Unlock Your Account' />}>
+                {status !== 200 && !submitting && (
+                  <LoginMessage content={getLanguage() === CN ? '密码错误!' : 'password error!'} />
+                )}
+
+                <Password
+                  name="password"
+                  placeholder={getLanguage() === CN ? '密码' : 'password'}
+                  onChange={onPasswordChange}
+                  rules={[
+                    {
+                      required: true,
+                      message: <FormattedMessage id='message.unlock.pwd' defaultMessage='please input your password!' />,
+                    },
+                    {
+                      min: 8,
+                      message: <FormattedMessage id='message.unlock.leastLength' defaultMessage='password should be at least 8 characters!' />,
+                    },
+                  ]}
+                />
+              </Tab>
+              <Submit loading={submitting}><FormattedMessage id='button.unlock' defaultMessage='Unlock' /></Submit>
+            </LoginFrom>
+          </div>
         </div>
+        <Footer />
+      </div >
+    );
+  } else { // else just redirect to the set lock password
+    return (
+      <div className={styles.container}>
+        <div className={styles.lang}>
+          <SelectLang />
+        </div>
+        <div className={styles.content}>
+          <div className={styles.top}>
+            <div className={styles.header}>
+              <Link to="/">
+                <img alt="logo" className={styles.logo} src={logo} />
+                <span className={styles.title}><FormattedMessage id='login.title' defaultMessage='Stacks Mining Bot' /></span>
+              </Link>
+            </div>
+            <div className={styles.desc}><FormattedMessage id='login.subTitle' defaultMessage='Stacks Mining Bot is an interesting tool!' /></div>
+          </div>
+
+          <div className={styles.main}>
+            <LoginFrom activeKey={type} onSubmit={handleSetPassword}>
+              <Tab key="account" tab={<FormattedMessage id='login.setLockPwd' defaultMessage='Set Your Lock Password' />}>
+                <Password
+                  name="password"
+                  placeholder={getLanguage() === CN ? '输入密码' : 'type your password'}
+                  onChange={onPasswordChange}
+                  rules={[
+                    {
+                      required: true,
+                      message: <FormattedMessage id='message.unlock.pwd' defaultMessage='please input your password!' />,
+                    },
+                    {
+                      min: 8,
+                      message: <FormattedMessage id='message.unlock.leastLength' defaultMessage='password should be at least 8 characters!' />,
+                    },
+                  ]}
+                />
+
+                <Password
+                  name="password2"
+                  placeholder={getLanguage() === CN ? '再次输入密码' : 'type your password again'}
+                  rules={[
+                    {
+                      required: true,
+                      message: <FormattedMessage id='message.unlock.pwdAgain' defaultMessage='please input your password again!' />,
+                    },
+                    {
+                      validator: checkPassword,
+                    }
+                  ]}
+                />
+              </Tab>
+              <Submit loading={submitting}><FormattedMessage id='button.login' defaultMessage='Login' /></Submit>
+            </LoginFrom>
+          </div>
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
-  );
+    );
+  }
 };
 
 export default Login;

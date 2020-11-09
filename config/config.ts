@@ -18,12 +18,11 @@ export default defineConfig({
     logo: '../../header.png'
   },
   locale: {
+    // default: 'en-US',
     default: 'en-US',
-    // default zh-CN
     antd: true,
     // default true, when it is true, will use `navigator.language` overwrite default
     baseNavigator: false,
-
   },
   dynamicImport: {
     loading: '@/components/PageLoading/index',
