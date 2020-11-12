@@ -16,16 +16,6 @@ export interface ChainInfo {
     burnChainHeight: string; // such as 600
 }
 
-export interface MiningInfo {
-    stxAddress: string;
-    actualWins: number;
-    totalWins: number;
-    totalMined: number;
-    wonRate:string;
-    actualWonRate:string;
-    burnBTCAmount: number
-}
-
 export interface BlockInfo{
     results: any;
     canonical: boolean | string;

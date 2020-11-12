@@ -2,10 +2,9 @@ import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType, zhCNIntl } from '@ant-design/pro-table';
 
-import { TokenPrice, ChainInfo, MiningInfo, BlockInfo, TxInfo } from '@/services/publicdata/data'
+import { TokenPrice, ChainInfo, BlockInfo, TxInfo } from '@/services/publicdata/data'
 import { getTokenPrice } from '@/services/publicdata/tokenInfo';
 import { getChainInfo, getBlockInfo, getTxsInfo } from '@/services/publicdata/chainInfo';
-import { getMiningInfo } from '@/services/publicdata/miningInfo'
 import { Divider, Tag } from 'antd';
 import { FormattedMessage } from 'umi';
 import { getLanguage } from '@ant-design/pro-layout/lib/locales';
@@ -22,16 +21,6 @@ const TableList: React.FC<{}> = () => {
   const chainInfoColumns: ProColumns<ChainInfo>[] = [
     { title: <FormattedMessage id='chain.tipHeight' defaultMessage='Last Seen Stacks Chain Tip Height' />, dataIndex: 'stacksChainHeight' },
     { title: <FormattedMessage id='chain.burnHeight' defaultMessage='Last Seen Burn Chain Block Height' />, dataIndex: 'burnChainHeight' },
-  ];
-
-  const miningInfoColumns: ProColumns<MiningInfo>[] = [
-    { title: <FormattedMessage id='miningInfo.stxAddress' defaultMessage='stxAddress' />, dataIndex: 'stxAddress' },
-    { title: <FormattedMessage id='miningInfo.actualWins' defaultMessage='actualWins' />, dataIndex: 'actualWins' },
-    { title: <FormattedMessage id='miningInfo.totalWins' defaultMessage='totalWins' />, dataIndex: 'totalWins' },
-    { title: <FormattedMessage id='miningInfo.totalMined' defaultMessage='totalMined' />, dataIndex: 'totalMined' },
-    { title: <FormattedMessage id='miningInfo.wonRate' defaultMessage='wonRate' />, dataIndex: 'wonRate' },
-    { title: <FormattedMessage id='miningInfo.actualWonRate' defaultMessage='actualWonRate' />, dataIndex: 'actualWonRate' },
-    { title: <FormattedMessage id='miningInfo.burnBTCAmount' defaultMessage='burnBTCAmount' />, dataIndex: 'burnBTCAmount' }
   ];
 
   const blockInfoColumns: ProColumns<BlockInfo>[] = [
@@ -152,18 +141,6 @@ const TableList: React.FC<{}> = () => {
           pagination={false}
           dateFormatter="string"
           search={false}
-        />
-
-        <Divider type="horizontal" />
-
-        <ProTable<MiningInfo>
-          headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Mining Info' />}
-          actionRef={actionRef}
-          rowKey="stxAddress"
-          request={() => getMiningInfo()}
-          columns={miningInfoColumns}
-          search={false}
-          pagination={false}
         />
       </ConfigProvider>
     </PageContainer >

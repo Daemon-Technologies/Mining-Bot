@@ -8,7 +8,7 @@ export default {
     'block.title': '区块信息',
     'block.height': '区块高度',
     'block.hash': '区块哈希',
-    'block.gas': '总燃油费',
+    'block.gas': 'gas费',
     'block.status': '区块状态',
     'block.status.success': '已上链',
     'block.status.pending': '处理中',
@@ -19,12 +19,4 @@ export default {
     'block.info.feeRate': '交易费率',
     'block.info.txType': '交易类型',
 
-    'miningInfo.title': '挖矿信息',
-    'miningInfo.stxAddress': 'STX地址',
-    'miningInfo.actualWins': '真正获胜量',
-    'miningInfo.totalWins': '总获胜量',
-    'miningInfo.totalMined': '总挖矿量',
-    'miningInfo.wonRate': '胜率',
-    'miningInfo.actualWonRate': '真正胜率',
-    'miningInfo.burnBTCAmount': '比特币燃烧数量',
 };

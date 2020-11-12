@@ -1,6 +1,6 @@
 export default {
   'menu.publicData': '公共数据',
-  'menu.wallet': '钱包',
+  'menu.wallet': '钱包账户',
   'menu.client': '挖矿客户端',
 
   'menu.welcome': '欢迎',
