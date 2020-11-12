@@ -1,14 +1,17 @@
 import { Alert, message } from 'antd';
 import React, { useState } from 'react';
-import { Link, useModel } from 'umi';
+import { FormattedMessage, Link, SelectLang, useModel } from 'umi';
 import { getPageQuery } from '@/utils/utils';
 import logo from '@/assets/logo.svg';
 import { LoginParamsType, loginByPassword, getUserAuth, setLockPassword } from '@/services/login';
 import Footer from '@/components/Footer';
 import LoginFrom from './components/Login';
 import styles from './style.less';
+import { getLanguage } from '@ant-design/pro-layout/lib/locales';
 
 const { Tab, Password, Submit } = LoginFrom;
+
+const { CN } = require('@/services/constants')
 
 const LoginMessage: React.FC<{
   content: string;
@@ -59,7 +62,7 @@ const Login: React.FC<{}> = () => {
       const password = values.password
       const result = await setLockPassword(password);
       if (result.status === 200) {
-        message.success('Set your lock password successfully!');
+        message.success(getLanguage() === CN ? '锁定密码成功！' : 'Set your lock password successfully!');
         replaceGoto();
         setTimeout(() => {
           refresh();
@@ -67,7 +70,7 @@ const Login: React.FC<{}> = () => {
         return;
       }
     } catch (error) {
-      message.error('Set your lock password error, please try it again');
+      message.error(getLanguage() === CN ? '设置锁定密码失败，请重试！' : 'Set your lock password error, please try it again');
     }
     setSubmitting(false);
   }
@@ -80,7 +83,7 @@ const Login: React.FC<{}> = () => {
       const result = await loginByPassword(password);
       if (result.status === 200) {
         setInitialState({ currentUser: { password: password } });
-        message.success('Unlock Successfully！');
+        message.success(getLanguage() === CN ? '解锁成功！' : 'Unlock Successfully！');
         replaceGoto();
         setTimeout(() => {
           refresh();
@@ -89,7 +92,7 @@ const Login: React.FC<{}> = () => {
       }
       setUserLoginState(result);
     } catch (error) {
-      message.error('Unlock your account error! Please try it again');
+      message.error(getLanguage() === CN ? '解锁账户失败！请重试！' : 'Unlock your account error! Please try it again');
     }
     setSubmitting(false);
   };
@@ -103,7 +106,7 @@ const Login: React.FC<{}> = () => {
   // validate password
   const checkPassword = (_: any, value: string, callback: any) => {
     if (value && value !== passwordValue) {
-      callback("Input passwords are inconsistent!");
+      callback(getLanguage() === CN ? '两次输入密码不一致！' : "Input passwords are inconsistent!");
     } else {
       callback();
     }
@@ -116,89 +119,93 @@ const Login: React.FC<{}> = () => {
   if (userAuth) {
     return (
       <div className={styles.container}>
-        {/* <div className={styles.lang}>
-        <SelectLang />
-      </div> */}
+        <div className={styles.lang}>
+          <SelectLang />
+        </div>
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>Stacks Mining Bot</span>
+                <span className={styles.title}><FormattedMessage id='login.title' defaultMessage='Stacks Mining Bot' /></span>
               </Link>
             </div>
-            <div className={styles.desc}>Stacks Mining Bot is an interesting tool!</div>
+            <div className={styles.desc}><FormattedMessage id='login.subTitle' defaultMessage='Stacks Mining Bot is an interesting tool!' /></div>
           </div>
 
           <div className={styles.main}>
             <LoginFrom activeKey={type} onSubmit={handleSubmit}>
-              <Tab key="account" tab="Unlock Your Account">
+              <Tab key="account" tab={<FormattedMessage id='login.unlock' defaultMessage='Unlock Your Account' />}>
                 {status !== 200 && !submitting && (
-                  <LoginMessage content="password error" />
+                  <LoginMessage content={getLanguage() === CN ? '密码错误!' : 'password error!'} />
                 )}
 
                 <Password
                   name="password"
+                  placeholder={getLanguage() === CN ? '密码' : 'password'}
                   onChange={onPasswordChange}
                   rules={[
                     {
                       required: true,
-                      message: 'please input your password!',
+                      message: <FormattedMessage id='message.unlock.pwd' defaultMessage='please input your password!' />,
                     },
                     {
                       min: 8,
-                      message: 'password should be at least 8 characters! ',
+                      message: <FormattedMessage id='message.unlock.leastLength' defaultMessage='password should be at least 8 characters!' />,
                     },
                   ]}
                 />
               </Tab>
-              <Submit loading={submitting}>Unlock</Submit>
+              <Submit loading={submitting}><FormattedMessage id='button.unlock' defaultMessage='Unlock' /></Submit>
             </LoginFrom>
           </div>
         </div>
         <Footer />
-      </div>
+      </div >
     );
   } else { // else just redirect to the set lock password
     return (
       <div className={styles.container}>
+        <div className={styles.lang}>
+          <SelectLang />
+        </div>
         <div className={styles.content}>
           <div className={styles.top}>
             <div className={styles.header}>
               <Link to="/">
                 <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>Stacks Mining Bot</span>
+                <span className={styles.title}><FormattedMessage id='login.title' defaultMessage='Stacks Mining Bot' /></span>
               </Link>
             </div>
-            <div className={styles.desc}>Stacks Mining Bot is an interesting tool!</div>
+            <div className={styles.desc}><FormattedMessage id='login.subTitle' defaultMessage='Stacks Mining Bot is an interesting tool!' /></div>
           </div>
 
           <div className={styles.main}>
             <LoginFrom activeKey={type} onSubmit={handleSetPassword}>
-              <Tab key="account" tab="Set Your Lock Password">
+              <Tab key="account" tab={<FormattedMessage id='login.setLockPwd' defaultMessage='Set Your Lock Password' />}>
                 <Password
                   name="password"
-                  placeholder="type your password"
+                  placeholder={getLanguage() === CN ? '输入密码' : 'type your password'}
                   onChange={onPasswordChange}
                   rules={[
                     {
                       required: true,
-                      message: 'please input your password!',
+                      message: <FormattedMessage id='message.unlock.pwd' defaultMessage='please input your password!' />,
                     },
                     {
                       min: 8,
-                      message: 'password should be at least 8 characters! ',
+                      message: <FormattedMessage id='message.unlock.leastLength' defaultMessage='password should be at least 8 characters!' />,
                     },
                   ]}
                 />
 
                 <Password
                   name="password2"
-                  placeholder="type your password again"
+                  placeholder={getLanguage() === CN ? '再次输入密码' : 'type your password again'}
                   rules={[
                     {
                       required: true,
-                      message: 'please input your password again!',
+                      message: <FormattedMessage id='message.unlock.pwdAgain' defaultMessage='please input your password again!' />,
                     },
                     {
                       validator: checkPassword,
@@ -206,7 +213,7 @@ const Login: React.FC<{}> = () => {
                   ]}
                 />
               </Tab>
-              <Submit loading={submitting}>Login</Submit>
+              <Submit loading={submitting}><FormattedMessage id='button.login' defaultMessage='Login' /></Submit>
             </LoginFrom>
           </div>
         </div>

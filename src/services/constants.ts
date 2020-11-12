@@ -52,6 +52,9 @@ module.exports = {
   burnChainBlockRate: 30,
   MIN_MINER_BTC_AMOUNT: 0.05,
 
+  // language
+  CN: 'zh-CN',
+
   // password key
   MiningPasswordAuthorization: 'MiningPasswordAuthorization',
   // password value
