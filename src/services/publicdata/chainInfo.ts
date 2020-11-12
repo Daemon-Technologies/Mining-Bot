@@ -41,7 +41,6 @@ export async function getBlockInfo(){
                 return {...item, total_fee:totalFee, canonical:item.canonical ? "success" : "pending"} as BlockInfo
             })
         )
-        console.log({'data':results})
         return {'data':results}
     })
 }
