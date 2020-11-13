@@ -11,14 +11,15 @@ export async function getNodeStatus() {
 }
 
 export async function startMining() {
-
   return request(`${stackNodeAPIURL}/startMining`, {
-    method: 'GET',
+    method: 'POST',
+    data: {
+      seed: "6041b7d216f9ac7744470bebe72c62382d153b9394ee78a16678e820791cf02401",
+      burn_fee_cap: "70000"
+    }
   }).then((resp) => {
     console.log(resp);
-    if (resp === "success")
-      return true
-    return false
+    return resp
   })
 }
 
@@ -28,9 +29,7 @@ export async function stopMining() {
     method: 'GET',
   }).then((resp) => {
     console.log(resp);
-    if (resp === "success")
-      return true
-    return false
+    return resp
   })
 }
 

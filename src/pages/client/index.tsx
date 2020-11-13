@@ -12,25 +12,12 @@ import { getLanguage } from '@ant-design/pro-layout/lib/locales';
 
 const { MIN_MINER_BTC_AMOUNT, CN } = require('@/services/constants');
 
-/**
- * @param fields
- */
-const handleAdd = async (fields) => {
-  const hide = message.loading('Adding');
-  try {
-    hide();
-    message.success('Adding success!');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Adding fail!');
-    return false;
-  }
-};
+
 
 const TableList: React.FC<{}> = () => {
   const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false)
+  const [nodeStatus, setNodeStatus] = useState(-1);
   const actionRef = useRef<ActionType>();
   const strategyColomns: ProColumns<Account>[] = [
     {
@@ -84,17 +71,23 @@ const TableList: React.FC<{}> = () => {
           }
         >
           <Space>
+            当前节点状态: {nodeStatus===-1 ? "无节点运行" : `挖矿程序正在运行，PID为${nodeStatus}`}
+
             <Button
               type="default"
               onClick={async () => {
                 await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
                 const res = await getNodeStatus()
                 console.log(res)
-                if (res === 0) {
-                  message.success({ content: getLanguage() === CN ? '后台没有stacks node进程！' : "There is no stacks node process running in backend", duration: 4 })
+                if (res.PID === -1){
+                  message.success({ content: getLanguage() === CN ? '后台没有挖矿进程！' : "There is no mining process running!", duration: 4 })
+                  setNodeStatus(res.PID)
                 }
                 else
-                  message.success({ content: getLanguage() === CN ? `后台有一个stacks node进程！进程id为${res}` : `There is a stacks node process running in pid ${res}`, duration: 4 })
+                {
+                  message.success({ content: getLanguage() === CN ? `后台有挖矿进程！进程id为${res.PID}` : `There is a mining process running in pid ${res}`, duration: 4 })
+                  setNodeStatus(res.PID)
+                }
 
               }
               }>
@@ -115,8 +108,17 @@ const TableList: React.FC<{}> = () => {
               type="danger"
               onClick={async () => {
                 // TODO check Node Status firstly
+                // TODO Reconfirm check
+                await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
                 const res = await stopMining()
-                message.success({ content: getLanguage() === CN ? '关闭成功！' : "Shut Down Successfully", duration: 4 })
+                console.log(res)
+                if (res.status === 404){
+                    await message.success({ content: getLanguage() === CN ? '没有挖矿程序在运行!' : `${res.data}`, duration: 4 })
+                }
+                else if (res.status === 200){
+                    await message.success({ content: getLanguage() === CN ? '关闭成功！' : `${res.data}`, duration: 4 })
+                }
+
                 console.log(res)
               }}
             >
@@ -150,12 +152,12 @@ const TableList: React.FC<{}> = () => {
         <CreateForm
           onSubmit={async (value) => {
             console.log("value", value)
-            if (value.balance < MIN_MINER_BTC_AMOUNT) {
+            if (false){//value.balance < MIN_MINER_BTC_AMOUNT) {
               message.error({ content: getLanguage() === CN ? '你的比特币余额不足以继续挖矿！' : "Your Bitcoin is not enough to mine", duration: 3 })
             }
             else {
               setStartMiningLoading(true)
-              await message.loading({ content: getLanguage() === CN ? '检查环境.....' : "Checking Environment...", duration: 2 })
+              await message.loading({ content: getLanguage() === CN ? '检查环境.....' : "Checking Environment...", duration: 1 })
               message.loading({ content: getLanguage() === CN ? '启动Stacks Blockchain' : "Launching Stacks Blockchain...", duration: 5 })
 
               // Launching stack-blockchain by rpc
@@ -163,14 +165,11 @@ const TableList: React.FC<{}> = () => {
               console.log(res)
               setStartMiningLoading(!res)
               // Launching Successfully
-              if (res) {
+              if (res.status == 200) {
                 message.success({ content: getLanguage() === CN ? '启动成功！' : "Launching Successfully!!!", duration: 4 })
-                const success = await handleAdd(value);
-                if (success) {
-                  handleModalVisible(false);
-                  if (actionRef.current) {
-                    actionRef.current.reload();
-                  }
+                handleModalVisible(false);
+                if (actionRef.current) {
+                  actionRef.current.reload();
                 }
               }
               // Launching UnSuccessfully
