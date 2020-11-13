@@ -5,7 +5,8 @@ import { queryAccount } from '@/services/wallet/accountData'
 import { Account } from '@/services/wallet/data'
 import { Steps, Divider } from 'antd';
 import { Slider, InputNumber, Row, Col } from 'antd';
-
+import { getLanguage } from '@ant-design/pro-layout/lib/locales';
+const { CN } = require('@/services/constants');
 const { Step } = Steps;
 
 
@@ -108,24 +109,23 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
           (() => {
             switch (stepStatus){
               case 0 :  return  (<div> 
-                                  <Button danger onClick={() => onCancel()}>Cancel</Button>
+                                  <Button danger onClick={() => onCancel()}>{(getLanguage() === CN ? "取消" : "Cancel")}</Button>
                                   <Button 
                                       type="primary" 
                                       disabled={accountSelected == undefined? true:false}
                                       onClick={()=> setStepStatus(1)}>
-                                        
-                                    Next
+                                      {(getLanguage() === CN ? "下一步" : "Next")}    
                                   </Button>
                                 </div>)
               case 1 :  return  (<div> 
-                                  <Button danger onClick={() => onCancel()}>Cancel</Button>
-                                  <Button onClick={()=> setStepStatus(0)}>Back</Button>
+                                  <Button danger onClick={() => onCancel()}>{(getLanguage() === CN ? "取消" : "Cancel")}</Button>
+                                  <Button onClick={()=> setStepStatus(0)}>{(getLanguage() === CN ? "上一步" : "Back")}</Button>
                                   <Button 
                                       type="primary" 
                                       disabled={accountSelected == undefined? true:false}
                                       onClick={()=> onSubmit({account : accountSelected, inputBurnFee : inputBurnFee})}>
-                                        
-                                      Set Burn Fee
+                                      {(getLanguage() === CN ? "完成" : "Finish")}   
+                                      
                                   </Button>
                                 </div>)
 
@@ -147,8 +147,8 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
       footer={renderSubmitFooter()}
     > 
       <Steps current={stepStatus}>
-        <Step title="Account Selection"/>
-        <Step title="Burn Fee Setting"/>
+        <Step title={(getLanguage() === CN ? "账户选择" : "Account Selection")} />
+        <Step title={(getLanguage() === CN ? "燃烧量设置" : "Burn Fee Setting")}/>
       </Steps>
       
       <Divider/>
