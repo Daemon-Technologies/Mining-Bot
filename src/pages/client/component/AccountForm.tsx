@@ -57,7 +57,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
           rowKey="address"
           search={false}
           columns={columns}
-          request={()=>queryAccount()}
+          request={()=>queryAccount(1)}
         />
       </>
     )

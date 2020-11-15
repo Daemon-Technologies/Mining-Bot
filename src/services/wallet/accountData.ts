@@ -39,49 +39,59 @@ export async function getBtcBalance(btcAddress: string) {
   });
 }
 
-export async function queryAccount() {
+export async function queryAccount(type: number = 0) {
+  // type 
+  // 0 all
+  // 1 btc only
+  // 2 stx only
+  
   const { btcAccounts, stxAccounts } = getAccount();
   const btcAccountsInfo: Account[] = [];
   const stxAccountsInfo: Account[] = [];
   let newAccountsInfo: Account[] = [];
+ 
   // update btc account balance
-  for (var i = 0; i < btcAccounts.length; i++) {
-    const row = btcAccounts[i];
-    const btcAddress = row.address;
-    const balanceResp = await getBtcBalance(btcAddress);
-    if (!balanceResp || balanceResp.balance === undefined) {
-      message.error(`query address${btcAddress} btc balance time out.`);
-      continue;
+  if (type === 0 || type === 1){
+    for (var i = 0; i < btcAccounts.length; i++) {
+      const row = btcAccounts[i];
+      const btcAddress = row.address;
+      const balanceResp = await getBtcBalance(btcAddress);
+      if (!balanceResp || balanceResp.balance === undefined) {
+        message.error(`query address${btcAddress} btc balance time out.`);
+        continue;
+      }
+      const accountInfo: Account = {
+        address: row.address,
+        type: row.type,
+        balance: balanceResp.balance,
+        skEnc: row.skEnc,
+        iv: row.iv,
+        authTag: row.authTag,
+      };
+      btcAccountsInfo.push(accountInfo);
     }
-    const accountInfo: Account = {
-      address: row.address,
-      type: row.type,
-      balance: balanceResp.balance,
-      skEnc: row.skEnc,
-      iv: row.iv,
-      authTag: row.authTag,
-    };
-    btcAccountsInfo.push(accountInfo);
   }
-
-  // update stx account balance
-  for (var i = 0; i < stxAccounts.length; i++) {
-    const row = stxAccounts[i];
-    const stxAddress = row.address;
-    const balanceResp = await getStxBalance(stxAddress);
-    if (!balanceResp || !balanceResp.stx) {
-      message.error(`query address${stxAddress} stx balance time out.`);
-      return;
+  
+  if (type === 0 || type === 2){
+    // update stx account balance
+    for (var i = 0; i < stxAccounts.length; i++) {
+      const row = stxAccounts[i];
+      const stxAddress = row.address;
+      const balanceResp = await getStxBalance(stxAddress);
+      if (!balanceResp || !balanceResp.stx) {
+        message.error(`query address${stxAddress} stx balance time out.`);
+        return;
+      }
+      const accountInfo: Account = {
+        address: row.address,
+        type: row.type,
+        balance: balanceResp.stx.balance,
+        skEnc: row.skEnc,
+        iv: row.iv,
+        authTag: row.authTag,
+      };
+      stxAccountsInfo.push(accountInfo);
     }
-    const accountInfo: Account = {
-      address: row.address,
-      type: row.type,
-      balance: balanceResp.stx.balance,
-      skEnc: row.skEnc,
-      iv: row.iv,
-      authTag: row.authTag,
-    };
-    stxAccountsInfo.push(accountInfo);
   }
 
   newAccountsInfo = btcAccountsInfo.concat(stxAccountsInfo);
