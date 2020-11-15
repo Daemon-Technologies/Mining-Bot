@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
-import { Button, Card, Space, Divider, message, ConfigProvider, Typography } from 'antd';
+import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification } from 'antd';
 import { FormattedMessage } from "umi"
 
 import { Account } from '@/services/wallet/data'
@@ -157,6 +157,25 @@ const TableList: React.FC<{}> = () => {
   }
 
   
+  const openNotification = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Button type="primary" size="small" 
+          onClick={async ()=>{
+              const w = await window.open('about:blank');
+              w.location.href="https://www.blockstack.org/testnet/faucet"
+          }}>
+        Get Bitcoin
+      </Button>
+    );
+    notification.info({
+      message: (getLanguage() === CN ? "余额提醒" : 'Balance Notification'),
+      description: (getLanguage() === CN ? "使用官方网站获取测试网比特币" : 'Visit Official Faucet Website to get Test Bitcoin'),
+      btn,
+      key
+    });
+  };
+
 
   const render_Form = () => {
     return (
@@ -164,8 +183,10 @@ const TableList: React.FC<{}> = () => {
         <AccountForm
           onSubmit={async (value: {account: Account, inputBurnFee: number}) => {
             //console.log("value", value)
-            if (false){//value.account.balance < MIN_MINER_BTC_AMOUNT) {
+            if (value.account.balance < MIN_MINER_BTC_AMOUNT) {
               message.error({ content: getLanguage() === CN ? '你的比特币余额不足以继续挖矿！' : "Your Bitcoin is not enough to mine", duration: 3 })
+              openNotification()
+              handleModalVisible(false)
             }
             else {
               setStartMiningLoading(true)
@@ -184,6 +205,7 @@ const TableList: React.FC<{}> = () => {
               // Launching UnSuccessfully
               else {
                 message.error({ content: getLanguage() === CN ? '启动异常，请联系管理员！' : "Launching Error, Please Contact With Admin!!!", duration: 4 })
+                handleModalVisible(false)
               }
               await initialNodeStatus()
             }  

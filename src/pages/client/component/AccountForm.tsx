@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Card } from 'antd';
 import ProTable, { ProColumns} from '@ant-design/pro-table';
 import { queryAccount } from '@/services/wallet/accountData'
@@ -19,12 +19,12 @@ interface CreateFormProps {
 
 const columns : ProColumns<Account>[]  = [
   {
-    title: 'BtcAddress',
+    title: (getLanguage() === CN ? "比特币地址" : 'BTC Address'),
     dataIndex: 'address',
     render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Balance',
+    title: (getLanguage() === CN ? "余额" : 'Balance'),
     dataIndex: 'balance',
   }
 ];
@@ -34,9 +34,10 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   const { modalVisible, onCancel, onSubmit } = props;
   const [accountSelected, handleAccountSelected] = useState<Account>()
   const [stepStatus, setStepStatus] = useState(0)
-  const [inputBurnFee, setInputBurnFee] = useState()
+  const [inputBurnFee, setInputBurnFee] = useState(20000)
   //console.log("in")
   //console.log(accountSelected)
+
   const rowSelection = {
     onChange : (selectedRowKeys: any, selectedRows: React.SetStateAction<Account | undefined>[]) => {
       //console.log(`selectedRowKeys: ${selectedRowKeys}, selectedRows: ${selectedRows}`)
@@ -56,12 +57,11 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
           rowKey="address"
           search={false}
           columns={columns}
-          request={()=>queryAccount()}
+          request={()=>queryAccount(1)}
         />
       </>
     )
   };
-
 
 
   const onChangeBurnFeeInput = (value:any) => {
@@ -74,23 +74,23 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   const renderBurnFeeContent = () => {
     return (
       <>
-        <Card title="Set Burn Fee">
+        <Card title={(getLanguage() === CN ? "设置燃烧量" : "Set Burn Fee")}>
           <Row style={{ margin: '10px 5px' }}>
             <Col span={12}>
               <Slider
                 min={1000}
-                max={100000}
+                max={200000}
                 onChange={onChangeBurnFeeInput}
                 value={typeof inputBurnFee === 'number' ? inputBurnFee : 0}
-                step={100}
+                step={200}
               />
             </Col>
             <Col span={4}>
               <InputNumber
                 min={1000}
-                max={100000}
+                max={1000000}
                 style={{ margin: '0 16px' }}
-                step={100}
+                step={200}
                 value={inputBurnFee}
                 onChange={onChangeBurnFeeInput}
               />
@@ -123,7 +123,13 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
                                   <Button 
                                       type="primary" 
                                       disabled={accountSelected == undefined? true:false}
-                                      onClick={()=> onSubmit({account : accountSelected, inputBurnFee : inputBurnFee})}>
+                                      onClick={()=> {
+                                
+                                          onSubmit({account : accountSelected, inputBurnFee : inputBurnFee})
+                                          setStepStatus(0)
+                                        }
+                                      }
+                                  >
                                       {(getLanguage() === CN ? "完成" : "Finish")}   
                                       
                                   </Button>
@@ -141,7 +147,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   return (
     <Modal
       destroyOnClose
-      title="Start Mining Configuration"
+      title={(getLanguage() === CN ? "账户选择" : "Start Mining Configuration")}
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={renderSubmitFooter()}
@@ -164,5 +170,3 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
 };
 
 export default AccountForm;
-
-//To Do Chinese
