@@ -11,9 +11,9 @@ export default {
     'miningInfo.title': '挖矿信息',
     'miningInfo.stxAddress': 'STX地址',
     'miningInfo.btcAddress': 'BTC地址',
-    'miningInfo.actualWins': '真正获胜量',
-    'miningInfo.totalWins': '总获胜量',
-    'miningInfo.totalMined': '总挖矿量',
+    'miningInfo.actualWins': '最终获胜数',
+    'miningInfo.totalWins': '燃烧链获胜数',
+    'miningInfo.totalMined': '总参与挖矿数',
     'miningInfo.burn': '总燃烧量',
 
 };

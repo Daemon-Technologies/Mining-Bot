@@ -7,7 +7,7 @@ import CreateForm from './components/CreateForm';
 import { Account, NewAccount } from '@/services/wallet/data'
 import { queryAccount } from '@/services/wallet/accountData'
 import { addAccount } from './service';
-import { FormattedMessage } from 'umi';
+import { FormattedMessage, getLocale } from 'umi';
 import { getLanguage } from '@ant-design/pro-layout/lib/locales';
 
 const { CN } = require('@/services/constants');
@@ -17,18 +17,18 @@ const { CN } = require('@/services/constants');
  * @param fields
  */
 const handleAdd = async (fields: NewAccount) => {
-  const hide = message.loading('Adding');
+  const hide = message.loading(getLocale() === CN ? '添加中...' : 'Adding');
   try {
     const result = await addAccount({ ...fields });
     if (result.status !== 200) {
-      throw message.error('Adding fail');
+      throw message.error(getLocale() === CN ? '添加失败!' : 'Adding fail!');
     }
     hide();
-    message.success('Adding success!');
+    message.success(getLocale() === CN ? '添加成功!' : 'Adding success!');
     return true;
   } catch (error) {
     hide();
-    message.error('Adding fail!');
+    message.error(getLocale() === CN ? '添加失败!' : 'Adding fail!');
     return false;
   }
 };
