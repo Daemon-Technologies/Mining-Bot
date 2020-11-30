@@ -4,4 +4,6 @@ export default {
     'account.type': '地址类型',
     'account.balance': '余额',
     'account.add': '添加账户',
+    'account.choose': '已选择',
+    'choose.num': '项',
 };
