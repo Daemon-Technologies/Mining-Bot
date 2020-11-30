@@ -9,7 +9,7 @@ module.exports = {
   nodeStatusURL: 'https://status.test-blockstack.com',
   binanceAPIURL: 'https://api.binance.com/api/v3',
   masterNodeKey: 'master_node_ping',
-  stackNodeAPIURL: 'http://127.0.0.1:5000',
+  stackNodeAPIURL: 'http://localhost:5000',
   sidecarKey: 'sidecar_ping',
   explorerKey: 'explorer_ping',
   stacksChainTipKey: 'stacks_chain_tip',
@@ -50,7 +50,10 @@ module.exports = {
   blockRateYellowCount: 18,
   blockRateRedCount: 5,
   burnChainBlockRate: 30,
-  MIN_MINER_BTC_AMOUNT: 0.05,
+  MIN_MINER_BTC_AMOUNT: 0.005,
+
+  // language
+  CN: 'zh-CN',
 
   // password key
   MiningPasswordAuthorization: 'MiningPasswordAuthorization',

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from '@ant-design/icons';
 import { Avatar, Menu, Spin } from 'antd';
-import { history, useModel } from 'umi';
+import { FormattedMessage, history, useModel } from 'umi';
 import { getPageQuery } from '@/utils/utils';
 import { outLogin } from '@/services/login';
 import { stringify } from 'querystring';
@@ -77,7 +77,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       {menu && <Menu.Divider />}
       <Menu.Item key="logout">
         <LogoutOutlined />
-        Lock your account
+        <FormattedMessage id='login.lockagain' defaultMessage='Lock your account' />
       </Menu.Item>
     </Menu>
   );

@@ -1,30 +1,34 @@
 import React, { useRef, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { Button, message } from 'antd';
+import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
+import { Button, ConfigProvider, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 import { Account, NewAccount } from '@/services/wallet/data'
 import { queryAccount } from '@/services/wallet/accountData'
 import { addAccount } from './service';
+import { FormattedMessage, getLocale } from 'umi';
+import { getLanguage } from '@ant-design/pro-layout/lib/locales';
+
+const { CN } = require('@/services/constants');
 
 /**
  * 添加节点
  * @param fields
  */
 const handleAdd = async (fields: NewAccount) => {
-  const hide = message.loading('Adding');
+  const hide = message.loading(getLocale() === CN ? '添加中...' : 'Adding');
   try {
     const result = await addAccount({ ...fields });
     if (result.status !== 200) {
-      throw message.error('Adding fail');
+      throw message.error(getLocale() === CN ? '添加失败!' : 'Adding fail!');
     }
     hide();
-    message.success('Adding success!');
+    message.success(getLocale() === CN ? '添加成功!' : 'Adding success!');
     return true;
   } catch (error) {
     hide();
-    message.error('Adding fail!');
+    message.error(getLocale() === CN ? '添加失败!' : 'Adding fail!');
     return false;
   }
 };
@@ -34,17 +38,17 @@ const TableList: React.FC<{}> = () => {
   const actionRef = useRef<ActionType>();
   const accountColomns: ProColumns<Account>[] = [
     {
-      title: 'Address',
+      title: <FormattedMessage id='account.address' defaultMessage='Address' />,
       dataIndex: 'address',
       hideInForm: true,
     },
     {
-      title: 'Type',
+      title: <FormattedMessage id='account.type' defaultMessage='Type' />,
       dataIndex: 'type',
       hideInForm: true,
     },
     {
-      title: 'Balance',
+      title: <FormattedMessage id='account.balance' defaultMessage='Balance' />,
       dataIndex: 'balance',
       hideInForm: true,
     },
@@ -52,34 +56,40 @@ const TableList: React.FC<{}> = () => {
 
   return (
     <PageContainer>
-      <ProTable<Account>
-        headerTitle="Account Info"
-        actionRef={actionRef}
-        rowKey="address"
-        columns={accountColomns}
-        search={false}
-        pagination={false}
-        request={() => queryAccount()}
-        toolBarRender={() => [
-          <Button type="primary" onClick={() => handleModalVisible(true)}>
-            <PlusOutlined /> Add
-            </Button>,
-        ]}
-      />
-
-      <CreateForm
-        onSubmit={async (value) => {
-          const success = await handleAdd(value);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
+      <ConfigProvider
+        value={{
+          intl: getLanguage() === CN ? zhCNIntl : enUSIntl,
         }}
-        onCancel={() => handleModalVisible(false)}
-        modalVisible={createModalVisible}
-      />
+      >
+        <ProTable<Account>
+          headerTitle={<FormattedMessage id='account.title' defaultMessage='Account Info' />}
+          actionRef={actionRef}
+          rowKey="address"
+          columns={accountColomns}
+          search={false}
+          pagination={false}
+          request={() => queryAccount()}
+          toolBarRender={() => [
+            <Button type="primary" onClick={() => handleModalVisible(true)}>
+              <PlusOutlined /> <FormattedMessage id='account.add' defaultMessage='Add' />
+            </Button>,
+          ]}
+        />
+
+        <CreateForm
+          onSubmit={async (value) => {
+            const success = await handleAdd(value);
+            if (success) {
+              handleModalVisible(false);
+              if (actionRef.current) {
+                actionRef.current.reload();
+              }
+            }
+          }}
+          onCancel={() => handleModalVisible(false)}
+          modalVisible={createModalVisible}
+        />
+      </ConfigProvider>
     </PageContainer >
   );
 };
