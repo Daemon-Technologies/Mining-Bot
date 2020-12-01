@@ -37,7 +37,7 @@ const TableList: React.FC<{}> = () => {
       width: 200
     },
     {
-      title: <FormattedMessage id='block.gas' defaultMessage='Total Gas' />,
+      title: <FormattedMessage id='block.fee' defaultMessage='Total Fee' />,
       dataIndex: 'total_fee',
       width: 80
     },
