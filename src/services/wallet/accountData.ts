@@ -3,7 +3,7 @@ import { Account } from "./data";
 import request from "umi-request";
 import { message } from "antd";
 
-const { sidecarURL } = require('@/services/constants')
+const { sidecarURL, sidecarURLKrypton } = require('@/services/constants')
 
 export function getAccount() {
   const stxAccounts: Account[] = [];
@@ -26,14 +26,14 @@ export function updateAccount() {
 }
 
 export async function getStxBalance(stxAddress: string) {
-  const baseUrl = `${sidecarURL}/v1/address/`;
+  const baseUrl = `${sidecarURLKrypton}/v1/address/`;
   return request(`${baseUrl + stxAddress}/balances`, {
     method: 'GET',
   });
 }
 
 export async function getBtcBalance(btcAddress: string) {
-  const btcUrl = `${sidecarURL}/v1/faucets/btc/`;
+  const btcUrl = `${sidecarURLKrypton}/v1/faucets/btc/`;
   return request(`${btcUrl + btcAddress}`, {
     method: "GET",
   });
