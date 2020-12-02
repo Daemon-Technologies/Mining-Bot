@@ -47,10 +47,12 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='miningInfo.stxAddress' defaultMessage='STX Address' />,
       dataIndex: 'stx_address',
+      copyable: true
     },
     {
       title: <FormattedMessage id='miningInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
+      copyable: true
     },
     {
       title: <FormattedMessage id='miningInfo.actualWins' defaultMessage='Actual Win' />,
@@ -59,10 +61,6 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='miningInfo.totalWins' defaultMessage='Total Win' />,
       dataIndex: 'total_win',
-    },
-    {
-      title: <FormattedMessage id='miningInfo.totalMined' defaultMessage='Total Mined' />,
-      dataIndex: 'total_mined',
     },
     {
       title: <FormattedMessage id='miningInfo.burn' defaultMessage='Miner Burned' />,
@@ -91,8 +89,15 @@ const TableList: React.FC<{}> = () => {
             <Typography>
               <Paragraph>
                 <Title level = {3}>
-                  {(getLanguage() === CN ? "当前状态" : "Current Status")} : {nodeStatus===-1 ? (getLanguage() === CN ? "无节点运行" : "No Mining Program Running!") : 
-                        (getLanguage() === CN ? `挖矿程序正在运行，PID为${nodeStatus}` : `Mining Program is Running, PID is ${nodeStatus}`)}
+                  <FormattedMessage id='status.current' defaultMessage='Current Status' />
+                  :
+                  { nodeStatus===-1 
+                    ?
+                    <FormattedMessage id='status.noProgramRunning' defaultMessage='No Mining Program Running!' />
+                    :
+                    <FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> + `${nodeStatus}`
+                    
+                  }
                 </Title>
               </Paragraph>
               <Paragraph>

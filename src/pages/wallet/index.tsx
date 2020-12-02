@@ -65,6 +65,7 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='account.address' defaultMessage='Address' />,
       dataIndex: 'address',
       hideInForm: true,
+      copyable: true
     },
     {
       title: <FormattedMessage id='account.type' defaultMessage='Type' />,
