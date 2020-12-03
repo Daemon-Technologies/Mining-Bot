@@ -2,6 +2,7 @@ import { Tag, Space } from 'antd';
 import React from 'react';
 import { SelectLang, useModel } from 'umi';
 import Avatar from './AvatarDropdown';
+import SwitchNetwork from './SwitchNetwork';
 import styles from './index.less';
 
 export type SiderTheme = 'light' | 'dark';
@@ -34,6 +35,7 @@ const GlobalHeaderRight: React.FC<{}> = () => {
         </span>
       )}
       <SelectLang className={styles.action} />
+      <SwitchNetwork />
     </Space>
   );
 };

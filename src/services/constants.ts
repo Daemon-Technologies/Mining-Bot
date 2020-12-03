@@ -1,15 +1,20 @@
 module.exports = {
 
 
-  sidecarURL: 'https://stacks-node-api.blockstack.org/extended',
+  // Krypton
   sidecarURLKrypton: 'https://stacks-node-api.krypton.blockstack.org/extended',
-  explorerURL: 'https://testnet-explorer.blockstack.org',
   btcFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/btc?address=',
   stxFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/stx?address=',
+
+  //Xenon
+  sidecarURL: 'https://stacks-node-api.blockstack.org/extended',
+  
+  explorerURL: 'https://testnet-explorer.blockstack.org',
   nodeStatusURL: 'https://status.test-blockstack.com',
   binanceAPIURL: 'https://api.binance.com/api/v3',
   masterNodeKey: 'master_node_ping',
-  stackNodeAPIURL: 'http://localhost:5000',
+
+  miningLocalServer_endpoint: 'http://localhost:5000',
 
   MIN_MINER_BTC_AMOUNT: 0.005,
 
