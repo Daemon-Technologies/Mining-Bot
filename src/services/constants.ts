@@ -3,6 +3,7 @@ module.exports = {
   nodeInfoURL: 'http://testnet-master.blockstack.org:20443/v2/info',
   neonNodeInfoURL: 'http://neon.blockstack.org/v2/info',
   sidecarURL: 'https://stacks-node-api.blockstack.org/extended',
+  sidecarURLKrypton: 'https://stacks-node-api.krypton.blockstack.org/extended',
   sidecarTxURL: 'https://stacks-node-api.blockstack.org/extended/v1/tx',
   explorerURL: 'https://testnet-explorer.blockstack.org',
   faucetURL: 'https://stacks-node-api.blockstack.org/extended/v1/faucets/stx?address=',
