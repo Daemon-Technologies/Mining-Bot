@@ -59,8 +59,8 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'actual_win',
     },
     {
-      title: <FormattedMessage id='miningInfo.totalWins' defaultMessage='Total Win' />,
-      dataIndex: 'total_win',
+      title: <FormattedMessage id='miningInfo.totalMined' defaultMessage='Total Mined' />,
+      dataIndex: 'total_mined',
     },
     {
       title: <FormattedMessage id='miningInfo.burn' defaultMessage='Miner Burned' />,

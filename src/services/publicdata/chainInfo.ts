@@ -3,8 +3,7 @@ import { ChainInfo, BlockInfo, TxInfo } from './data';
 
 const {
   nodeStatusURL,
-  sidecarURL,
-  sidecarTxURL
+  sidecarURL
 } = require('@/services/constants')
 
 
@@ -46,7 +45,7 @@ export async function getBlockInfo(){
 }
 
 export async function getTxInfo(tx_id: any){
-    return request(`${sidecarTxURL}/${tx_id}`,{
+    return request(`${sidecarURL}/v1/tx/${tx_id}`,{
         method: "GET"
     }).then((resp:TxInfo)=>{
         return {'data' : resp}
