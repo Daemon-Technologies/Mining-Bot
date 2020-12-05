@@ -117,7 +117,8 @@ const TableList: React.FC<{}> = () => {
                 actionRef.current?.reloadAndRest?.();
               }}
             >
-              批量删除
+              <FormattedMessage id='button.delete' defaultMessage='Delete' /> 
+              
               </Button></FooterToolbar>)
         }
 

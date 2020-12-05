@@ -6,4 +6,6 @@ export default {
     'account.add': '添加账户',
     'account.choose': '已选择',
     'choose.num': '项',
+
+    'button.delete' : '批量删除'
 };

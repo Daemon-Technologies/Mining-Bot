@@ -6,10 +6,14 @@ module.exports = {
   explorerURL: 'https://testnet-explorer.blockstack.org',
   btcFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/btc?address=',
   stxFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/stx?address=',
-  nodeStatusURL: 'https://status.test-blockstack.com',
+
   binanceAPIURL: 'https://api.binance.com/api/v3',
-  masterNodeKey: 'master_node_ping',
+
+  nodeKryptonURL: "http://krypton.blockstack.org:20443",
+
   stackNodeAPIURL: 'http://localhost:5000',
+
+
 
   MIN_MINER_BTC_AMOUNT: 0.005,
 
