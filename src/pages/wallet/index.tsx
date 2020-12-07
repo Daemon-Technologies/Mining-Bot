@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
-import { Button, ConfigProvider, message } from 'antd';
+import { Button, ConfigProvider, message, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 import { Account, NewAccount } from '@/services/wallet/data'
@@ -59,6 +59,9 @@ const handleRemove = async (selectedRows: Account[]) => {
 
 const TableList: React.FC<{}> = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const [isFaucetModalVisible, setFaucetModalVisible] = useState<boolean>(false);
+  const [faucetAccount, setFaucetAccount] = useState<Account>();
+
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<Account[]>([]);
   const accountColomns: ProColumns<Account>[] = [
@@ -85,9 +88,26 @@ const TableList: React.FC<{}> = () => {
     }
   ];
 
-  const getFaucet = (value) => {
-    console.log(value)
+  const getFaucet = (value: React.SetStateAction<Account | undefined>) => {
+    setFaucetAccount(value)
+    setFaucetModalVisible(true)
   }
+
+  const handleFaucetOk = () => {
+    setFaucetModalVisible(false);
+    console.log(faucetAccount)
+    if (faucetAccount)
+      if (faucetAccount.type === "BTC"){
+        getBtcFaucet(faucetAccount.address)
+      }
+      else if (faucetAccount.type === "STX"){
+        getStxFaucet(faucetAccount.address)
+      }
+  };
+
+  const handleFaucetCancel = () => {
+    setFaucetModalVisible(false);
+  };
 
   return (
     <PageContainer>
@@ -145,6 +165,16 @@ const TableList: React.FC<{}> = () => {
           onCancel={() => handleModalVisible(false)}
           modalVisible={createModalVisible}
         />
+        <Modal
+          title={<FormattedMessage id='faucet.notification' defaultMessage='Faucet Confirm' />}
+          visible={isFaucetModalVisible}
+          onOk={handleFaucetOk}
+          onCancel={handleFaucetCancel}
+        >
+            <FormattedMessage id='faucet.notification.content' defaultMessage='If you want to get Faucet for address : ' />
+            {faucetAccount ? faucetAccount.address : ""} ?
+          
+        </Modal>
       </ConfigProvider>
     </PageContainer >
   );

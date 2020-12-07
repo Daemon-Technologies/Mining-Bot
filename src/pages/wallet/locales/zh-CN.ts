@@ -8,6 +8,8 @@ export default {
 
     'faucet.get' : '获取测试币',
     'faucet.add' : '获取',
+    'faucet.notification': '充值提示',
+    'faucet.notification.content': '您是否要领取测试币到地址 : ',
 
     'choose.num': '项',
 
