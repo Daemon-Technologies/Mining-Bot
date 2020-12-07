@@ -5,6 +5,8 @@ import { message } from "antd";
 
 const { sidecarURL, sidecarURLKrypton } = require('@/services/constants')
 
+const stacks_blockchain_api_base_url = sidecarURLKrypton
+
 export function getAccount() {
   const stxAccounts: Account[] = [];
   const btcAccounts: Account[] = [];
@@ -26,18 +28,22 @@ export function updateAccount() {
 }
 
 export async function getStxBalance(stxAddress: string) {
-  const baseUrl = `${sidecarURLKrypton}/v1/address/`;
+  const baseUrl = `${stacks_blockchain_api_base_url}/v1/address/`;
   return request(`${baseUrl + stxAddress}/balances`, {
     method: 'GET',
   });
 }
 
+
+
 export async function getBtcBalance(btcAddress: string) {
-  const btcUrl = `${sidecarURLKrypton}/v1/faucets/btc/`;
-  return request(`${btcUrl + btcAddress}`, {
+  const baseUrl = `${stacks_blockchain_api_base_url}/v1/faucets/btc/`;
+  return request(`${baseUrl + btcAddress}`, {
     method: "GET",
   });
 }
+
+
 
 export async function queryAccount(type: number = 0) {
   // type 

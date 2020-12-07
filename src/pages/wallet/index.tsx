@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
-import { Button, ConfigProvider, message } from 'antd';
+import { Button, ConfigProvider, message, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 import { Account, NewAccount } from '@/services/wallet/data'
 import { queryAccount } from '@/services/wallet/accountData'
-import { addAccount, deleteAccount } from './service';
+import { getStxFaucet, getBtcFaucet } from '@/services/wallet/faucet'
+import { addAccount, deleteAccount,  } from './service';
 import { FormattedMessage, getLocale } from 'umi';
 
 const { CN } = require('@/services/constants');
@@ -58,6 +59,9 @@ const handleRemove = async (selectedRows: Account[]) => {
 
 const TableList: React.FC<{}> = () => {
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const [isFaucetModalVisible, setFaucetModalVisible] = useState<boolean>(false);
+  const [faucetAccount, setFaucetAccount] = useState<Account>();
+
   const actionRef = useRef<ActionType>();
   const [selectedRowsState, setSelectedRows] = useState<Account[]>([]);
   const accountColomns: ProColumns<Account>[] = [
@@ -77,7 +81,33 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'balance',
       hideInForm: true,
     },
+    {
+      title: <FormattedMessage id='faucet.get' defaultMessage='Get Faucet' />,
+      hideInForm: true,
+      render : (text, record, index, action) => [<a key="1" onClick={()=>getFaucet(record)}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a>]
+    }
   ];
+
+  const getFaucet = (value: React.SetStateAction<Account | undefined>) => {
+    setFaucetAccount(value)
+    setFaucetModalVisible(true)
+  }
+
+  const handleFaucetOk = () => {
+    setFaucetModalVisible(false);
+    console.log(faucetAccount)
+    if (faucetAccount)
+      if (faucetAccount.type === "BTC"){
+        getBtcFaucet(faucetAccount.address)
+      }
+      else if (faucetAccount.type === "STX"){
+        getStxFaucet(faucetAccount.address)
+      }
+  };
+
+  const handleFaucetCancel = () => {
+    setFaucetModalVisible(false);
+  };
 
   return (
     <PageContainer>
@@ -95,7 +125,7 @@ const TableList: React.FC<{}> = () => {
           pagination={false}
           request={() => queryAccount()}
           toolBarRender={() => [
-            <Button type="primary" onClick={() => handleModalVisible(true)}>
+            <Button key="add_account" type="primary" onClick={() => handleModalVisible(true)}>
               <PlusOutlined /> <FormattedMessage id='account.add' defaultMessage='Add' />
             </Button>,
           ]}
@@ -117,7 +147,8 @@ const TableList: React.FC<{}> = () => {
                 actionRef.current?.reloadAndRest?.();
               }}
             >
-              批量删除
+              <FormattedMessage id='button.delete' defaultMessage='Delete' /> 
+              
               </Button></FooterToolbar>)
         }
 
@@ -134,6 +165,16 @@ const TableList: React.FC<{}> = () => {
           onCancel={() => handleModalVisible(false)}
           modalVisible={createModalVisible}
         />
+        <Modal
+          title={<FormattedMessage id='faucet.notification' defaultMessage='Faucet Confirm' />}
+          visible={isFaucetModalVisible}
+          onOk={handleFaucetOk}
+          onCancel={handleFaucetCancel}
+        >
+            <FormattedMessage id='faucet.notification.content' defaultMessage='If you want to get Faucet for address : ' />
+            {faucetAccount ? faucetAccount.address : ""} ?
+          
+        </Modal>
       </ConfigProvider>
     </PageContainer >
   );
