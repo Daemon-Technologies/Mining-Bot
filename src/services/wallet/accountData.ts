@@ -34,15 +34,7 @@ export async function getStxBalance(stxAddress: string) {
   });
 }
 
-export async function getStxFaucet(stxAddress: string) {
-  const baseUrl = `${stacks_blockchain_api_base_url}/v1/faucets/stx/`;
-  return request(`${baseUrl}`, {
-    method: "POST",
-    data: {
-      address: stxAddress
-    }
-  });
-}
+
 
 export async function getBtcBalance(btcAddress: string) {
   const baseUrl = `${stacks_blockchain_api_base_url}/v1/faucets/btc/`;
@@ -51,15 +43,7 @@ export async function getBtcBalance(btcAddress: string) {
   });
 }
 
-export async function getBtcFaucet(btcAddress: string) {
-  const baseUrl = `${stacks_blockchain_api_base_url}/v1/faucets/btc/`;
-  return request(`${baseUrl}`, {
-    method: "POST",
-    data: {
-      address: btcAddress
-    }
-  });
-}
+
 
 export async function queryAccount(type: number = 0) {
   // type 

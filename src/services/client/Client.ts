@@ -9,6 +9,9 @@ export async function getNodeStatus() {
   }).then((resp) => {
     console.log(resp);
     return resp
+  }).catch((error) => {
+    console.log("catch:", error)
+    return error
   })
 }
 

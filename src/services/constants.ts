@@ -1,6 +1,5 @@
 module.exports = {
 
-
   sidecarURL: 'https://stacks-node-api.blockstack.org/extended',
   sidecarURLKrypton: 'https://stacks-node-api.krypton.blockstack.org/extended',
   explorerURL: 'https://testnet-explorer.blockstack.org',
@@ -11,7 +10,7 @@ module.exports = {
 
   nodeKryptonURL: "http://krypton.blockstack.org:20443",
 
-  stackNodeAPIURL: 'http://localhost:5000',
+  miningLocalServer_endpoint: 'http://localhost:5000',
 
 
 

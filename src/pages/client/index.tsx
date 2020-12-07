@@ -47,12 +47,14 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='miningInfo.stxAddress' defaultMessage='STX Address' />,
       dataIndex: 'stx_address',
-      copyable: true
+      copyable: true,
+      ellipsis: true
     },
     {
       title: <FormattedMessage id='miningInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
-      copyable: true
+      copyable: true,
+      ellipsis: true
     },
     {
       title: <FormattedMessage id='miningInfo.actualWins' defaultMessage='Actual Win' />,

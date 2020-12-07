@@ -5,6 +5,10 @@ export default {
     'account.balance': '余额',
     'account.add': '添加账户',
     'account.choose': '已选择',
+
+    'faucet.get' : '获取测试币',
+    'faucet.add' : '获取',
+
     'choose.num': '项',
 
     'button.delete' : '批量删除'

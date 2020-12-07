@@ -6,7 +6,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
 import { Account, NewAccount } from '@/services/wallet/data'
 import { queryAccount } from '@/services/wallet/accountData'
-import { addAccount, deleteAccount } from './service';
+import { getStxFaucet, getBtcFaucet } from '@/services/wallet/faucet'
+import { addAccount, deleteAccount,  } from './service';
 import { FormattedMessage, getLocale } from 'umi';
 
 const { CN } = require('@/services/constants');
@@ -77,7 +78,16 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'balance',
       hideInForm: true,
     },
+    {
+      title: <FormattedMessage id='faucet.get' defaultMessage='Get Faucet' />,
+      hideInForm: true,
+      render : (text, record, index, action) => [<a key="1" onClick={()=>getFaucet(record)}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a>]
+    }
   ];
+
+  const getFaucet = (value) => {
+    console.log(value)
+  }
 
   return (
     <PageContainer>
@@ -95,7 +105,7 @@ const TableList: React.FC<{}> = () => {
           pagination={false}
           request={() => queryAccount()}
           toolBarRender={() => [
-            <Button type="primary" onClick={() => handleModalVisible(true)}>
+            <Button key="add_account" type="primary" onClick={() => handleModalVisible(true)}>
               <PlusOutlined /> <FormattedMessage id='account.add' defaultMessage='Add' />
             </Button>,
           ]}
