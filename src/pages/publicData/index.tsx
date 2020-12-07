@@ -34,7 +34,8 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='block.hash' defaultMessage='Block Hash' />,
       dataIndex: 'hash',
-      width: 200
+      width: 200,
+      ellipsis: true
     },
     {
       title: <FormattedMessage id='block.fee' defaultMessage='Total Fee' />,
@@ -55,7 +56,9 @@ const TableList: React.FC<{}> = () => {
   const txInfoColumns: ProColumns<TxInfo>[] = [
     {
       title: <FormattedMessage id='block.info.txHash' defaultMessage='TX Hash' />,
-      dataIndex: 'tx_id', key: 'tx_id'
+      dataIndex: 'tx_id', 
+      key: 'tx_id',
+      ellipsis: true
     },
     {
       title: <FormattedMessage id='block.info.status' defaultMessage='Status' />,

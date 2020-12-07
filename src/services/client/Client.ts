@@ -1,14 +1,17 @@
 import { request } from 'umi';
-const { stackNodeAPIURL } = require('@/services/constants')
+const { miningLocalServer_endpoint } = require('@/services/constants')
 import { keyGen, aes256Decrypt } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
 
 export async function getNodeStatus() {
-  return request(`${stackNodeAPIURL}/getNodeStatus`, {
+  return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
     method: 'GET',
   }).then((resp) => {
     console.log(resp);
     return resp
+  }).catch((error) => {
+    console.log("catch:", error)
+    return error
   })
 }
 
@@ -28,7 +31,7 @@ export async function startMining(data: {account: Account, inputBurnFee: number}
   const seed = aes256Decrypt(account.skEnc, key, account.iv, account.authTag)
   console.log(seed)
 
-  return request(`${stackNodeAPIURL}/startMining`, {
+  return request(`${miningLocalServer_endpoint}/startMining`, {
     method: 'POST',
     data: {
       seed: seed,
@@ -42,7 +45,7 @@ export async function startMining(data: {account: Account, inputBurnFee: number}
 
 
 export async function stopMining() {
-  return request(`${stackNodeAPIURL}/stopMining`, {
+  return request(`${miningLocalServer_endpoint}/stopMining`, {
     method: 'GET',
   }).then((resp) => {
     console.log(resp);
