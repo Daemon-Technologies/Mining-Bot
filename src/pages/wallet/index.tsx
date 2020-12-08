@@ -80,6 +80,7 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='account.balance' defaultMessage='Balance' />,
       dataIndex: 'balance',
       hideInForm: true,
+      render: (text, record, index, action) => [<a key="1"> {record.type === "BTC"? record.balance : parseInt(record.balance)/1000000} </a>]
     },
     {
       title: <FormattedMessage id='faucet.get' defaultMessage='Get Faucet' />,
@@ -93,15 +94,23 @@ const TableList: React.FC<{}> = () => {
     setFaucetModalVisible(true)
   }
 
-  const handleFaucetOk = () => {
+  const handleFaucetOk = async () => {
     setFaucetModalVisible(false);
     console.log(faucetAccount)
     if (faucetAccount)
       if (faucetAccount.type === "BTC"){
-        getBtcFaucet(faucetAccount.address)
+        let t = await getBtcFaucet(faucetAccount.address)
+        if (t && t.success && t.success == true){
+          message.success(`Faucet get successfully, txid is ${t.txid}`)
+        }
+        console.log(t)
       }
       else if (faucetAccount.type === "STX"){
-        getStxFaucet(faucetAccount.address)
+        let t = await getStxFaucet(faucetAccount.address)
+        if (t && t.success && t.success == true){
+          message.success(`Faucet get successfully, txid is ${t.txid}`)
+        }
+        console.log(t)
       }
   };
 
@@ -151,7 +160,6 @@ const TableList: React.FC<{}> = () => {
               
               </Button></FooterToolbar>)
         }
-
         <CreateForm
           onSubmit={async (value) => {
             const success = await handleAdd(value);
@@ -172,8 +180,7 @@ const TableList: React.FC<{}> = () => {
           onCancel={handleFaucetCancel}
         >
             <FormattedMessage id='faucet.notification.content' defaultMessage='If you want to get Faucet for address : ' />
-            {faucetAccount ? faucetAccount.address : ""} ?
-          
+            {faucetAccount ? faucetAccount.address : ""}      
         </Modal>
       </ConfigProvider>
     </PageContainer >
