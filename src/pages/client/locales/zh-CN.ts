@@ -20,6 +20,7 @@ export default {
     'status.noProgramRunning' : "无节点运行",
     'status.programRunning' : "挖矿程序正在运行，PID为",
     'status.miner':"当前地址为",
+    'status.noMiningLocalServerRunning': "Mining Local Server 没有运行！",
 
     'notification.getNodeStatus.checkEnv' : "环境检查中....",
     'notification.getNodeStatus.noProgram' : "后台没有挖矿进程！",
