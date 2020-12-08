@@ -8,7 +8,7 @@ export default {
     'strategy.name': '策略名称',
     'strategy.createAt': '创建时间',
 
-    'miningInfo.title': '挖矿信息',
+    'miningInfo.title': '矿工信息',
     'miningInfo.stxAddress': 'STX地址',
     'miningInfo.btcAddress': 'BTC地址',
     'miningInfo.actualWins': '最终获胜数',

@@ -19,6 +19,7 @@ const { MIN_MINER_BTC_AMOUNT, CN } = require('@/services/constants');
 const TableList: React.FC<{}> = () => {
   const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false)
+  const [minerAddress, setMinerAddress] = useState<string>();
   const [nodeStatus, setNodeStatus] = useState(-1);
   const actionRef = useRef<ActionType>();
 
@@ -27,6 +28,8 @@ const TableList: React.FC<{}> = () => {
     const res = await getNodeStatus()
     console.log(res)
     setNodeStatus(res.PID)
+    console.log(res.address)
+    setMinerAddress(res.address)
   }
 
   useEffect (() => {
@@ -47,18 +50,23 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='miningInfo.stxAddress' defaultMessage='STX Address' />,
       dataIndex: 'stx_address',
+      copyable: true,
+      ellipsis: true
     },
     {
       title: <FormattedMessage id='miningInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
+      render: (text, record, index, action) => 
+        [<p style={record.btc_address === minerAddress? {color:"red"} : {}}> {record.btc_address} </p>],
+      copyable: true,
+      ellipsis: true,
+      
+      
+      
     },
     {
       title: <FormattedMessage id='miningInfo.actualWins' defaultMessage='Actual Win' />,
       dataIndex: 'actual_win',
-    },
-    {
-      title: <FormattedMessage id='miningInfo.totalWins' defaultMessage='Total Win' />,
-      dataIndex: 'total_win',
     },
     {
       title: <FormattedMessage id='miningInfo.totalMined' defaultMessage='Total Mined' />,
@@ -152,12 +160,12 @@ const TableList: React.FC<{}> = () => {
                   type="primary"
                   loading={startMiningLoading}
                   onClick={async () => {
-                    // TODO check BTC Balance
-                    // TODO choose BTC Address
-                    handleModalVisible(true)
-                  }
+                      // TODO check BTC Balance
+                      // TODO choose BTC Address
+                      handleModalVisible(true)
+                    }
                   }>
-                  <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
+                <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                 </Button>
                 <Button
                   type="danger"
@@ -174,6 +182,7 @@ const TableList: React.FC<{}> = () => {
                         message.success({ content: getLanguage() === CN ? '关闭成功！' : `${res.data}`, duration: 4 })
                     }
                     await initialNodeStatus()
+                    setMinerAddress(undefined)
                     console.log(res)
                   }}
                 >
@@ -213,11 +222,11 @@ const TableList: React.FC<{}> = () => {
     return (
       <>
         <AccountForm
-          onSubmit={async (value: {account: Account, inputBurnFee: number}) => {
+          onSubmit={async (value: {account: Account, inputBurnFee: number, network: string}) => {
             //console.log("value", value)
             if (value.account.balance < MIN_MINER_BTC_AMOUNT) {
-              message.error({ content: getLanguage() === CN ? '你的比特币余额不足以继续挖矿！' : "Your Bitcoin is not enough to mine", duration: 3 })
-              openNotification()
+              message.error({ content: getLanguage() === CN ? '你的比特币余额不足以继续挖矿，跳转到钱包页面进行充值' : "Your Bitcoin is not enough to mine, turn to Wallet page to get faucet.", duration: 3 })
+              //openNotification()
               handleModalVisible(false)
             }
             else {
@@ -225,6 +234,9 @@ const TableList: React.FC<{}> = () => {
               await message.loading({ content: getLanguage() === CN ? '检查环境.....' : "Checking Environment...", duration: 1 })
               await message.loading({ content: getLanguage() === CN ? '启动Stacks Blockchain' : "Launching Stacks Blockchain...", duration: 1 })
 
+              // Add network type
+              value.network = "Krypton"
+              console.log(value)
               // Launching stack-blockchain by rpc
               const res = await startMining(value)
               console.log(res)
@@ -254,7 +266,7 @@ const TableList: React.FC<{}> = () => {
       <>
         <Divider />
         <ProTable<MiningInfo>
-          headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Mining Info' />}
+          headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
           rowKey="stx_address"
           request={async () => {
