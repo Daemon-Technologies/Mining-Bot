@@ -15,7 +15,7 @@ export async function getNodeStatus() {
   })
 }
 
-export async function startMining(data: {account: Account, inputBurnFee: number}) {
+export async function startMining(data: {account: Account, inputBurnFee: number, network: string}) {
   /*
     address: "n4e9BRjiNm8ANt94eyoMofxNQoKQxHN2jJ"
     authTag: "a4df9c8972d554a4108b0aaff87e8ccb"
@@ -27,6 +27,8 @@ export async function startMining(data: {account: Account, inputBurnFee: number}
   console.log(data)
   const account = data.account
   const burnFee = data.inputBurnFee
+
+
   const key = keyGen()
   const seed = aes256Decrypt(account.skEnc, key, account.iv, account.authTag)
   console.log(seed)
@@ -34,8 +36,10 @@ export async function startMining(data: {account: Account, inputBurnFee: number}
   return request(`${miningLocalServer_endpoint}/startMining`, {
     method: 'POST',
     data: {
+      address: account.address,
       seed: seed,
-      burn_fee_cap: burnFee
+      burn_fee_cap: burnFee,
+      network: data.network
     }
   }).then((resp) => {
     console.log(resp);

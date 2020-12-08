@@ -8,7 +8,7 @@ export default {
     'strategy.name': '策略名称',
     'strategy.createAt': '创建时间',
 
-    'miningInfo.title': '挖矿信息',
+    'miningInfo.title': '矿工信息',
     'miningInfo.stxAddress': 'STX地址',
     'miningInfo.btcAddress': 'BTC地址',
     'miningInfo.actualWins': '最终获胜数',
@@ -19,6 +19,7 @@ export default {
     'status.current': "当前状态",
     'status.noProgramRunning' : "无节点运行",
     'status.programRunning' : "挖矿程序正在运行，PID为",
+    'status.miner':"当前地址为",
 
     'notification.getNodeStatus.checkEnv' : "环境检查中....",
     'notification.getNodeStatus.noProgram' : "后台没有挖矿进程！",
