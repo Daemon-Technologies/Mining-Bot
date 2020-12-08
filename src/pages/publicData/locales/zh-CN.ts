@@ -8,7 +8,7 @@ export default {
     'block.title': '区块信息',
     'block.height': '区块高度',
     'block.hash': '区块哈希',
-    'block.gas': 'gas费',
+    'block.fee': '交易费',
     'block.status': '区块状态',
     'block.status.success': '已上链',
     'block.status.pending': '处理中',

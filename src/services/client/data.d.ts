@@ -12,7 +12,7 @@ export interface MiningInfo {
   stx_address: string;
   btc_address: string;
   actual_win: number;
-  total_win: number;
+  total_win?: number;
   total_mined: number;
   miner_burned: number;
 }

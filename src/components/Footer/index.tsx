@@ -6,7 +6,7 @@ const { CN } = require('@/services/constants');
 
 export default () => (
   <DefaultFooter
-    copyright='2020 BlockStack'
+    copyright='2020 Daemon Technologies'
     links={[
       {
         key: getLanguage() === CN ? '挖矿机器人' : 'Mining Bot',

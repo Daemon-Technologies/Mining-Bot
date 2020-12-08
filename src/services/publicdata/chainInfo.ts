@@ -2,20 +2,20 @@ import { request } from 'umi';
 import { ChainInfo, BlockInfo, TxInfo } from './data';
 
 const {
-  nodeStatusURL,
+  nodeKryptonURL,
   sidecarURL,
-  sidecarTxURL
+  sidecarURLKrypton
 } = require('@/services/constants')
 
 
 export async function getChainInfo() {
-    return request(`${nodeStatusURL}/json`, {
+    return request(`${nodeKryptonURL}/v2/info`, {
         method: 'GET',
-    }).then((resp: { lastStacksChainTipHeight: string; lastBurnBlockHeight: string; }) => {
+    }).then((resp: { stacks_tip_height: string; stable_burn_block_height: string; }) => {
         const chainInfoList: ChainInfo[] = [];
         chainInfoList.push({
-            stacksChainHeight: resp.lastStacksChainTipHeight,
-            burnChainHeight: resp.lastBurnBlockHeight,
+            stacksChainHeight: resp.stacks_tip_height,
+            burnChainHeight: resp.stable_burn_block_height,
         })
         // let chainInfo: ChainInfo = { stacksChainHeight: '', burnChainHeight: '' }
         // chainInfo.stacksChainHeight = resp.lastStacksChainTipHeight;
@@ -25,7 +25,7 @@ export async function getChainInfo() {
 }
 
 export async function getBlockInfo(){
-    return request(`${sidecarURL}/v1/block?limit=5`,{
+    return request(`${sidecarURLKrypton}/v1/block?limit=5`,{
         method: "GET"
     }).then(async (resp) =>{
         console.log(resp)
@@ -46,7 +46,7 @@ export async function getBlockInfo(){
 }
 
 export async function getTxInfo(tx_id: any){
-    return request(`${sidecarTxURL}/${tx_id}`,{
+    return request(`${sidecarURLKrypton}/v1/tx/${tx_id}`,{
         method: "GET"
     }).then((resp:TxInfo)=>{
         return {'data' : resp}
