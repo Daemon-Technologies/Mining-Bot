@@ -2,7 +2,7 @@ import { Alert, message } from 'antd';
 import React, { useState } from 'react';
 import { FormattedMessage, Link, SelectLang, useModel } from 'umi';
 import { getPageQuery } from '@/utils/utils';
-import logo from '@/assets/logo.png';
+import logo from '@/assets/logo.svg';
 import { LoginParamsType, loginByPassword, getUserAuth, setLockPassword } from '@/services/login';
 import Footer from '@/components/Footer';
 import LoginFrom from './components/Login';

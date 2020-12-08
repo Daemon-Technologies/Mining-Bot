@@ -83,17 +83,17 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
                 onChange={onChangeBurnFeeInput}
                 value={typeof inputBurnFee === 'number' ? inputBurnFee : 0}
                 step={200}
-              /> 
+              />
             </Col>
             <Col span={4}>
-                <InputNumber
-                  min={1000}
-                  max={1000000}
-                  style={{ margin: '0 16px' }}
-                  step={200}
-                  value={inputBurnFee}
-                  onChange={onChangeBurnFeeInput}
-                /> 
+              <InputNumber
+                min={1000}
+                max={1000000}
+                style={{ margin: '0 16px' }}
+                step={200}
+                value={inputBurnFee}
+                onChange={onChangeBurnFeeInput}
+              />
             </Col>
           </Row>
         </Card>

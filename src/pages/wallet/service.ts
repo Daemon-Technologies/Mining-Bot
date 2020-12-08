@@ -87,30 +87,4 @@ export async function addAccount(params: NewAccount) {
   return result;
 }
 
-export async function deleteAccount(accounts: Account[]) {
-  const result: API.RequestResult = { status: 200 };
-  let stxAccounts: Account[] = [];
-  let btcAccounts: Account[] = [];
-  const STX_STJ = localStorage.getItem("STX");
-  const BTC_STJ = localStorage.getItem("BTC");
-  if (STX_STJ) {
-    const STX_RES: Account[] = JSON.parse(STX_STJ);
-    stxAccounts.push(...STX_RES);
-  }
-  if (BTC_STJ) {
-    const BTC_RES: Account[] = JSON.parse(BTC_STJ);
-    btcAccounts.push(...BTC_RES);
-  }
-  for (var i = 0; i < accounts.length; i++) {
-    const type = accounts[i].type;
-    if (type === 'STX') {
-      stxAccounts = stxAccounts.filter(row => row.address !== accounts[i].address);
-    } else if (type === 'BTC') {
-      btcAccounts = btcAccounts.filter(row => row.address !== accounts[i].address);
-    }
-  }
-  localStorage.setItem('STX', JSON.stringify(stxAccounts));
-  localStorage.setItem('BTC', JSON.stringify(btcAccounts));
-  return result;
-}
 
