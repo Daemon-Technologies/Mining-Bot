@@ -70,7 +70,27 @@ const TableList: React.FC<{}> = () => {
     },
   ]
 
+  const render_boardStatus = () => {
+    let t;
+    if (nodeStatus){
+      if (nodeStatus === -1){
+        t = <a><FormattedMessage id='status.noProgramRunning' defaultMessage='No Mining Program Running!' /></a>
+      }
+      else {
+        t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a> 
+      }
+    }
+    else{
+      t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!"  /></a>
+    }
 
+    return (
+    <div>
+      <FormattedMessage id='status.current' defaultMessage='Current Status' /> : 
+      {t}
+    </div>
+    )
+  }
 
   const render_OperationBoard = () => {
     return (
@@ -91,8 +111,20 @@ const TableList: React.FC<{}> = () => {
             <Typography>
               <Paragraph>
                 <Title level = {3}>
-                  {(getLanguage() === CN ? "当前状态" : "Current Status")} : {nodeStatus===-1 ? (getLanguage() === CN ? "无节点运行" : "No Mining Program Running!") : 
-                        (getLanguage() === CN ? `挖矿程序正在运行，PID为${nodeStatus}` : `Mining Program is Running, PID is ${nodeStatus}`)}
+                  {render_boardStatus()}
+                </Title>
+                <Title level = {5}>
+                  { minerAddress? 
+                    <div> 
+                      <FormattedMessage id='status.miner' defaultMessage='Miner address is' /> 
+                      <a> { `:${minerAddress}` } </a> 
+                    </div>
+                    :
+                    <div></div> 
+
+                  }
+                  
+                  
                 </Title>
               </Paragraph>
               <Paragraph>
