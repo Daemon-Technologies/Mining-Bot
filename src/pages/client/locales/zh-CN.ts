@@ -8,13 +8,16 @@ export default {
     'strategy.name': '策略名称',
     'strategy.createAt': '创建时间',
 
-    'miningInfo.title': '矿工信息',
-    'miningInfo.stxAddress': 'STX地址',
-    'miningInfo.btcAddress': 'BTC地址',
-    'miningInfo.actualWins': '最终获胜数',
-    'miningInfo.totalWins': '燃烧链获胜数',
-    'miningInfo.totalMined': '总参与挖矿数',
-    'miningInfo.burn': '总燃烧量',
+    'minerInfo.title': '矿工信息',
+    'minerInfo.stxAddress': 'STX地址',
+    'minerInfo.btcAddress': 'BTC地址',
+    'minerInfo.actualWins': '最终获胜数',
+    'minerInfo.totalWins': '燃烧链获胜数',
+    'minerInfo.totalMined': '总参与挖矿数',
+    'minerInfo.burn': '总燃烧量',
+
+    'miningInfo.stacksHeight': '链高度',
+    'miningInfo.burnfee': '燃烧量',
 
     'status.current': "当前状态",
     'status.noProgramRunning' : "无节点运行",
