@@ -305,7 +305,7 @@ const TableList: React.FC<{}> = () => {
             pageSize: 10,
           }}
           request={async (params, sorter, filter) => {
-            console.log(params);
+            //console.log(params);
             const minerInfo = await getMinerInfo();
             return minerInfo;
           }}
@@ -320,16 +320,16 @@ const TableList: React.FC<{}> = () => {
       <>
         <Divider />
         <ProTable<MiningInfo>
-          headerTitle={<FormattedMessage id='minerInfo.title' defaultMessage='Miner Info' />}
+          headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
           rowKey="stacks_block_height"
           pagination={{
             pageSize: 10,
           }}
           request={async (params, sorter, filter) => {
-            console.log(params, sorter, filter);
+            //console.log(params, sorter, filter);
             const miningInfo = await getMiningInfo();
-            console.log(miningInfo)
+            //console.log(miningInfo)
             return miningInfo;
           }}
           columns={miningInfoColumns}
@@ -351,7 +351,7 @@ const TableList: React.FC<{}> = () => {
           title={
             <FormattedMessage
               id="strategy.title"
-              defaultMessage="StrategyLibrary"
+              defaultMessage="Strategy Library"
             />
           }
         >
