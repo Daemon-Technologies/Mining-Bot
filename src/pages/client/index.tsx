@@ -1,13 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
-import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification } from 'antd';
+import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification, Tag } from 'antd';
 import { FormattedMessage } from "umi"
 
 import { Account } from '@/services/wallet/data'
-import { startMining, stopMining, getNodeStatus, getMiningInfo } from '@/services/client/Client'
+import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo } from '@/services/client/Client'
 import AccountForm from './component/AccountForm'
-import { MiningInfo } from '@/services/client/data';
+import { MiningInfo, MinerInfo } from '@/services/client/data';
 import { getLanguage } from '@ant-design/pro-layout/lib/locales';
 
 const { Title, Paragraph } = Typography;
@@ -46,35 +46,68 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'time'
     }
   ];
-  const miningInfoColumns: ProColumns<MiningInfo>[] = [
+  const minerInfoColumns: ProColumns<MinerInfo>[] = [
     {
-      title: <FormattedMessage id='miningInfo.stxAddress' defaultMessage='STX Address' />,
+      title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
       dataIndex: 'stx_address',
+      width: 150,
       copyable: true,
       ellipsis: true
     },
     {
-      title: <FormattedMessage id='miningInfo.btcAddress' defaultMessage='BTC Address' />,
+      title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
+      width: 120,
       render: (text, record, index, action) => 
-        [<p style={record.btc_address === minerAddress? {color:"red"} : {}}> {record.btc_address} </p>],
+        [<p style={record.btc_address === minerAddress? {color:"red"} : {}} key={record.stx_address}> {record.btc_address} </p>],
       copyable: true,
       ellipsis: true,
-      
-      
-      
     },
     {
-      title: <FormattedMessage id='miningInfo.actualWins' defaultMessage='Actual Win' />,
+      title: <FormattedMessage id='minerInfo.actualWins' defaultMessage='Actual Win' />,
       dataIndex: 'actual_win',
+      width: 50,
     },
     {
-      title: <FormattedMessage id='miningInfo.totalMined' defaultMessage='Total Mined' />,
+      title: <FormattedMessage id='minerInfo.totalMined' defaultMessage='Total Mined' />,
       dataIndex: 'total_mined',
+      width: 50,
     },
     {
-      title: <FormattedMessage id='miningInfo.burn' defaultMessage='Miner Burned' />,
+      title: <FormattedMessage id='minerInfo.burn' defaultMessage='Miner Burned' />,
       dataIndex: 'miner_burned',
+      width: 70,
+    },
+  ]
+
+  const miningInfoColumns : ProColumns<MiningInfo>[] = [
+    {
+      title: <FormattedMessage id='miningInfo.stacksHeight' defaultMessage='Stacks Chain Height' />,
+      dataIndex: 'stacks_block_height',
+      width: 35,
+      render: (_) => <Tag color="blue">{_}</Tag>,
+      
+    },
+    {
+      title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
+      dataIndex: 'stx_address',
+      copyable: true,
+      ellipsis: true,
+      width: 150,
+    },
+    {
+      title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
+      dataIndex: 'btc_address',
+      render: (text, record, index, action) => 
+        [<p style={record.btc_address === minerAddress? {color:"red"} : {}} key={record.stacks_block_height}> {record.btc_address} </p>],
+      copyable: true,
+      ellipsis: true,
+      width: 150,
+    },
+    {
+      title: <FormattedMessage id='miningInfo.burnfee' defaultMessage='Burn Fee' />,
+      dataIndex: 'burn_fee',
+      width: 50,
     },
   ]
 
@@ -260,7 +293,28 @@ const TableList: React.FC<{}> = () => {
       </>
     )
   }
-
+  const render_MinerInfo = () => {
+    return (
+      <>
+        <Divider />
+        <ProTable<MinerInfo>
+          headerTitle={<FormattedMessage id='minerInfo.title' defaultMessage='Miner Info' />}
+          actionRef={actionRef}
+          rowKey="stx_address"
+          pagination={{
+            pageSize: 10,
+          }}
+          request={async (params, sorter, filter) => {
+            //console.log(params);
+            const minerInfo = await getMinerInfo();
+            return minerInfo;
+          }}
+          columns={minerInfoColumns}
+          search={false}
+        />
+      </>
+    )
+  }
   const render_MiningInfo = () => {
     return (
       <>
@@ -268,14 +322,18 @@ const TableList: React.FC<{}> = () => {
         <ProTable<MiningInfo>
           headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
-          rowKey="stx_address"
-          request={async () => {
+          rowKey="stacks_block_height"
+          pagination={{
+            pageSize: 10,
+          }}
+          request={async (params, sorter, filter) => {
+            //console.log(params, sorter, filter);
             const miningInfo = await getMiningInfo();
+            //console.log(miningInfo)
             return miningInfo;
           }}
           columns={miningInfoColumns}
           search={false}
-          pagination={false}
         />
       </>
     )
@@ -293,7 +351,7 @@ const TableList: React.FC<{}> = () => {
           title={
             <FormattedMessage
               id="strategy.title"
-              defaultMessage="StrategyLibrary"
+              defaultMessage="Strategy Library"
             />
           }
         >
@@ -311,6 +369,7 @@ const TableList: React.FC<{}> = () => {
         }}
       >
         {render_OperationBoard()}
+        {render_MinerInfo()}
         {render_MiningInfo()}
         {render_Form()}
         {render_StrategyLibrary()}
