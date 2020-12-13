@@ -1,13 +1,14 @@
 import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ConfigProvider, enUSIntl, ActionType, zhCNIntl } from '@ant-design/pro-table';
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 
 import { TokenPrice, ChainInfo, BlockInfo, TxInfo } from '@/services/publicdata/data'
 import { getTokenPrice } from '@/services/publicdata/tokenInfo';
 import { getChainInfo, getBlockInfo, getTxsInfo } from '@/services/publicdata/chainInfo';
-import { Divider, Tag } from 'antd';
-import { FormattedMessage } from 'umi';
-import { getLanguage } from '@ant-design/pro-layout/lib/locales';
+import { ConfigProvider, Divider, Tag } from 'antd';
+import { FormattedMessage, getLocale } from 'umi';
+import enUS from 'antd/lib/locale/en_US';
+import zhCN from 'antd/lib/locale/zh_CN'
 
 const { CN } = require('@/services/constants');
 
@@ -56,7 +57,7 @@ const TableList: React.FC<{}> = () => {
   const txInfoColumns: ProColumns<TxInfo>[] = [
     {
       title: <FormattedMessage id='block.info.txHash' defaultMessage='TX Hash' />,
-      dataIndex: 'tx_id', 
+      dataIndex: 'tx_id',
       key: 'tx_id',
       ellipsis: true
     },
@@ -108,9 +109,7 @@ const TableList: React.FC<{}> = () => {
   return (
     <PageContainer>
       <ConfigProvider
-        value={{
-          intl: getLanguage() === CN ? zhCNIntl : enUSIntl,
-        }}
+        locale={getLocale() === CN? zhCN :enUS}
       >
         <ProTable<TokenPrice>
           headerTitle={<FormattedMessage id='price.title' defaultMessage='Token Price Info' />}
