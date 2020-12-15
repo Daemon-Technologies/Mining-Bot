@@ -7,7 +7,7 @@ export interface BinanceResp {
 
 export interface TokenPrice {
     tradingPair: string; // such as STX/USDT
-    price: number; // such as 0.23493812
+    price: string; // such as 0.23493812
 }
 
 // wrapped chain info entity
