@@ -8,7 +8,7 @@ import { getChainInfo, getBlockInfo, getTxsInfo } from '@/services/publicdata/ch
 import { ConfigProvider, Divider, Tag } from 'antd';
 import { FormattedMessage, getLocale } from 'umi';
 import enUS from 'antd/lib/locale/en_US';
-import zhCN from 'antd/lib/locale/zh_CN'
+import zhCN from 'antd/lib/locale/zh_CN';
 
 const { CN } = require('@/services/constants');
 
