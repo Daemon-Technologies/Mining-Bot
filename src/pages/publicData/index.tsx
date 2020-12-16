@@ -29,19 +29,19 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='block.height' defaultMessage='Height' />,
       dataIndex: 'height',
       render: (_) => <Tag color="blue">{_}</Tag>,
-      width: 100,
+      width: 35,
       align: 'center'
     },
     {
       title: <FormattedMessage id='block.hash' defaultMessage='Block Hash' />,
       dataIndex: 'hash',
-      width: 200,
+      width: 100,
       ellipsis: true
     },
     {
       title: <FormattedMessage id='block.fee' defaultMessage='Total Fee' />,
       dataIndex: 'total_fee',
-      width: 80
+      width: 50
     },
     {
       title: <FormattedMessage id='block.status' defaultMessage='Status' />, dataIndex: 'canonical',
@@ -50,7 +50,7 @@ const TableList: React.FC<{}> = () => {
         success: { text: <FormattedMessage id='block.status.success' defaultMessage='Success' />, status: 'Success' },
         pending: { text: <FormattedMessage id='block.status.pending' defaultMessage='Pending' />, status: 'Processing' }
       },
-      width: 150
+      width: 50
     }
   ];
 

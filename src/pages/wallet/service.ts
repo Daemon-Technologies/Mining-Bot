@@ -4,25 +4,27 @@ import { getAccount, getStxBalance, getBtcBalance } from '@/services/wallet/acco
 import { getBtcAddress, mnemonicToEcPair, getPrivateKeyFromEcPair, getStxAddressFromPriKey, isMnemonicValid } from '@/services/wallet/key'
 import { message } from 'antd';
 import { aes256Encrypt, keyGen } from '@/utils/utils';
+import { getLocale } from 'umi';
 
-const { btcType, stxType } = require('@/services/constants');
+const { btcType, stxType, CN } = require('@/services/constants');
 
-export async function addAccount(params: NewAccount) {
-  const result: API.RequestResult = { status: 200 };
+
+export async function addAccount(params: NewAccount): Promise<API.RequestResult> {
+  const result: API.RequestResult = { status: 200, data: {} };
   try {
     const { mnemonic, type } = params;
     if (!mnemonic || !type) {
-      throw message.error('invalid params');
+      throw message.error(getLocale() === CN ? '非法输入参数' : 'invalid params');
     }
     if (isMnemonicValid(mnemonic)) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw message.error('invalid mnemonic');
+      throw message.error(getLocale() === CN ? '非法助记词' : 'invalid mnemonic');
     }
     // get ecPair
     const ecPair = await mnemonicToEcPair(mnemonic);
     if (ecPair === null) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
-      throw message.error('invalid mnemonic');
+      throw message.error(getLocale() === CN ? '非法助记词' : 'invalid mnemonic');
     }
 
     // get private key
@@ -31,7 +33,7 @@ export async function addAccount(params: NewAccount) {
     const key = keyGen();
     const encryptedData = aes256Encrypt(priKey, key);
     if (!encryptedData) {
-      throw message.error('error when make the encryption');
+      throw message.error(getLocale() === CN ? '加密失败' : 'error when make the encryption');
     }
     const [enc, iv, authTag] = encryptedData;
     let { stxAccounts, btcAccounts } = getAccount();
@@ -40,7 +42,7 @@ export async function addAccount(params: NewAccount) {
       const btcAddress = await getBtcAddress(ecPair);
       if (btcAddress === undefined || btcAddress === null) {
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
-        throw message.error('invalid btc address');
+        throw message.error(getLocale() === CN ? '获取BTC地址失败' : 'invalid btc address');
       }
       // get btc balance
       const btcBalance = await getBtcBalance(btcAddress);
@@ -62,7 +64,7 @@ export async function addAccount(params: NewAccount) {
       const stxAddress = await getStxAddressFromPriKey(priKey);
       if (stxAddress === null) {
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
-        throw message.error('invalid stx address');
+        throw message.error(getLocale() === CN ? '获取STX地址失败' : 'invalid stx address');
       }
       // get stx balance
       const stxBalance = await getStxBalance(stxAddress);
@@ -82,13 +84,12 @@ export async function addAccount(params: NewAccount) {
     }
   } catch (error) {
     result.status = 500;
-    message.error(error);
   }
   return result;
 }
 
-export async function deleteAccount(accounts: Account[]) {
-  const result: API.RequestResult = { status: 200 };
+export async function deleteAccount(accounts: Account[]): Promise<API.RequestResult> {
+  const result: API.RequestResult = { status: 200, data: {} };
   let stxAccounts: Account[] = [];
   let btcAccounts: Account[] = [];
   const STX_STJ = localStorage.getItem("STX");

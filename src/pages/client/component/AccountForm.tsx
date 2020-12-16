@@ -78,8 +78,8 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
           <Row style={{ margin: '10px 5px' }}>
             <Col span={12}>
               <Slider
-                min={1000}
-                max={200000}
+                min={100}
+                max={1000000}
                 onChange={onChangeBurnFeeInput}
                 value={typeof inputBurnFee === 'number' ? inputBurnFee : 0}
                 step={200}
@@ -87,7 +87,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
             </Col>
             <Col span={4}>
                 <InputNumber
-                  min={1000}
+                  min={100}
                   max={1000000}
                   style={{ margin: '0 16px' }}
                   step={200}
