@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification, Tag } from 'antd';
-import { FormattedMessage } from "umi"
+import { FormattedMessage, getLocale } from "umi"
 
 
 import { Account } from '@/services/wallet/data'
@@ -10,7 +10,8 @@ import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo } f
 import AccountForm from './component/AccountForm'
 
 import { MiningInfo, MinerInfo } from '@/services/client/data';
-import { getLanguage } from '@ant-design/pro-layout/lib/locales';
+import enUS from 'antd/lib/locale/en_US';
+import zhCN from 'antd/lib/locale/zh_CN';
 
 
 const { Title, Paragraph } = Typography;
@@ -61,8 +62,8 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
       width: 120,
-      render: (text, record, index, action) => 
-        [<p style={record.btc_address === minerAddress? {color:"red"} : {}} key={record.stx_address}> {record.btc_address} </p>],
+      render: (text, record, index, action) =>
+        [<p style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stx_address}> {record.btc_address} </p>],
       copyable: true,
       ellipsis: true,
     },
@@ -83,13 +84,13 @@ const TableList: React.FC<{}> = () => {
     },
   ]
 
-  const miningInfoColumns : ProColumns<MiningInfo>[] = [
+  const miningInfoColumns: ProColumns<MiningInfo>[] = [
     {
       title: <FormattedMessage id='miningInfo.stacksHeight' defaultMessage='Stacks Chain Height' />,
       dataIndex: 'stacks_block_height',
       width: 35,
       render: (_) => <Tag color="blue">{_}</Tag>,
-      
+
     },
     {
       title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
@@ -101,8 +102,8 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
-      render: (text, record, index, action) => 
-        [<p style={record.btc_address === minerAddress? {color:"red"} : {}} key={record.stacks_block_height}> {record.btc_address} </p>],
+      render: (text, record, index, action) =>
+        [<p style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stacks_block_height}> {record.btc_address} </p>],
       copyable: true,
       ellipsis: true,
       width: 150,
@@ -116,23 +117,23 @@ const TableList: React.FC<{}> = () => {
 
   const render_boardStatus = () => {
     let t;
-    if (nodeStatus){
-      if (nodeStatus === -1){
+    if (nodeStatus) {
+      if (nodeStatus === -1) {
         t = <a><FormattedMessage id='status.noProgramRunning' defaultMessage='No Mining Program Running!' /></a>
       }
       else {
-        t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a> 
+        t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a>
       }
     }
-    else{
-      t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!"  /></a>
+    else {
+      t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
     }
 
     return (
-    <div>
-      <FormattedMessage id='status.current' defaultMessage='Current Status' /> : 
-      {t}
-    </div>
+      <div>
+        <FormattedMessage id='status.current' defaultMessage='Current Status' /> :
+        {t}
+      </div>
     )
   }
 
@@ -152,20 +153,20 @@ const TableList: React.FC<{}> = () => {
           }
         >
 
-          
-            <Typography>
-              <Paragraph>
-                <Title level = {3}>
-                  {render_boardStatus()}
-                </Title>
-                <Title level = {5}>
-                  { minerAddress? 
-                    <div> 
-                      <FormattedMessage id='status.miner' defaultMessage='Miner address is' /> 
-                      <a> { `:${minerAddress}` } </a> 
-                    </div>
-                    :
-                    <div></div> 
+
+          <Typography>
+            <Paragraph>
+              <Title level={3}>
+                {render_boardStatus()}
+              </Title>
+              <Title level={5}>
+                {minerAddress ?
+                  <div>
+                    <FormattedMessage id='status.miner' defaultMessage='Miner address is' />
+                    <a> {`:${minerAddress}`} </a>
+                  </div>
+                  :
+                  <div></div>
 
                 }
 
