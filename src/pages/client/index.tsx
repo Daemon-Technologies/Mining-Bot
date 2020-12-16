@@ -1,14 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification } from 'antd';
-import { FormattedMessage } from "umi"
+import { FormattedMessage, getLocale } from "umi"
 
 import { Account } from '@/services/wallet/data'
 import { startMining, stopMining, getNodeStatus, getMiningInfo } from '@/services/client/Client'
 import AccountForm from './component/AccountForm'
 import { MiningInfo } from '@/services/client/data';
-import { getLanguage } from '@ant-design/pro-layout/lib/locales';
+import zhCN from 'antd/lib/locale/zh_CN';
+import enUS from 'antd/lib/locale/en_US';
 
 const { Title, Paragraph } = Typography;
 
@@ -23,8 +24,8 @@ const TableList: React.FC<{}> = () => {
   const [nodeStatus, setNodeStatus] = useState(-1);
   const actionRef = useRef<ActionType>();
 
-  async function initialNodeStatus(){
-    await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
+  async function initialNodeStatus() {
+    await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
     const res = await getNodeStatus()
     console.log(res)
     setNodeStatus(res.PID)
@@ -32,9 +33,9 @@ const TableList: React.FC<{}> = () => {
     setMinerAddress(res.address)
   }
 
-  useEffect (() => {
+  useEffect(() => {
     initialNodeStatus()
-  }, []) 
+  }, [])
 
   const strategyColomns: ProColumns<Account>[] = [
     {
@@ -56,13 +57,13 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='miningInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
-      render: (text, record, index, action) => 
-        [<p style={record.btc_address === minerAddress? {color:"red"} : {}}> {record.btc_address} </p>],
+      render: (text, record, index, action) =>
+        [<p style={record.btc_address === minerAddress ? { color: "red" } : {}}> {record.btc_address} </p>],
       copyable: true,
       ellipsis: true,
-      
-      
-      
+
+
+
     },
     {
       title: <FormattedMessage id='miningInfo.actualWins' defaultMessage='Actual Win' />,
@@ -130,56 +131,55 @@ const TableList: React.FC<{}> = () => {
                     :
                     <div></div> 
 
-                  }
-                  
-                  
-                </Title>
-              </Paragraph>
-              <Paragraph>
-                <Space>
+                }
+
+
+              </Title>
+            </Paragraph>
+            <Paragraph>
+              <Space>
                 <Button
-                type="default"
-                onClick={async () => {
-                  await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
-                  const res = await getNodeStatus()
-                  console.log(res)
-                  if (res.PID === -1){
-                    message.success({ content: getLanguage() === CN ? '后台没有挖矿进程！' : "There is no mining process running!", duration: 4 })
-                    setNodeStatus(res.PID)
-                  }
-                  else
-                  {
-                    message.success({ content: getLanguage() === CN ? `后台有挖矿进程！进程id为${res.PID}` : `There is a mining process running in pid ${res.PID}`, duration: 4 })
-                    setNodeStatus(res.PID)
-                  }
-              
-                }}>
-                <FormattedMessage id='opt.button.status' defaultMessage='Get Node Status' />
+                  type="default"
+                  onClick={async () => {
+                    await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
+                    const res = await getNodeStatus()
+                    console.log(res)
+                    if (res.PID === -1) {
+                      message.success({ content: getLocale() === CN ? '后台没有挖矿进程！' : "There is no mining process running!", duration: 4 })
+                      setNodeStatus(res.PID)
+                    }
+                    else {
+                      message.success({ content: getLocale() === CN ? `后台有挖矿进程！进程id为${res.PID}` : `There is a mining process running in pid ${res.PID}`, duration: 4 })
+                      setNodeStatus(res.PID)
+                    }
+
+                  }}>
+                  <FormattedMessage id='opt.button.status' defaultMessage='Get Node Status' />
                 </Button>
                 <Button
                   type="primary"
                   loading={startMiningLoading}
                   onClick={async () => {
-                      // TODO check BTC Balance
-                      // TODO choose BTC Address
-                      handleModalVisible(true)
-                    }
+                    // TODO check BTC Balance
+                    // TODO choose BTC Address
+                    handleModalVisible(true)
+                  }
                   }>
-                <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
+                  <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                 </Button>
                 <Button
                   type="danger"
                   onClick={async () => {
                     // TODO check Node Status firstly
                     // TODO Reconfirm check
-                    await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
+                    await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
                     const res = await stopMining()
                     console.log(res)
-                    if (res.status === 404){
-                        message.success({ content: getLanguage() === CN ? '没有挖矿程序在运行!' : `${res.data}`, duration: 4 })
+                    if (res.status === 404) {
+                      message.success({ content: getLocale() === CN ? '没有挖矿程序在运行!' : `${res.data}`, duration: 4 })
                     }
-                    else if (res.status === 200){
-                        message.success({ content: getLanguage() === CN ? '关闭成功！' : `${res.data}`, duration: 4 })
+                    else if (res.status === 200) {
+                      message.success({ content: getLocale() === CN ? '关闭成功！' : `${res.data}`, duration: 4 })
                     }
                     await initialNodeStatus()
                     setMinerAddress(undefined)
@@ -188,30 +188,30 @@ const TableList: React.FC<{}> = () => {
                 >
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                 </Button>
-                </Space>
-              </Paragraph>
-            </Typography> 
-          
+              </Space>
+            </Paragraph>
+          </Typography>
+
         </Card>
       </>
     )
   }
 
-  
+
   const openNotification = () => {
     const key = `open${Date.now()}`;
     const btn = (
-      <Button type="primary" size="small" 
-          onClick={async ()=>{
-              const w = await window.open('about:blank');
-              w.location.href="https://www.blockstack.org/testnet/faucet"
-          }}>
+      <Button type="primary" size="small"
+        onClick={async () => {
+          const w = await window.open('about:blank');
+          w.location.href = "https://www.blockstack.org/testnet/faucet"
+        }}>
         Get Bitcoin
       </Button>
     );
     notification.info({
-      message: (getLanguage() === CN ? "余额提醒" : 'Balance Notification'),
-      description: (getLanguage() === CN ? "使用官方网站获取测试网比特币" : 'Visit Official Faucet Website to get Test Bitcoin'),
+      message: (getLocale() === CN ? "余额提醒" : 'Balance Notification'),
+      description: (getLocale() === CN ? "使用官方网站获取测试网比特币" : 'Visit Official Faucet Website to get Test Bitcoin'),
       btn,
       key
     });
@@ -222,17 +222,17 @@ const TableList: React.FC<{}> = () => {
     return (
       <>
         <AccountForm
-          onSubmit={async (value: {account: Account, inputBurnFee: number, network: string}) => {
+          onSubmit={async (value: { account: Account, inputBurnFee: number, network: string }) => {
             //console.log("value", value)
             if (value.account.balance < MIN_MINER_BTC_AMOUNT) {
-              message.error({ content: getLanguage() === CN ? '你的比特币余额不足以继续挖矿，跳转到钱包页面进行充值' : "Your Bitcoin is not enough to mine, turn to Wallet page to get faucet.", duration: 3 })
+              message.error({ content: getLocale() === CN ? '你的比特币余额不足以继续挖矿，跳转到钱包页面进行充值' : "Your Bitcoin is not enough to mine, turn to Wallet page to get faucet.", duration: 3 })
               //openNotification()
               handleModalVisible(false)
             }
             else {
               setStartMiningLoading(true)
-              await message.loading({ content: getLanguage() === CN ? '检查环境.....' : "Checking Environment...", duration: 1 })
-              await message.loading({ content: getLanguage() === CN ? '启动Stacks Blockchain' : "Launching Stacks Blockchain...", duration: 1 })
+              await message.loading({ content: getLocale() === CN ? '检查环境.....' : "Checking Environment...", duration: 1 })
+              await message.loading({ content: getLocale() === CN ? '启动Stacks Blockchain' : "Launching Stacks Blockchain...", duration: 1 })
 
               // Add network type
               value.network = "Krypton"
@@ -243,16 +243,16 @@ const TableList: React.FC<{}> = () => {
               setStartMiningLoading(!res)
               // Launching Successfully
               if (res.status == 200) {
-                message.success({ content: getLanguage() === CN ? '启动成功！' : "Launching Successfully!!!", duration: 4 })
+                message.success({ content: getLocale() === CN ? '启动成功！' : "Launching Successfully!!!", duration: 4 })
                 handleModalVisible(false);
               }
               // Launching UnSuccessfully
               else {
-                message.error({ content: getLanguage() === CN ? '启动异常，请联系管理员！' : "Launching Error, Please Contact With Admin!!!", duration: 4 })
+                message.error({ content: getLocale() === CN ? '启动异常，请联系管理员！' : "Launching Error, Please Contact With Admin!!!", duration: 4 })
                 handleModalVisible(false)
               }
               await initialNodeStatus()
-            }  
+            }
           }}
           onCancel={() => handleModalVisible(false)}
           modalVisible={createModalVisible}
@@ -297,7 +297,7 @@ const TableList: React.FC<{}> = () => {
             />
           }
         >
-            To Complete in Beta Version......
+          To Complete in Beta Version......
         </Card>
       </>
     )
@@ -306,9 +306,7 @@ const TableList: React.FC<{}> = () => {
   return (
     <PageContainer>
       <ConfigProvider
-        value={{
-          intl: getLanguage() === CN ? zhCNIntl : enUSIntl,
-        }}
+        locale={getLocale() === CN ? zhCN : enUS}
       >
         {render_OperationBoard()}
         {render_MiningInfo()}
