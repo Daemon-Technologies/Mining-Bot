@@ -123,7 +123,7 @@ const TableList: React.FC<{}> = () => {
   return (
     <PageContainer>
       <ConfigProvider
-        locale={getLocale() === CN ? zhCNIntl : enUSIntl}
+        locale={getLocale() === CN ? zhCN : enUS}
       >
         <ProTable<Account>
           headerTitle={<FormattedMessage id='account.title' defaultMessage='Account Info' />}
