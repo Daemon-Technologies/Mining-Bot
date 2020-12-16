@@ -4,7 +4,7 @@ declare namespace API {
   }
 
   export interface RequestResult {
-    data?: any,
+    data: any,
     status: number;
   }
 

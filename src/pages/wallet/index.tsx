@@ -23,7 +23,7 @@ const handleAdd = async (fields: NewAccount) => {
   try {
     const result = await addAccount({ ...fields });
     if (result.status !== 200) {
-      throw message.error(getLocale() === CN ? '添加失败!' : 'Adding fail!');
+      throw Error('添加失败');
     }
     hide();
     message.success(getLocale() === CN ? '添加成功!' : 'Adding successfully!');
@@ -47,7 +47,7 @@ const handleRemove = async (selectedRows: Account[]) => {
       selectedRows
     );
     if (result.status !== 200) {
-      throw message.error(getLocale() === CN ? '删除失败!' : 'Deleting fail!');
+      throw Error('删除失败');
     }
     hide();
     message.success(getLocale() === CN ? '删除成功，即将刷新' : 'Delete successfully!');
@@ -103,14 +103,14 @@ const TableList: React.FC<{}> = () => {
       if (faucetAccount.type === "BTC") {
         let t = await getBtcFaucet(faucetAccount.address)
         if (t && t.success && t.success == true) {
-          message.success(`Faucet get successfully, txid is ${t.txid}`)
+          message.success(getLocale() === CN ? `测试币获取成功，交易id为${t.txid}` : `Faucet get successfully, txid is ${t.txid}`)
         }
         console.log(t)
       }
       else if (faucetAccount.type === "STX") {
         let t = await getStxFaucet(faucetAccount.address)
         if (t && t.success && t.success == true) {
-          message.success(`Faucet get successfully, txid is ${t.txid}`)
+          message.success(getLocale() === CN ? `测试币获取成功，交易id为${t.txid}` : `Faucet get successfully, txid is ${t.txid}`)
         }
         console.log(t)
       }
@@ -123,7 +123,7 @@ const TableList: React.FC<{}> = () => {
   return (
     <PageContainer>
       <ConfigProvider
-        locale={getLocale() === CN ? zhCN : enUS}
+        locale={getLocale() === CN ? zhCNIntl : enUSIntl}
       >
         <ProTable<Account>
           headerTitle={<FormattedMessage id='account.title' defaultMessage='Account Info' />}
