@@ -38,7 +38,7 @@ const TableList: React.FC<{}> = () => {
 
   useEffect(() => {
     initialNodeStatus()
-  }, [])
+  }, [])                
 
   const strategyColomns: ProColumns<Account>[] = [
     {
@@ -152,24 +152,6 @@ const TableList: React.FC<{}> = () => {
             />
           }
         >
-<<<<<<< HEAD
-          
-            <Typography>
-              <Paragraph>
-                <Title level = {3}>
-                  {render_boardStatus()}
-                </Title>
-                <Title level = {5}>
-                  { minerAddress? 
-                    <div> 
-                      <FormattedMessage id='status.miner' defaultMessage='Miner address is' /> 
-                      <a> { `:${minerAddress}` } </a> 
-                    </div>
-                    :
-                    <div></div> 
-=======
-
-
           <Typography>
             <Paragraph>
               <Title level={3}>
@@ -183,16 +165,14 @@ const TableList: React.FC<{}> = () => {
                   </div>
                   :
                   <div></div>
->>>>>>> upstream/dev
 
                 }
-
-
               </Title>
             </Paragraph>
             <Paragraph>
               <Space>
                 <Button
+                  disabled={!nodeStatus}
                   type="default"
                   onClick={async () => {
                     await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
@@ -218,8 +198,10 @@ const TableList: React.FC<{}> = () => {
                     // TODO choose BTC Address
                     handleModalVisible(true)
                   }
-                  }>
-                  <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
+                  }
+                  disabled={!nodeStatus}
+                  >
+                  <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' / >
                 </Button>
                 <Button
                   type="danger"
@@ -239,6 +221,7 @@ const TableList: React.FC<{}> = () => {
                     setMinerAddress(undefined)
                     console.log(res)
                   }}
+                  disabled={!nodeStatus}
                 >
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                 </Button>
