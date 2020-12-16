@@ -1,5 +1,5 @@
 import { request } from 'umi';
-import { getShaValue, kdf } from '@/utils/utils';
+import { getShaValue } from '@/utils/utils';
 import * as crypto from 'crypto';
 
 const { MiningPasswordAuthorization, MiningPassword } = require('@/services/constants')
@@ -15,7 +15,7 @@ export interface FirstTimeLoginParams {
 
 // lock your account by your password
 export async function loginByPassword(password: string) {
-  let result: API.RequestResult = { status: 200 };
+  let result: API.RequestResult = { status: 200, data: {} };
   const userAuth = getUserAuth();
   if (!userAuth) {
     result.status = 500;
