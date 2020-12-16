@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { Button, ConfigProvider, message, Modal } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import CreateForm from './components/CreateForm';
@@ -9,6 +9,8 @@ import { queryAccount } from '@/services/wallet/accountData'
 import { getStxFaucet, getBtcFaucet } from '@/services/wallet/faucet'
 import { addAccount, deleteAccount, } from './service';
 import { FormattedMessage, getLocale } from 'umi';
+import enUS from 'antd/lib/locale/en_US';
+import zhCN from 'antd/lib/locale/zh_CN';
 
 const { CN } = require('@/services/constants');
 
