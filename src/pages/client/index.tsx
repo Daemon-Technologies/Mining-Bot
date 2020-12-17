@@ -6,10 +6,10 @@ import { FormattedMessage, getLocale } from "umi"
 
 
 import { Account } from '@/services/wallet/data'
-import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo } from '@/services/client/Client'
+import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo, getChainSyncInfo } from '@/services/client/Client'
 import AccountForm from './component/AccountForm'
 
-import { MiningInfo, MinerInfo } from '@/services/client/data';
+import { MiningInfo, MinerInfo, ChainSyncInfo } from '@/services/client/data';
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
 
@@ -38,7 +38,7 @@ const TableList: React.FC<{}> = () => {
 
   useEffect(() => {
     initialNodeStatus()
-  }, [])                
+  }, [])
 
   const strategyColomns: ProColumns<Account>[] = [
     {
@@ -112,6 +112,34 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='miningInfo.burnfee' defaultMessage='Burn Fee' />,
       dataIndex: 'burn_fee',
       width: 50,
+    },
+  ]
+
+  const chainSyncInfoColumns: ProColumns<ChainSyncInfo>[] = [
+    {
+      title: <FormattedMessage id='chainSyncInfo.type' defaultMessage='Type' />,
+      dataIndex: 'type',
+      valueEnum: {
+        0: { text: <FormattedMessage id='chainSyncInfo.type.main' defaultMessage='Main Chain' /> },
+        1: { text: <FormattedMessage id='chainSyncInfo.type.local' defaultMessage='Local Chain' /> }
+      },
+      width: 100,
+    },
+    {
+      title: <FormattedMessage id='chainSyncInfo.burn_block_height' defaultMessage='Burn Chain Block Height' />,
+      dataIndex: 'burn_block_height',
+      width: 150,
+    },
+    {
+      title: <FormattedMessage id='chainSyncInfo.stacks_tip_height' defaultMessage='Stacks Chain Tip Height' />,
+      dataIndex: 'stacks_tip_height',
+      width: 150,
+    },
+    {
+      title: <FormattedMessage id='chainSyncInfo.stacks_tip' defaultMessage='Stacks Chain Tip Block Hash' />,
+      dataIndex: 'stacks_tip',
+      ellipsis: true,
+      width: 200,
     },
   ]
 
@@ -200,8 +228,8 @@ const TableList: React.FC<{}> = () => {
                   }
                   }
                   disabled={!nodeStatus}
-                  >
-                  <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' / >
+                >
+                  <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                 </Button>
                 <Button
                   type="danger"
@@ -343,6 +371,32 @@ const TableList: React.FC<{}> = () => {
     )
   }
 
+  const render_ChainSyncInfo = () => {
+    return (
+      <>
+        <Divider />
+        <ProTable<ChainSyncInfo>
+          headerTitle={<FormattedMessage id='chainSyncInfo.title' defaultMessage='Chain Sync Info' />}
+          actionRef={actionRef}
+          rowKey="type"
+          pagination={{
+            pageSize: 10,
+          }}
+          request={async (params, sorter, filter) => {
+            const chainSyncInfo: API.RequestResult = await getChainSyncInfo();
+            console.log('chainSyncInfo:', chainSyncInfo)
+            if (chainSyncInfo.status === 201) {
+              message.warning(getLocale() === CN ? '链信息无法获取' : 'Can not get chain info');
+            }
+            return chainSyncInfo;
+          }}
+          columns={chainSyncInfoColumns}
+          search={false}
+        />
+      </>
+    )
+  }
+
   const render_StrategyLibrary = () => {
     return (
       <>
@@ -371,6 +425,7 @@ const TableList: React.FC<{}> = () => {
         locale={getLocale() === CN ? zhCN : enUS}
       >
         {render_OperationBoard()}
+        {render_ChainSyncInfo()}
         {render_MinerInfo()}
         {render_MiningInfo()}
         {render_Form()}

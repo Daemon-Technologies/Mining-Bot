@@ -24,3 +24,10 @@ export interface MiningInfo {
   burn_fee: number;
   stacks_block_height: number;
 }
+
+export interface ChainSyncInfo {
+  burn_block_height: number | string;
+  stacks_tip_height: number | string;
+  stacks_tip: string;
+  type: number;
+}

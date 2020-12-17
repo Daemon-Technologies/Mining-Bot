@@ -20,27 +20,35 @@ export default {
     'miningInfo.stacksHeight': '链高度',
     'miningInfo.burnfee': '燃烧量',
 
+    'chainSyncInfo.title': '链同步信息',
+    'chainSyncInfo.burn_block_height': '燃烧链高度',
+    'chainSyncInfo.stacks_tip_height': '主链高度',
+    'chainSyncInfo.stacks_tip': '主链最新区块哈希',
+    'chainSyncInfo.type': '类型',
+    'chainSyncInfo.type.main': '主链',
+    'chainSyncInfo.type.local': '本地链',
+
     'status.current': "当前状态",
-    'status.noProgramRunning' : "无节点运行",
-    'status.programRunning' : "挖矿程序正在运行，PID为",
-    'status.miner':"当前地址为",
+    'status.noProgramRunning': "无节点运行",
+    'status.programRunning': "挖矿程序正在运行，PID为",
+    'status.miner': "当前地址为",
     'status.noMiningLocalServerRunning': "Mining Local Server 没有运行！",
 
-    'notification.getNodeStatus.checkEnv' : "环境检查中....",
-    'notification.getNodeStatus.noProgram' : "后台没有挖矿进程！",
-    'notification.getNodeStatus.programRunning' : "后台有挖矿进程！进程id为",
-    'notification.stopMining.succeed' : "关闭成功！",
-    'notification.startMining.balanceNotification' : "余额提醒",
-    'notification.startMining.getBTC' : "使用官方网站获取测试网比特币",
-    'notification.startMining.notEnoughBTC' : "你的比特币余额不足以继续挖矿！",
-    'notification.startMining.checkEnv' : "检查环境.....",
-    'notification.startMining.launchStacksNode' : "启动Stacks Blockchain",
-    'notification.startMining.succeed' : "启动成功！",
-    'notification.startMining.error' : "启动异常，请联系管理员！",
-    
-    
-    
-    
-    
+    'notification.getNodeStatus.checkEnv': "环境检查中....",
+    'notification.getNodeStatus.noProgram': "后台没有挖矿进程！",
+    'notification.getNodeStatus.programRunning': "后台有挖矿进程！进程id为",
+    'notification.stopMining.succeed': "关闭成功！",
+    'notification.startMining.balanceNotification': "余额提醒",
+    'notification.startMining.getBTC': "使用官方网站获取测试网比特币",
+    'notification.startMining.notEnoughBTC': "你的比特币余额不足以继续挖矿！",
+    'notification.startMining.checkEnv': "检查环境.....",
+    'notification.startMining.launchStacksNode': "启动Stacks Blockchain",
+    'notification.startMining.succeed': "启动成功！",
+    'notification.startMining.error': "启动异常，请联系管理员！",
+
+
+
+
+
 
 };
