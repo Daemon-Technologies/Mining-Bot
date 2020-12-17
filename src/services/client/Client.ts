@@ -1,7 +1,9 @@
 import { request } from 'umi';
-const { miningLocalServer_endpoint, miningMonitorServer_endpoint } = require('@/services/constants')
+const { miningMonitorServer_endpoint } = require('@/services/constants')
 import { keyGen, aes256Decrypt } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
+
+const miningLocalServer_endpoint = "http://" + window.location.hostname + ":5000"
 
 export async function getNodeStatus() {
   return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
@@ -15,7 +17,7 @@ export async function getNodeStatus() {
   })
 }
 
-export async function startMining(data: {account: Account, inputBurnFee: number, network: string}) {
+export async function startMining(data: { account: Account, inputBurnFee: number, network: string }) {
   /*
     address: "n4e9BRjiNm8ANt94eyoMofxNQoKQxHN2jJ"
     authTag: "a4df9c8972d554a4108b0aaff87e8ccb"
