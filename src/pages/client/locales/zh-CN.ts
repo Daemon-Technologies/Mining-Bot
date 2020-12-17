@@ -3,6 +3,7 @@ export default {
     'opt.button.status': '获取节点状态',
     'opt.button.start': '开始挖矿',
     'opt.button.stop': '停止挖矿',
+    'opt.button.download': "下载stacks-node",
 
     'strategy.title': '策略仓库',
     'strategy.name': '策略名称',
@@ -25,6 +26,8 @@ export default {
     'status.programRunning' : "挖矿程序正在运行，PID为",
     'status.miner':"当前地址为",
     'status.noMiningLocalServerRunning': "Mining Local Server 没有运行！",
+    'status.noStacksNodeFound':"Mining Local Server 已运行，但是没有找到stacks-node程序",
+    'status.noStacksNodeRunning':"stacks-node程序已下载，但是没有运行",
 
     'notification.getNodeStatus.checkEnv' : "环境检查中....",
     'notification.getNodeStatus.noProgram' : "后台没有挖矿进程！",

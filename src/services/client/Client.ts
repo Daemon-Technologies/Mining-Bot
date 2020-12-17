@@ -3,6 +3,7 @@ const { miningLocalServer_endpoint, miningMonitorServer_endpoint } = require('@/
 import { keyGen, aes256Decrypt } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
 
+
 export async function getNodeStatus() {
   return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
     method: 'GET',

@@ -1,18 +1,18 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification, Tag } from 'antd';
+import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification, Tag, Progress } from 'antd';
 import { FormattedMessage, getLocale } from "umi"
-
+import { DownloadOutlined } from '@ant-design/icons';
 
 import { Account } from '@/services/wallet/data'
 import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo } from '@/services/client/Client'
 import AccountForm from './component/AccountForm'
 
 import { MiningInfo, MinerInfo } from '@/services/client/data';
+import {initiateSocket, subscribePercent, startDownload, disconnectSocket} from '@/services/client/socket'
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
-
 
 const { Title, Paragraph } = Typography;
 
@@ -24,17 +24,41 @@ const TableList: React.FC<{}> = () => {
   const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false)
   const [minerAddress, setMinerAddress] = useState<string>();
-  const [nodeStatus, setNodeStatus] = useState(-1);
+  const [nodeStatus, setNodeStatus] = useState(-1); 
+  const [percent,setPercent] = useState(0)
+  const [processing, setProcessing] = useState(false)
+  
+  /* nodeStatus 
+    -1 no Mining-Local-Server Started
+    -2 Got Mining-Local-Server, but no stacks-node found
+    -3 Found stacks-node, but no PID of stacks-node runs
+    else PID nodeStatus is running.
+  */
   const actionRef = useRef<ActionType>();
+  
+
 
   async function initialNodeStatus() {
     await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
     const res = await getNodeStatus()
     console.log(res)
-    setNodeStatus(res.PID)
-    console.log(res.address)
+    if (res.PID) setNodeStatus(res.PID)
+    else setNodeStatus(-1)
     setMinerAddress(res.address)
   }
+
+  useEffect(()=>{
+    initiateSocket()
+    subscribePercent((err, data) => {
+      if (err) return;
+      console.log((data*100).toFixed(1))
+      setPercent((data*100).toFixed(1))
+      setProcessing(true)
+    })
+    return () => {
+      disconnectSocket();
+    }
+  }, [])
 
   useEffect(() => {
     initialNodeStatus()
@@ -117,16 +141,17 @@ const TableList: React.FC<{}> = () => {
 
   const render_boardStatus = () => {
     let t;
-    if (nodeStatus) {
-      if (nodeStatus === -1) {
-        t = <a><FormattedMessage id='status.noProgramRunning' defaultMessage='No Mining Program Running!' /></a>
-      }
-      else {
-        t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a>
-      }
-    }
-    else {
-      t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+    switch (nodeStatus){
+      case undefined: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+                      break;
+      case -1: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+               break;
+      case -2: t = <a><FormattedMessage id='status.noStacksNodeFound' defaultMessage='Mining Local Server is Running, But stacks-node binary not found!' /></a>
+               break;
+      case -3: t = <a><FormattedMessage id='status.noStacksNodeRunning' defaultMessage='Stacks-node is downloaded but not running!' /></a>
+               break;
+      default: t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a> 
+               break;
     }
 
     return (
@@ -223,10 +248,29 @@ const TableList: React.FC<{}> = () => {
                   }}
                   disabled={!nodeStatus}
                 >
+                
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                 </Button>
               </Space>
             </Paragraph>
+            <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={nodeStatus!=-2}
+                    onClick={()=>{
+                      startDownload()
+                    }}
+            >
+                  <FormattedMessage id='opt.button.download' defaultMessage='Download stacks-node' />
+            </Button>
+            <Progress
+              strokeColor={{
+                from: '#108ee9',
+                to: '#87d068',
+              }}
+              percent={percent}
+              status="active"
+              style={{width: 500, marginLeft: 30}}
+              hidden={!processing}
+            />
+
           </Typography>
 
         </Card>
