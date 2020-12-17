@@ -63,7 +63,7 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'btc_address',
       width: 120,
       render: (text, record, index, action) =>
-        [<p style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stx_address}> {record.btc_address} </p>],
+        [<a style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stx_address}> {record.btc_address} </a>],
       copyable: true,
       ellipsis: true,
     },
@@ -103,7 +103,7 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
       render: (text, record, index, action) =>
-        [<p style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stacks_block_height}> {record.btc_address} </p>],
+        [<a style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stacks_block_height}> {record.btc_address} </a>],
       copyable: true,
       ellipsis: true,
       width: 150,
@@ -315,6 +315,7 @@ const TableList: React.FC<{}> = () => {
           }}
           columns={minerInfoColumns}
           search={false}
+          size="small"
         />
       </>
     )
@@ -324,6 +325,7 @@ const TableList: React.FC<{}> = () => {
       <>
         <Divider />
         <ProTable<MiningInfo>
+          size="small"
           headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
           rowKey="stacks_block_height"
