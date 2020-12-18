@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-let socket;
+let socket : any;
 export const initiateSocket = () => {
     socket = io('http://localhost:5000',{transports: ['websocket']});
     console.log(`Connecting socket...`);
@@ -8,7 +8,15 @@ export const initiateSocket = () => {
   
 export const subscribePercent = (cb) => {
     if (!socket) return(true);
-    socket.on('download_info', msg => {
+    socket.on('download_info', (msg:any) => {
+        //console.log(msg*100)
+        return cb(null, msg);
+    })
+}
+
+export const subscribeDownloadFinish = (cb) => {
+    if (!socket) return(true);
+    socket.on('download_complete', (msg:any) => {
         //console.log(msg*100)
         return cb(null, msg);
     })

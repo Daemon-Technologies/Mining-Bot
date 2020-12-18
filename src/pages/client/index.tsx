@@ -11,10 +11,11 @@ import AccountForm from './component/AccountForm'
 
 
 import { MiningInfo, MinerInfo, ChainSyncInfo, MinerInfoQueryParams, MiningInfoQueryParams } from '@/services/client/data';
-import {initiateSocket, subscribePercent, startDownload, disconnectSocket} from '@/services/client/socket'
+import {initiateSocket, subscribePercent, subscribeDownloadFinish, startDownload, disconnectSocket} from '@/services/client/socket'
 
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
+import { spellNamePath } from '@ant-design/pro-table/lib/defaultRender';
 
 const { Title, Paragraph } = Typography;
 
@@ -52,6 +53,14 @@ const TableList: React.FC<{}> = () => {
       setPercent((data*100).toFixed(1))
       setProcessing(true)
     })
+
+    subscribeDownloadFinish((err, data) => {
+      if (err) return;
+      if (data){
+        message.success("Sownload successfully!")
+        window.location.reload()
+      }
+    })
     return () => {
       disconnectSocket();
     }
@@ -59,6 +68,7 @@ const TableList: React.FC<{}> = () => {
 
   useEffect(() => {
     initialNodeStatus()
+    if (nodeStatus == -3) window.location.reload()
   }, [])
 
   const strategyColomns: ProColumns<Account>[] = [
@@ -77,7 +87,8 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'stx_address',
       width: 150,
       copyable: true,
-      ellipsis: true
+      ellipsis: true,
+      search: false
     },
     {
       title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
@@ -121,6 +132,7 @@ const TableList: React.FC<{}> = () => {
       copyable: true,
       ellipsis: true,
       width: 150,
+      search: false,
     },
     {
       title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
@@ -401,8 +413,9 @@ const TableList: React.FC<{}> = () => {
             return minerInfo;
           }}
           columns={minerInfoColumns}
-          search={false}
           size="small"
+
+          search={{ labelWidth: 'auto' }}
         />
       </>
     )
@@ -433,6 +446,7 @@ const TableList: React.FC<{}> = () => {
             return miningInfo;
           }}
           columns={miningInfoColumns}
+          search={{ labelWidth: 'auto' }}
         />
       </>
     )
