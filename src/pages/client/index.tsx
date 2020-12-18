@@ -11,7 +11,7 @@ import AccountForm from './component/AccountForm'
 
 
 import { MiningInfo, MinerInfo, ChainSyncInfo, MinerInfoQueryParams, MiningInfoQueryParams } from '@/services/client/data';
-import {initiateSocket, subscribePercent, subscribeDownloadFinish, startDownload, disconnectSocket} from '@/services/client/socket'
+import { initiateSocket, subscribePercent, subscribeDownloadFinish, startDownload, disconnectSocket } from '@/services/client/socket'
 
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
@@ -27,14 +27,14 @@ const TableList: React.FC<{}> = () => {
   const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false)
   const [minerAddress, setMinerAddress] = useState<string>();
-  const [nodeStatus, setNodeStatus] = useState(-1); 
-  const [percent,setPercent] = useState(0)
+  const [nodeStatus, setNodeStatus] = useState(-1);
+  const [percent, setPercent] = useState(0)
   const [processing, setProcessing] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
-  
- 
+
+
   const actionRef = useRef<ActionType>();
-  
+
 
 
   async function initialNodeStatus() {
@@ -46,19 +46,19 @@ const TableList: React.FC<{}> = () => {
     setMinerAddress(res.address)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     initiateSocket()
     subscribePercent((err, data) => {
       if (err) return;
       if (!isDownloading) setIsDownloading(true)
-      console.log((data*100).toFixed(1))
-      setPercent((data*100).toFixed(1))
+      console.log((data * 100).toFixed(1))
+      setPercent((data * 100).toFixed(1))
       setProcessing(true)
     })
 
     subscribeDownloadFinish((err, data) => {
       if (err) return;
-      if (data){
+      if (data) {
         setIsDownloading(false)
         message.success("Download successfully!")
         window.location.reload()
@@ -128,6 +128,7 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'stacks_block_height',
       width: 35,
       render: (_) => <Tag color="blue">{_}</Tag>,
+      search: false,
     },
     {
       title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
@@ -182,32 +183,32 @@ const TableList: React.FC<{}> = () => {
     },
   ]
 
-   /* nodeStatus 
-    -1 no Mining-Local-Server Started
-    -2 Got Mining-Local-Server, but no stacks-node found
-    -3 Found stacks-node, but stacks-node is incomplete. Will delete it, delete successfully.
-    -4 Found stacks-node, but stacks-node is incomplete. Will delete it, delete unsuccessfully, please do it manually.
-    -5 Found stacks-node, but no PID of stacks-node runs
-    
-    else PID nodeStatus is running.
-  */
+  /* nodeStatus 
+   -1 no Mining-Local-Server Started
+   -2 Got Mining-Local-Server, but no stacks-node found
+   -3 Found stacks-node, but stacks-node is incomplete. Will delete it, delete successfully.
+   -4 Found stacks-node, but stacks-node is incomplete. Will delete it, delete unsuccessfully, please do it manually.
+   -5 Found stacks-node, but no PID of stacks-node runs
+   
+   else PID nodeStatus is running.
+ */
   const render_boardStatus = () => {
     let t;
-    switch (nodeStatus){
+    switch (nodeStatus) {
       case undefined: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
-                      break;
+        break;
       case -1: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
-               break;
+        break;
       case -2: t = <a><FormattedMessage id='status.noStacksNodeFound' defaultMessage='Mining Local Server is Running, But stacks-node binary not found!' /></a>
-               break;
+        break;
       case -3: t = <a><FormattedMessage id='status.stacksNodeDeletedSuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete successfully! Please Refresh the Mining-bot and redownload stacks-node!' /></a>
-               break;
+        break;
       case -4: t = <a><FormattedMessage id='status.stacksNodeDeletedUnsuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete unsuccessfully!!! Please delete it manually in Mining-Local-Server folder before refresh the Mining-Bot.' /></a>
-               break;
+        break;
       case -5: t = <a><FormattedMessage id='status.noStacksNodeRunning' defaultMessage='Stacks-node is downloaded but not running!' /></a>
-               break;
-      default: t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a> 
-               break;
+        break;
+      default: t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a>
+        break;
     }
 
     return (
@@ -296,19 +297,19 @@ const TableList: React.FC<{}> = () => {
                   }}
                   disabled={!nodeStatus}
                 >
-                
+
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                 </Button>
               </Space>
             </Paragraph>
-            <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={nodeStatus!=-2}
-                    onClick={()=>{
-                      startDownload()
-                      if (!isDownloading) setIsDownloading(true)
-                    }}
-                    loading = {isDownloading}
+            <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={nodeStatus != -2}
+              onClick={() => {
+                startDownload()
+                if (!isDownloading) setIsDownloading(true)
+              }}
+              loading={isDownloading}
             >
-                  <FormattedMessage id='opt.button.download' defaultMessage='Download stacks-node' />
+              <FormattedMessage id='opt.button.download' defaultMessage='Download stacks-node' />
             </Button>
             <Progress
               strokeColor={{
@@ -317,7 +318,7 @@ const TableList: React.FC<{}> = () => {
               }}
               percent={percent}
               status="active"
-              style={{width: 500, marginLeft: 30}}
+              style={{ width: 500, marginLeft: 30 }}
               hidden={!processing}
             />
 
@@ -422,7 +423,7 @@ const TableList: React.FC<{}> = () => {
       <>
         <Divider />
 
-          
+
 
         <ProTable<MiningInfo, MiningInfoQueryParams>
           size="small"
@@ -433,12 +434,10 @@ const TableList: React.FC<{}> = () => {
             pageSize: 10,
           }}
           request={async (params: MiningInfoQueryParams) => {
+            console.log('params:', params)
             const miningInfo = await getMiningInfo();
             let data = miningInfo.data.filter((row: MiningInfo) => row.stx_address.includes(params.stx_address || ''));
             data = data.filter((row: MiningInfo) => row.btc_address.includes(params.btc_address || ''));
-            if (params.stacks_block_height) {
-              data = data.filter((row: MiningInfo) => row.stacks_block_height === params.stacks_block_height);
-            }
             miningInfo.data = data;
             return miningInfo;
           }}
