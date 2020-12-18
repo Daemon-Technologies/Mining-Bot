@@ -12,7 +12,7 @@ module.exports = {
 
   miningLocalServer_endpoint: 'http://localhost:5000',
 
-  miningMonitorServer_endpoint: 'http://8.210.105.204:23456',
+  miningMonitorServer_endpoint: 'http://monitor.stxmining.xyz',
 
   MIN_MINER_BTC_AMOUNT: 0.005,
 

@@ -1,7 +1,14 @@
 import { request } from 'umi';
-const { miningLocalServer_endpoint, miningMonitorServer_endpoint } = require('@/services/constants')
+const { miningMonitorServer_endpoint } = require('@/services/constants')
 import { keyGen, aes256Decrypt } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
+import { ChainSyncInfo } from './data';
+
+
+const { nodeKryptonURL } = require('@/services/constants')
+const miningLocalServer_endpoint: string = "http://" + window.location.hostname + ":5000"
+const localChainURL: string = 'http://' + window.location.hostname + ":20443"
+
 
 export async function getNodeStatus() {
   return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
@@ -15,7 +22,7 @@ export async function getNodeStatus() {
   })
 }
 
-export async function startMining(data: {account: Account, inputBurnFee: number, network: string}) {
+export async function startMining(data: { account: Account, inputBurnFee: number, network: string }) {
   /*
     address: "n4e9BRjiNm8ANt94eyoMofxNQoKQxHN2jJ"
     authTag: "a4df9c8972d554a4108b0aaff87e8ccb"
@@ -73,4 +80,39 @@ export async function getMiningInfo() {
   }).then(data => {
     return { 'data': data.mining_info, 'success': true };
   });
+}
+
+export async function getChainSyncInfo(): Promise<API.RequestResult> {
+  let infoList: ChainSyncInfo[] = [];
+  let result: API.RequestResult = { status: 200, data: [] };
+  let mainChainInfo: Partial<ChainSyncInfo> = {};
+  let localChainInfo: Partial<ChainSyncInfo> = {};
+  try {
+    mainChainInfo = await getMainChainInfo();
+    localChainInfo = await getLocalChainSyncInfo();
+  } catch (error) {
+    result.status = 201;
+  }
+  infoList.push({
+    burn_block_height: mainChainInfo.burn_block_height === undefined ? 'NaN' : mainChainInfo.burn_block_height,
+    stacks_tip_height: mainChainInfo.stacks_tip_height === undefined ? 'NaN' : mainChainInfo.stacks_tip_height,
+    stacks_tip: mainChainInfo.stacks_tip === undefined ? 'NaN' : mainChainInfo.stacks_tip,
+    type: 0,
+  });
+  infoList.push({
+    burn_block_height: localChainInfo.burn_block_height === undefined ? 'NaN' : localChainInfo.burn_block_height,
+    stacks_tip_height: localChainInfo.stacks_tip_height === undefined ? 'NaN' : localChainInfo.stacks_tip_height,
+    stacks_tip: localChainInfo.stacks_tip === undefined ? 'NaN' : localChainInfo.stacks_tip,
+    type: 1,
+  });
+  result.data = infoList;
+  return result;
+}
+
+export async function getLocalChainSyncInfo() {
+  return request(`${localChainURL}/v2/info`, { method: 'GET' });
+}
+
+export async function getMainChainInfo() {
+  return request(`${nodeKryptonURL}/v2/info`, { method: 'GET' });
 }
