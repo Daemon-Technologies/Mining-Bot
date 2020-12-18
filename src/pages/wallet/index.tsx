@@ -87,7 +87,7 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='faucet.get' defaultMessage='Get Faucet' />,
       hideInForm: true,
-      render: (text, record, index, action) => [<a key="1" onClick={() => getFaucet(record)}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a>]
+      render: (text, record, index, action) => [record.type === "BTC"? <a key="1" onClick={() => getFaucet(record)}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a> : <a></a> ]
     }
   ];
 
