@@ -12,7 +12,6 @@ import AccountForm from './component/AccountForm'
 import { MiningInfo, MinerInfo, ChainSyncInfo, MinerInfoQueryParams, MiningInfoQueryParams } from '@/services/client/data';
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
-import { min } from 'lodash';
 
 
 const { Title, Paragraph } = Typography;

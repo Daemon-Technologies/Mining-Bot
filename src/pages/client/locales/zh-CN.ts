@@ -31,7 +31,7 @@ export default {
     'status.current': "当前状态",
     'status.noProgramRunning': "无节点运行",
     'status.programRunning': "挖矿程序正在运行，PID为",
-    'status.miner': "当前地址为",
+    'status.miner': "当前挖矿BTC地址为",
     'status.noMiningLocalServerRunning': "Mining Local Server 没有运行！",
 
     'notification.getNodeStatus.checkEnv': "环境检查中....",

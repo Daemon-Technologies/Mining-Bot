@@ -63,7 +63,7 @@ export async function stopMining() {
   })
 }
 
-export async function getMinerInfo(){
+export async function getMinerInfo() {
   return request(`${miningMonitorServer_endpoint}/mining_info`, {
     method: 'GET',
     timeout: 30000,
