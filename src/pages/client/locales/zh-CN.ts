@@ -28,6 +28,8 @@ export default {
     'status.noMiningLocalServerRunning': "Mining Local Server 没有运行！",
     'status.noStacksNodeFound':"Mining Local Server 已运行，但是没有找到stacks-node程序",
     'status.noStacksNodeRunning':"stacks-node程序已下载，但是没有运行",
+    'status.stacksNodeDeletedSuccessfully': "stacks-node文件存在但是不完整，后台将会删除。。。删除成功！请刷新本页面重新下载stacks-node",
+    'status.stacksNodeDeletedUnsuccessfully': "stacks-node文件存在但是不完整，后台将会删除。。。删除失败！！！请在刷新本页面之前手动在Mining-Local-Server文件夹下删除stacks-node文件",
 
     'notification.getNodeStatus.checkEnv' : "环境检查中....",
     'notification.getNodeStatus.noProgram' : "后台没有挖矿进程！",

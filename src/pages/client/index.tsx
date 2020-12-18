@@ -28,12 +28,7 @@ const TableList: React.FC<{}> = () => {
   const [percent,setPercent] = useState(0)
   const [processing, setProcessing] = useState(false)
   
-  /* nodeStatus 
-    -1 no Mining-Local-Server Started
-    -2 Got Mining-Local-Server, but no stacks-node found
-    -3 Found stacks-node, but no PID of stacks-node runs
-    else PID nodeStatus is running.
-  */
+ 
   const actionRef = useRef<ActionType>();
   
 
@@ -139,6 +134,15 @@ const TableList: React.FC<{}> = () => {
     },
   ]
 
+   /* nodeStatus 
+    -1 no Mining-Local-Server Started
+    -2 Got Mining-Local-Server, but no stacks-node found
+    -3 Found stacks-node, but stacks-node is incomplete. Will delete it, delete successfully.
+    -4 Found stacks-node, but stacks-node is incomplete. Will delete it, delete unsuccessfully, please do it manually.
+    -5 Found stacks-node, but no PID of stacks-node runs
+    
+    else PID nodeStatus is running.
+  */
   const render_boardStatus = () => {
     let t;
     switch (nodeStatus){
@@ -148,7 +152,11 @@ const TableList: React.FC<{}> = () => {
                break;
       case -2: t = <a><FormattedMessage id='status.noStacksNodeFound' defaultMessage='Mining Local Server is Running, But stacks-node binary not found!' /></a>
                break;
-      case -3: t = <a><FormattedMessage id='status.noStacksNodeRunning' defaultMessage='Stacks-node is downloaded but not running!' /></a>
+      case -3: t = <a><FormattedMessage id='status.stacksNodeDeletedSuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete successfully! Please Refresh the Mining-bot and redownload stacks-node!' /></a>
+               break;
+      case -4: t = <a><FormattedMessage id='status.stacksNodeDeletedUnsuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete unsuccessfully!!! Please delete it manually in Mining-Local-Server folder before refresh the Mining-Bot.' /></a>
+               break;
+      case -5: t = <a><FormattedMessage id='status.noStacksNodeRunning' defaultMessage='Stacks-node is downloaded but not running!' /></a>
                break;
       default: t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a> 
                break;
