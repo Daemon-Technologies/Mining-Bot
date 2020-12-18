@@ -30,6 +30,7 @@ const TableList: React.FC<{}> = () => {
   const [nodeStatus, setNodeStatus] = useState(-1); 
   const [percent,setPercent] = useState(0)
   const [processing, setProcessing] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   
  
   const actionRef = useRef<ActionType>();
@@ -49,6 +50,7 @@ const TableList: React.FC<{}> = () => {
     initiateSocket()
     subscribePercent((err, data) => {
       if (err) return;
+      if (!isDownloading) setIsDownloading(true)
       console.log((data*100).toFixed(1))
       setPercent((data*100).toFixed(1))
       setProcessing(true)
@@ -57,7 +59,8 @@ const TableList: React.FC<{}> = () => {
     subscribeDownloadFinish((err, data) => {
       if (err) return;
       if (data){
-        message.success("Sownload successfully!")
+        setIsDownloading(false)
+        message.success("Download successfully!")
         window.location.reload()
       }
     })
@@ -255,15 +258,7 @@ const TableList: React.FC<{}> = () => {
                   onClick={async () => {
                     await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
                     const res = await getNodeStatus()
-                    console.log(res)
-                    if (res.PID === -1) {
-                      message.success({ content: getLocale() === CN ? '后台没有挖矿进程！' : "There is no mining process running!", duration: 4 })
-                      setNodeStatus(res.PID)
-                    }
-                    else {
-                      message.success({ content: getLocale() === CN ? `后台有挖矿进程！进程id为${res.PID}` : `There is a mining process running in pid ${res.PID}`, duration: 4 })
-                      setNodeStatus(res.PID)
-                    }
+                    await initialNodeStatus()
 
                   }}>
                   <FormattedMessage id='opt.button.status' defaultMessage='Get Node Status' />
@@ -309,7 +304,9 @@ const TableList: React.FC<{}> = () => {
             <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={nodeStatus!=-2}
                     onClick={()=>{
                       startDownload()
+                      if (!isDownloading) setIsDownloading(true)
                     }}
+                    loading = {isDownloading}
             >
                   <FormattedMessage id='opt.button.download' defaultMessage='Download stacks-node' />
             </Button>
