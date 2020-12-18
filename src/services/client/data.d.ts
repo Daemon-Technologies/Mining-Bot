@@ -17,12 +17,28 @@ export interface MinerInfo {
   miner_burned: number;
 }
 
+export interface MinerInfoQueryParams {
+  stx_address?: string;
+  btc_address?: string;
+  current?: number;
+  pageSize?: number;
+}
+
 
 export interface MiningInfo {
   stx_address: string;
   btc_address: string;
   burn_fee: number;
   stacks_block_height: number;
+}
+
+export interface MiningInfoQueryParams {
+  stx_address?: string;
+  btc_address?: string;
+  burn_fee?: number;
+  stacks_block_height?: number;
+  current?: number;
+  pageSize?: number;
 }
 
 export interface ChainSyncInfo {

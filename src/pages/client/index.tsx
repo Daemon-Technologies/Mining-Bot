@@ -9,9 +9,10 @@ import { Account } from '@/services/wallet/data'
 import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo, getChainSyncInfo } from '@/services/client/Client'
 import AccountForm from './component/AccountForm'
 
-import { MiningInfo, MinerInfo, ChainSyncInfo } from '@/services/client/data';
+import { MiningInfo, MinerInfo, ChainSyncInfo, MinerInfoQueryParams, MiningInfoQueryParams } from '@/services/client/data';
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
+import { min } from 'lodash';
 
 
 const { Title, Paragraph } = Typography;
@@ -71,16 +72,19 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='minerInfo.actualWins' defaultMessage='Actual Win' />,
       dataIndex: 'actual_win',
       width: 50,
+      search: false,
     },
     {
       title: <FormattedMessage id='minerInfo.totalMined' defaultMessage='Total Mined' />,
       dataIndex: 'total_mined',
       width: 50,
+      search: false,
     },
     {
       title: <FormattedMessage id='minerInfo.burn' defaultMessage='Miner Burned' />,
       dataIndex: 'miner_burned',
       width: 70,
+      search: false,
     },
   ]
 
@@ -90,7 +94,6 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'stacks_block_height',
       width: 35,
       render: (_) => <Tag color="blue">{_}</Tag>,
-
     },
     {
       title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
@@ -112,6 +115,7 @@ const TableList: React.FC<{}> = () => {
       title: <FormattedMessage id='miningInfo.burnfee' defaultMessage='Burn Fee' />,
       dataIndex: 'burn_fee',
       width: 50,
+      search: false,
     },
   ]
 
@@ -123,23 +127,23 @@ const TableList: React.FC<{}> = () => {
         0: { text: <FormattedMessage id='chainSyncInfo.type.main' defaultMessage='Main Chain' /> },
         1: { text: <FormattedMessage id='chainSyncInfo.type.local' defaultMessage='Local Chain' /> }
       },
-      width: 100,
+      width: 30,
     },
     {
       title: <FormattedMessage id='chainSyncInfo.burn_block_height' defaultMessage='Burn Chain Block Height' />,
       dataIndex: 'burn_block_height',
-      width: 150,
+      width: 50,
     },
     {
       title: <FormattedMessage id='chainSyncInfo.stacks_tip_height' defaultMessage='Stacks Chain Tip Height' />,
       dataIndex: 'stacks_tip_height',
-      width: 150,
+      width: 50,
     },
     {
       title: <FormattedMessage id='chainSyncInfo.stacks_tip' defaultMessage='Stacks Chain Tip Block Hash' />,
       dataIndex: 'stacks_tip',
       ellipsis: true,
-      width: 200,
+      width: 150,
     },
   ]
 
@@ -329,20 +333,21 @@ const TableList: React.FC<{}> = () => {
     return (
       <>
         <Divider />
-        <ProTable<MinerInfo>
+        <ProTable<MinerInfo, MinerInfoQueryParams>
           headerTitle={<FormattedMessage id='minerInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
           rowKey="stx_address"
           pagination={{
             pageSize: 10,
           }}
-          request={async (params, sorter, filter) => {
-            //console.log(params);
-            const minerInfo = await getMinerInfo();
+          request={async (params: MinerInfoQueryParams) => {
+            let minerInfo = await getMinerInfo();
+            let data = minerInfo.data.filter((row: MinerInfo) => row.stx_address.includes(params.stx_address || ''));
+            data = data.filter((row: MinerInfo) => row.btc_address.includes(params.btc_address || ''));
+            minerInfo.data = data;
             return minerInfo;
           }}
           columns={minerInfoColumns}
-          search={false}
         />
       </>
     )
@@ -351,21 +356,24 @@ const TableList: React.FC<{}> = () => {
     return (
       <>
         <Divider />
-        <ProTable<MiningInfo>
+        <ProTable<MiningInfo, MiningInfoQueryParams>
           headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
           rowKey="stacks_block_height"
           pagination={{
             pageSize: 10,
           }}
-          request={async (params, sorter, filter) => {
-            //console.log(params, sorter, filter);
+          request={async (params: MiningInfoQueryParams) => {
             const miningInfo = await getMiningInfo();
-            //console.log(miningInfo)
+            let data = miningInfo.data.filter((row: MiningInfo) => row.stx_address.includes(params.stx_address || ''));
+            data = data.filter((row: MiningInfo) => row.btc_address.includes(params.btc_address || ''));
+            if (params.stacks_block_height) {
+              data = data.filter((row: MiningInfo) => row.stacks_block_height === params.stacks_block_height);
+            }
+            miningInfo.data = data;
             return miningInfo;
           }}
           columns={miningInfoColumns}
-          search={false}
         />
       </>
     )

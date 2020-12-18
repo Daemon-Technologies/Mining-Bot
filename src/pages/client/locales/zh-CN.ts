@@ -23,7 +23,7 @@ export default {
     'chainSyncInfo.title': '链同步信息',
     'chainSyncInfo.burn_block_height': '燃烧链高度',
     'chainSyncInfo.stacks_tip_height': '主链高度',
-    'chainSyncInfo.stacks_tip': '主链最新区块哈希',
+    'chainSyncInfo.stacks_tip': '最新区块哈希',
     'chainSyncInfo.type': '类型',
     'chainSyncInfo.type.main': '主链',
     'chainSyncInfo.type.local': '本地链',
