@@ -9,13 +9,29 @@ export default {
     'strategy.name': 'Strategy Name',
     'strategy.createAt': 'Create Time',
 
-    'miningInfo.title': 'Miner Info',
-    'miningInfo.stxAddress': 'STX Address',
-    'miningInfo.btcAddress': 'BTC Address',
-    'miningInfo.actualWins': 'Actual Wins',
-    'miningInfo.totalWins': 'Total Wins',
-    'miningInfo.totalMined': 'Total Mined',
-    'miningInfo.burn': 'Miner Burned',
+
+
+    
+
+    'minerInfo.title': 'Miner Info',
+    'minerInfo.stxAddress': 'STX Address',
+    'minerInfo.btcAddress': 'BTC Address',
+    'minerInfo.actualWins': 'Actual Wins',
+    'minerInfo.totalWins': 'Total Wins',
+    'minerInfo.totalMined': 'Total Mined',
+    'minerInfo.burn': 'Miner Burned',
+
+    'miningInfo.title': 'Mining Info',
+    'miningInfo.stacksHeight': 'Stack Chain Height',
+    'miningInfo.burnfee': 'Burn fee',
+
+    'chainSyncInfo.title': 'Chain Sync Info',
+    'chainSyncInfo.burn_block_height': 'Burn Chain Block Height',
+    'chainSyncInfo.stacks_tip_height': 'Stacks Chain Tip Height',
+    'chainSyncInfo.stacks_tip': 'Stacks Chain Tip Block Hash',
+    'chainSyncInfo.type': 'Type',
+    'chainSyncInfo.type.main': 'Main Chain',
+    'chainSyncInfo.type.local': 'Local Chain',
 
     'status.current': "Current Status",
     'status.noProgramRunning' : "No Mining Program Running!",
@@ -24,6 +40,9 @@ export default {
     'status.noMiningLocalServerRunning': "No Mining Local Server Running!",
     'status.noStacksNodeFound':"Mining Local Server is Running, but stacks-node binary not found!",
     'status.noStacksNodeRunning':"Stacks-node is downloaded but not running!",
+    'status.stacksNodeDeletedSuccessfully': "Found stacks-node, but stacks-node file is incomplete and delete successfully! Please Refresh the Mining-bot and redownload stacks-node!",
+    'status.stacksNodeDeletedUnsuccessfully': 'Found stacks-node, but stacks-node file is incomplete but delete unsuccessfully!!! Please delete it manually in Mining-Local-Server folder before refresh the Mining-Bot.',
+
 
     'notification.getNodeStatus.checkEnv' : "Checking Environment...",
     'notification.getNodeStatus.noProgram' : "There is no mining process running!",
