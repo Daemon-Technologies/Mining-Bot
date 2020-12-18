@@ -1,18 +1,21 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
-import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification, Tag } from 'antd';
+import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification, Tag, Progress } from 'antd';
 import { FormattedMessage, getLocale } from "umi"
-
+import { DownloadOutlined } from '@ant-design/icons';
 
 import { Account } from '@/services/wallet/data'
 import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo, getChainSyncInfo } from '@/services/client/Client'
 import AccountForm from './component/AccountForm'
 
+
 import { MiningInfo, MinerInfo, ChainSyncInfo, MinerInfoQueryParams, MiningInfoQueryParams } from '@/services/client/data';
+import {initiateSocket, subscribePercent, subscribeDownloadFinish, startDownload, disconnectSocket} from '@/services/client/socket'
+
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
-
+import { spellNamePath } from '@ant-design/pro-table/lib/defaultRender';
 
 const { Title, Paragraph } = Typography;
 
@@ -24,20 +27,48 @@ const TableList: React.FC<{}> = () => {
   const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false)
   const [minerAddress, setMinerAddress] = useState<string>();
-  const [nodeStatus, setNodeStatus] = useState(-1);
+  const [nodeStatus, setNodeStatus] = useState(-1); 
+  const [percent,setPercent] = useState(0)
+  const [processing, setProcessing] = useState(false)
+  
+ 
   const actionRef = useRef<ActionType>();
+  
+
 
   async function initialNodeStatus() {
     await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
     const res = await getNodeStatus()
     console.log(res)
-    setNodeStatus(res.PID)
-    console.log(res.address)
+    if (res.PID) setNodeStatus(res.PID)
+    else setNodeStatus(-1)
     setMinerAddress(res.address)
   }
 
+  useEffect(()=>{
+    initiateSocket()
+    subscribePercent((err, data) => {
+      if (err) return;
+      console.log((data*100).toFixed(1))
+      setPercent((data*100).toFixed(1))
+      setProcessing(true)
+    })
+
+    subscribeDownloadFinish((err, data) => {
+      if (err) return;
+      if (data){
+        message.success("Sownload successfully!")
+        window.location.reload()
+      }
+    })
+    return () => {
+      disconnectSocket();
+    }
+  }, [])
+
   useEffect(() => {
     initialNodeStatus()
+    if (nodeStatus == -3) window.location.reload()
   }, [])
 
   const strategyColomns: ProColumns<Account>[] = [
@@ -56,14 +87,15 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'stx_address',
       width: 150,
       copyable: true,
-      ellipsis: true
+      ellipsis: true,
+      search: false
     },
     {
       title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
       width: 120,
       render: (text, record, index, action) =>
-        [<p style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stx_address}> {record.btc_address} </p>],
+        [<a style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stx_address}> {record.btc_address} </a>],
       copyable: true,
       ellipsis: true,
     },
@@ -100,12 +132,13 @@ const TableList: React.FC<{}> = () => {
       copyable: true,
       ellipsis: true,
       width: 150,
+      search: false,
     },
     {
       title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
       render: (text, record, index, action) =>
-        [<p style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stacks_block_height}> {record.btc_address} </p>],
+        [<a style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stacks_block_height}> {record.btc_address} </a>],
       copyable: true,
       ellipsis: true,
       width: 150,
@@ -146,18 +179,32 @@ const TableList: React.FC<{}> = () => {
     },
   ]
 
+   /* nodeStatus 
+    -1 no Mining-Local-Server Started
+    -2 Got Mining-Local-Server, but no stacks-node found
+    -3 Found stacks-node, but stacks-node is incomplete. Will delete it, delete successfully.
+    -4 Found stacks-node, but stacks-node is incomplete. Will delete it, delete unsuccessfully, please do it manually.
+    -5 Found stacks-node, but no PID of stacks-node runs
+    
+    else PID nodeStatus is running.
+  */
   const render_boardStatus = () => {
     let t;
-    if (nodeStatus) {
-      if (nodeStatus === -1) {
-        t = <a><FormattedMessage id='status.noProgramRunning' defaultMessage='No Mining Program Running!' /></a>
-      }
-      else {
-        t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a>
-      }
-    }
-    else {
-      t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+    switch (nodeStatus){
+      case undefined: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+                      break;
+      case -1: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+               break;
+      case -2: t = <a><FormattedMessage id='status.noStacksNodeFound' defaultMessage='Mining Local Server is Running, But stacks-node binary not found!' /></a>
+               break;
+      case -3: t = <a><FormattedMessage id='status.stacksNodeDeletedSuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete successfully! Please Refresh the Mining-bot and redownload stacks-node!' /></a>
+               break;
+      case -4: t = <a><FormattedMessage id='status.stacksNodeDeletedUnsuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete unsuccessfully!!! Please delete it manually in Mining-Local-Server folder before refresh the Mining-Bot.' /></a>
+               break;
+      case -5: t = <a><FormattedMessage id='status.noStacksNodeRunning' defaultMessage='Stacks-node is downloaded but not running!' /></a>
+               break;
+      default: t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a> 
+               break;
     }
 
     return (
@@ -254,10 +301,29 @@ const TableList: React.FC<{}> = () => {
                   }}
                   disabled={!nodeStatus}
                 >
+                
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                 </Button>
               </Space>
             </Paragraph>
+            <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={nodeStatus!=-2}
+                    onClick={()=>{
+                      startDownload()
+                    }}
+            >
+                  <FormattedMessage id='opt.button.download' defaultMessage='Download stacks-node' />
+            </Button>
+            <Progress
+              strokeColor={{
+                from: '#108ee9',
+                to: '#87d068',
+              }}
+              percent={percent}
+              status="active"
+              style={{width: 500, marginLeft: 30}}
+              hidden={!processing}
+            />
+
           </Typography>
 
         </Card>
@@ -347,6 +413,9 @@ const TableList: React.FC<{}> = () => {
             return minerInfo;
           }}
           columns={minerInfoColumns}
+          size="small"
+
+          search={{ labelWidth: 'auto' }}
         />
       </>
     )
@@ -355,7 +424,11 @@ const TableList: React.FC<{}> = () => {
     return (
       <>
         <Divider />
+
+          
+
         <ProTable<MiningInfo, MiningInfoQueryParams>
+          size="small"
           headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
           rowKey="stacks_block_height"
@@ -373,6 +446,7 @@ const TableList: React.FC<{}> = () => {
             return miningInfo;
           }}
           columns={miningInfoColumns}
+          search={{ labelWidth: 'auto' }}
         />
       </>
     )

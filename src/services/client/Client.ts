@@ -9,6 +9,7 @@ const { nodeKryptonURL } = require('@/services/constants')
 const miningLocalServer_endpoint: string = "http://" + window.location.hostname + ":5000"
 const localChainURL: string = 'http://' + window.location.hostname + ":20443"
 
+
 export async function getNodeStatus() {
   return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
     method: 'GET',
