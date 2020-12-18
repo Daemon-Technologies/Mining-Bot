@@ -128,6 +128,7 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'stacks_block_height',
       width: 35,
       render: (_) => <Tag color="blue">{_}</Tag>,
+      search: false,
     },
     {
       title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
@@ -437,13 +438,6 @@ const TableList: React.FC<{}> = () => {
             const miningInfo = await getMiningInfo();
             let data = miningInfo.data.filter((row: MiningInfo) => row.stx_address.includes(params.stx_address || ''));
             data = data.filter((row: MiningInfo) => row.btc_address.includes(params.btc_address || ''));
-            if (params.stacks_block_height) {
-              try {
-                let stacks_block_height = Number(params.stacks_block_height);
-                data = data.filter((row: MiningInfo) => row.stacks_block_height === stacks_block_height);
-              } catch (error) {
-              }
-            }
             miningInfo.data = data;
             return miningInfo;
           }}
