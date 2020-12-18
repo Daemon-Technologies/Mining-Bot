@@ -1,10 +1,10 @@
 import { io } from 'socket.io-client';
 let socket : any;
 export const initiateSocket = () => {
-    socket = io('http://localhost:5000',{transports: ['websocket']});
+    socket = io('http://'+window.location.hostname+':5000',{transports: ['websocket']});
     console.log(`Connecting socket...`);
 
-  }
+}
   
 export const subscribePercent = (cb) => {
     if (!socket) return(true);
