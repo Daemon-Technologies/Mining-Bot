@@ -295,7 +295,7 @@ const TableList: React.FC<{}> = () => {
                     setMinerAddress(undefined)
                     console.log(res)
                   }}
-                  disabled={!(nodeStatus === -5)}
+                  disabled={!(nodeStatus > 0)}
                 >
 
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
