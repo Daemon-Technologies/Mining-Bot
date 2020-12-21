@@ -38,11 +38,11 @@ export default {
     'status.programRunning' : "Mining Program is Running, PID is ",
     'status.miner':"Miner address is",
     'status.noMiningLocalServerRunning': "No Mining Local Server Running!",
-    'status.noStacksNodeFound':"Mining Local Server is Running, but stacks-node binary not found!",
-    'status.noStacksNodeRunning':"Stacks-node is downloaded but not running!",
+    'status.noStacksNodeFound':"Mining Local Server is Running, but stacks-node binary not found! Please press download button",
+    'status.noStacksNodeRunning':"Stacks-node is downloaded but not running! Please Start Mining!",
     'status.stacksNodeDeletedSuccessfully': "Found stacks-node, but stacks-node file is incomplete and delete successfully! Please Refresh the Mining-bot and redownload stacks-node!",
-    'status.stacksNodeDeletedUnsuccessfully': 'Found stacks-node, but stacks-node file is incomplete but delete unsuccessfully!!! Please delete it manually in Mining-Local-Server folder before refresh the Mining-Bot.',
-
+    'status.stacksNodeDeletedUnsuccessfully': 'Found stacks-node, but stacks-node file is incomplete but delete unsuccessfully!!! Please delete it manually in folder.',
+    'status.status.isDownloading':'Downloading Stacks-node now!',
 
     'notification.getNodeStatus.checkEnv' : "Checking Environment...",
     'notification.getNodeStatus.noProgram' : "There is no mining process running!",

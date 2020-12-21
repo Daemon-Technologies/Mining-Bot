@@ -15,6 +15,7 @@ module.exports = {
   miningMonitorServer_endpoint: 'http://monitor.stxmining.xyz',
 
   MIN_MINER_BTC_AMOUNT: 0.005,
+  MIN_MINER_BURN_FEE: 11000,
 
   // language
   CN: 'zh-CN',
