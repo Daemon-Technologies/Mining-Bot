@@ -3,8 +3,9 @@ import { Modal, Button, Select } from 'antd';
 import Form from 'antd/es/form';
 import TextArea from 'antd/lib/input/TextArea';
 import { NewAccount } from '@/services/wallet/data';
+import { getLocale } from 'umi';
 
-const { btcType, stxType } = require('@/services/constants');
+const { btcType, stxType, CN } = require('@/services/constants');
 
 interface CreateFormProps {
   modalVisible: boolean;
@@ -51,15 +52,15 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
       <>
         <FormItem
           name="mnemonic"
-          label="Mnemonic"
-          rules={[{ required: true, message: 'Please input your mnemonic!' }]}
+          label={getLocale() === CN ? '助记词' : "Mnemonic"}
+          rules={[{ required: true, message: getLocale() === CN ? '请输入你的助记词！' : 'Please input your mnemonic!' }]}
         >
-          <TextArea rows={5} placeholder="Please input your 24 words mnemonic." />
+          <TextArea rows={5} placeholder={getLocale() === CN ? '请输入你24个单词的助记词' : 'Please input your 24 words mnemonic.'} />
         </FormItem>
         <FormItem
           name="type"
-          label="Type"
-          rules={[{ required: true, message: 'Please select your address type!' }]}
+          label={getLocale() === CN ? '地址类型' : 'Type'}
+          rules={[{ required: true, message: getLocale() === CN ? '请选择你的地址类型' : 'Please select your address type!' }]}
         >
           <Select>
             <Select.Option value={btcType}>BTC</Select.Option>
@@ -73,9 +74,9 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   const renderFooter = () => {
     return (
       <>
-        <Button onClick={() => handleCancel()}>Cancel</Button>
+        <Button onClick={() => handleCancel()}>{getLocale() === CN ? '取消' : 'Cancel'}</Button>
         <Button type="primary" onClick={() => handleAddNewAccount()}>
-          Submit!
+          {getLocale() === CN ? '创建' : 'Submit'}
         </Button>
       </>
     )
@@ -84,7 +85,7 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   return (
     <Modal
       destroyOnClose
-      title="new account"
+      title={getLocale() === CN ? '新建账户' : 'new account'}
       visible={modalVisible}
       onCancel={() => handleCancel()}
       footer={renderFooter()}

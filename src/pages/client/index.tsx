@@ -1,14 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable, { ProColumns, ActionType, zhCNIntl, enUSIntl } from '@ant-design/pro-table';
-import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification } from 'antd';
-import { FormattedMessage } from "umi"
+import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import { Button, Card, Space, Divider, message, ConfigProvider, Typography, notification, Tag, Progress } from 'antd';
+import { FormattedMessage, getLocale } from "umi"
+import { DownloadOutlined } from '@ant-design/icons';
 
 import { Account } from '@/services/wallet/data'
-import { startMining, stopMining, getNodeStatus, getMiningInfo } from '@/services/client/Client'
+import { startMining, stopMining, getNodeStatus, getMiningInfo, getMinerInfo, getChainSyncInfo } from '@/services/client/Client'
 import AccountForm from './component/AccountForm'
-import { MiningInfo } from '@/services/client/data';
-import { getLanguage } from '@ant-design/pro-layout/lib/locales';
+
+
+import { MiningInfo, MinerInfo, ChainSyncInfo, MinerInfoQueryParams, MiningInfoQueryParams } from '@/services/client/data';
+import { initiateSocket, subscribePercent, subscribeDownloadFinish, startDownload, disconnectSocket } from '@/services/client/socket'
+
+import enUS from 'antd/lib/locale/en_US';
+import zhCN from 'antd/lib/locale/zh_CN';
 
 const { Title, Paragraph } = Typography;
 
@@ -19,19 +25,53 @@ const { MIN_MINER_BTC_AMOUNT, CN } = require('@/services/constants');
 const TableList: React.FC<{}> = () => {
   const [startMiningLoading, setStartMiningLoading] = useState<boolean>(false);
   const [createModalVisible, handleModalVisible] = useState<boolean>(false)
+  const [minerAddress, setMinerAddress] = useState<string>();
   const [nodeStatus, setNodeStatus] = useState(-1);
+  const [percent, setPercent] = useState(0)
+  const [processing, setProcessing] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+
   const actionRef = useRef<ActionType>();
 
-  async function initialNodeStatus(){
-    await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
+
+
+  async function initialNodeStatus() {
+    await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
     const res = await getNodeStatus()
     console.log(res)
-    setNodeStatus(res.PID)
+    if (res.PID) setNodeStatus(res.PID)
+    else setNodeStatus(-1)
+    setMinerAddress(res.address)
   }
 
-  useEffect (() => {
+  useEffect(() => {
+    initiateSocket()
+    subscribePercent((err, data) => {
+      if (err) return;
+      if (!isDownloading) setIsDownloading(true)
+      console.log((data * 100).toFixed(1))
+      setPercent((data * 100).toFixed(1))
+      setProcessing(true)
+    })
+
+    subscribeDownloadFinish((err, data) => {
+      if (err) return;
+      if (data) {
+        setIsDownloading(false)
+        message.success("Download successfully!")
+        window.location.reload()
+      }
+    })
+    return () => {
+      disconnectSocket();
+    }
+  }, [])
+
+  useEffect(() => {
     initialNodeStatus()
-  }, []) 
+    if (nodeStatus == -3) window.location.reload()
+  }, [])
 
   const strategyColomns: ProColumns<Account>[] = [
     {
@@ -43,32 +83,142 @@ const TableList: React.FC<{}> = () => {
       dataIndex: 'time'
     }
   ];
-  const miningInfoColumns: ProColumns<MiningInfo>[] = [
+  const minerInfoColumns: ProColumns<MinerInfo>[] = [
     {
-      title: <FormattedMessage id='miningInfo.stxAddress' defaultMessage='STX Address' />,
+      title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
       dataIndex: 'stx_address',
-      copyable: true
+      width: 150,
+      copyable: true,
+      ellipsis: true,
+      search: false
     },
     {
-      title: <FormattedMessage id='miningInfo.btcAddress' defaultMessage='BTC Address' />,
+      title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
       dataIndex: 'btc_address',
-      copyable: true
+      width: 120,
+      render: (text, record, index, action) =>
+        [<a style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stx_address}> {record.btc_address} </a>],
+      copyable: true,
+      ellipsis: true,
     },
     {
-      title: <FormattedMessage id='miningInfo.actualWins' defaultMessage='Actual Win' />,
+      title: <FormattedMessage id='minerInfo.actualWins' defaultMessage='Actual Win' />,
       dataIndex: 'actual_win',
+      width: 50,
+      search: false,
     },
     {
-      title: <FormattedMessage id='miningInfo.totalMined' defaultMessage='Total Mined' />,
+      title: <FormattedMessage id='minerInfo.totalMined' defaultMessage='Total Mined' />,
       dataIndex: 'total_mined',
+      width: 50,
+      search: false,
     },
     {
-      title: <FormattedMessage id='miningInfo.burn' defaultMessage='Miner Burned' />,
+      title: <FormattedMessage id='minerInfo.burn' defaultMessage='Miner Burned' />,
       dataIndex: 'miner_burned',
+      width: 70,
+      search: false,
     },
   ]
 
+  const miningInfoColumns: ProColumns<MiningInfo>[] = [
+    {
+      title: <FormattedMessage id='miningInfo.stacksHeight' defaultMessage='Stacks Chain Height' />,
+      dataIndex: 'stacks_block_height',
+      width: 35,
+      render: (_) => <Tag color="blue">{_}</Tag>,
+      search: false,
+    },
+    {
+      title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
+      dataIndex: 'stx_address',
+      copyable: true,
+      ellipsis: true,
+      width: 150,
+      search: false,
+    },
+    {
+      title: <FormattedMessage id='minerInfo.btcAddress' defaultMessage='BTC Address' />,
+      dataIndex: 'btc_address',
+      render: (text, record, index, action) =>
+        [<a style={record.btc_address === minerAddress ? { color: "red" } : {}} key={record.stacks_block_height}> {record.btc_address} </a>],
+      copyable: true,
+      ellipsis: true,
+      width: 150,
+    },
+    {
+      title: <FormattedMessage id='miningInfo.burnfee' defaultMessage='Burn Fee' />,
+      dataIndex: 'burn_fee',
+      width: 50,
+      search: false,
+    },
+  ]
 
+  const chainSyncInfoColumns: ProColumns<ChainSyncInfo>[] = [
+    {
+      title: <FormattedMessage id='chainSyncInfo.type' defaultMessage='Type' />,
+      dataIndex: 'type',
+      valueEnum: {
+        0: { text: <FormattedMessage id='chainSyncInfo.type.main' defaultMessage='Main Chain' /> },
+        1: { text: <FormattedMessage id='chainSyncInfo.type.local' defaultMessage='Local Chain' /> }
+      },
+      width: 30,
+    },
+    {
+      title: <FormattedMessage id='chainSyncInfo.burn_block_height' defaultMessage='Burn Chain Block Height' />,
+      dataIndex: 'burn_block_height',
+      width: 50,
+    },
+    {
+      title: <FormattedMessage id='chainSyncInfo.stacks_tip_height' defaultMessage='Stacks Chain Tip Height' />,
+      dataIndex: 'stacks_tip_height',
+      width: 50,
+    },
+    {
+      title: <FormattedMessage id='chainSyncInfo.stacks_tip' defaultMessage='Stacks Chain Tip Block Hash' />,
+      dataIndex: 'stacks_tip',
+      ellipsis: true,
+      width: 150,
+    },
+  ]
+
+  /* nodeStatus 
+   -1 no Mining-Local-Server Started
+   -2 Got Mining-Local-Server, but no stacks-node found
+   -3 Found stacks-node, but stacks-node is incomplete. Will delete it, delete successfully.
+   -4 Found stacks-node, but stacks-node is incomplete. Will delete it, delete unsuccessfully, please do it manually.
+   -5 Found stacks-node, but no PID of stacks-node runs
+   
+   else PID nodeStatus is running.
+ */
+  const render_boardStatus = () => {
+    let t;
+    switch (nodeStatus) {
+      case undefined: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+        break;
+      case -1: t = <a><FormattedMessage id='status.noMiningLocalServerRunning' defaultMessage="No Mining-Local-Program detected!" /></a>
+        break;
+      case -2: t = <a><FormattedMessage id='status.noStacksNodeFound' defaultMessage='Mining Local Server is Running, But stacks-node binary not found!' /></a>
+        break;
+      case -3: t = <a><FormattedMessage id='status.stacksNodeDeletedSuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete successfully! Please Refresh the Mining-bot and redownload stacks-node!' /></a>
+        break;
+      case -4: t = <a><FormattedMessage id='status.stacksNodeDeletedUnsuccessfully' defaultMessage='Found stacks-node, but stacks-node file is incomplete. Will delete it... Delete unsuccessfully!!! Please delete it manually in Mining-Local-Server folder before refresh the Mining-Bot.' /></a>
+        break;
+      case -5: t = <a><FormattedMessage id='status.noStacksNodeRunning' defaultMessage='Stacks-node is downloaded but not running!' /></a>
+        break;
+      case -6: t = <a><FormattedMessage id='status.isDownloading' defaultMessage='Downloading Stacks-node now!' /></a>
+        break;
+      default: t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a>
+        break;
+    }
+
+    return (
+      <div>
+        <FormattedMessage id='status.current' defaultMessage='Current Status' /> :
+        {t}
+      </div>
+    )
+  }
 
   const render_OperationBoard = () => {
     return (
@@ -85,41 +235,34 @@ const TableList: React.FC<{}> = () => {
             />
           }
         >
-          
-            <Typography>
-              <Paragraph>
-                <Title level = {3}>
-                  <FormattedMessage id='status.current' defaultMessage='Current Status' />
+          <Typography>
+            <Paragraph>
+              <Title level={3}>
+                {render_boardStatus()}
+              </Title>
+              <Title level={5}>
+                {minerAddress ?
+                  <div>
+                    <FormattedMessage id='status.miner' defaultMessage='Miner address is' />
+                    <a> {`:${minerAddress}`} </a>
+                  </div>
                   :
-                  { nodeStatus===-1 
-                    ?
-                    <FormattedMessage id='status.noProgramRunning' defaultMessage='No Mining Program Running!' />
-                    :
-                    <FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> + `${nodeStatus}`
-                    
-                  }
-                </Title>
-              </Paragraph>
-              <Paragraph>
-                <Space>
+                  <div></div>
+
+                }
+              </Title>
+            </Paragraph>
+            <Paragraph>
+              <Space>
                 <Button
-                type="default"
-                onClick={async () => {
-                  await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
-                  const res = await getNodeStatus()
-                  console.log(res)
-                  if (res.PID === -1){
-                    message.success({ content: getLanguage() === CN ? '后台没有挖矿进程！' : "There is no mining process running!", duration: 4 })
-                    setNodeStatus(res.PID)
-                  }
-                  else
-                  {
-                    message.success({ content: getLanguage() === CN ? `后台有挖矿进程！进程id为${res.PID}` : `There is a mining process running in pid ${res.PID}`, duration: 4 })
-                    setNodeStatus(res.PID)
-                  }
-              
-                }}>
-                <FormattedMessage id='opt.button.status' defaultMessage='Get Node Status' />
+                  type="default"
+                  onClick={async () => {
+                    await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
+                    const res = await getNodeStatus()
+                    await initialNodeStatus()
+
+                  }}>
+                  <FormattedMessage id='opt.button.status' defaultMessage='Get Node Status' />
                 </Button>
                 <Button
                   type="primary"
@@ -129,7 +272,9 @@ const TableList: React.FC<{}> = () => {
                     // TODO choose BTC Address
                     handleModalVisible(true)
                   }
-                  }>
+                  }
+                  disabled={!(nodeStatus === -5)}
+                >
                   <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                 </Button>
                 <Button
@@ -137,45 +282,68 @@ const TableList: React.FC<{}> = () => {
                   onClick={async () => {
                     // TODO check Node Status firstly
                     // TODO Reconfirm check
-                    await message.loading({ content: getLanguage() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
+                    await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
                     const res = await stopMining()
                     console.log(res)
-                    if (res.status === 404){
-                        message.success({ content: getLanguage() === CN ? '没有挖矿程序在运行!' : `${res.data}`, duration: 4 })
+                    if (res.status === 404) {
+                      message.success({ content: getLocale() === CN ? '没有挖矿程序在运行!' : `${res.data}`, duration: 4 })
                     }
-                    else if (res.status === 200){
-                        message.success({ content: getLanguage() === CN ? '关闭成功！' : `${res.data}`, duration: 4 })
+                    else if (res.status === 200) {
+                      message.success({ content: getLocale() === CN ? '关闭成功！' : `${res.data}`, duration: 4 })
                     }
                     await initialNodeStatus()
+                    setMinerAddress(undefined)
                     console.log(res)
                   }}
+                  disabled={!(nodeStatus > 0)}
                 >
+
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                 </Button>
-                </Space>
-              </Paragraph>
-            </Typography> 
-          
+              </Space>
+            </Paragraph>
+            <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={(nodeStatus !== -2) && (nodeStatus !== -6)}
+              onClick={() => {
+                startDownload()
+                if (!isDownloading) setIsDownloading(true)
+              }}
+              loading={isDownloading}
+            >
+              <FormattedMessage id='opt.button.download' defaultMessage='Download stacks-node' />
+            </Button>
+            <Progress
+              strokeColor={{
+                from: '#108ee9',
+                to: '#87d068',
+              }}
+              percent={percent}
+              status="active"
+              style={{ width: 500, marginLeft: 30 }}
+              hidden={!processing}
+            />
+
+          </Typography>
+
         </Card>
       </>
     )
   }
 
-  
+
   const openNotification = () => {
     const key = `open${Date.now()}`;
     const btn = (
-      <Button type="primary" size="small" 
-          onClick={async ()=>{
-              const w = await window.open('about:blank');
-              w.location.href="https://www.blockstack.org/testnet/faucet"
-          }}>
+      <Button type="primary" size="small"
+        onClick={async () => {
+          const w = await window.open('about:blank');
+          w.location.href = "https://www.blockstack.org/testnet/faucet"
+        }}>
         Get Bitcoin
       </Button>
     );
     notification.info({
-      message: (getLanguage() === CN ? "余额提醒" : 'Balance Notification'),
-      description: (getLanguage() === CN ? "使用官方网站获取测试网比特币" : 'Visit Official Faucet Website to get Test Bitcoin'),
+      message: (getLocale() === CN ? "余额提醒" : 'Balance Notification'),
+      description: (getLocale() === CN ? "使用官方网站获取测试网比特币" : 'Visit Official Faucet Website to get Test Bitcoin'),
       btn,
       key
     });
@@ -186,34 +354,37 @@ const TableList: React.FC<{}> = () => {
     return (
       <>
         <AccountForm
-          onSubmit={async (value: {account: Account, inputBurnFee: number}) => {
+          onSubmit={async (value: { account: Account, inputBurnFee: number, network: string }) => {
             //console.log("value", value)
             if (value.account.balance < MIN_MINER_BTC_AMOUNT) {
-              message.error({ content: getLanguage() === CN ? '你的比特币余额不足以继续挖矿！' : "Your Bitcoin is not enough to mine", duration: 3 })
-              openNotification()
+              message.error({ content: getLocale() === CN ? '你的比特币余额不足以继续挖矿，跳转到钱包页面进行充值' : "Your Bitcoin is not enough to mine, turn to Wallet page to get faucet.", duration: 3 })
+              //openNotification()
               handleModalVisible(false)
             }
             else {
               setStartMiningLoading(true)
-              await message.loading({ content: getLanguage() === CN ? '检查环境.....' : "Checking Environment...", duration: 1 })
-              await message.loading({ content: getLanguage() === CN ? '启动Stacks Blockchain' : "Launching Stacks Blockchain...", duration: 1 })
+              await message.loading({ content: getLocale() === CN ? '检查环境.....' : "Checking Environment...", duration: 1 })
+              await message.loading({ content: getLocale() === CN ? '启动Stacks Blockchain' : "Launching Stacks Blockchain...", duration: 1 })
 
+              // Add network type
+              value.network = "Krypton"
+              console.log(value)
               // Launching stack-blockchain by rpc
               const res = await startMining(value)
               console.log(res)
               setStartMiningLoading(!res)
               // Launching Successfully
               if (res.status == 200) {
-                message.success({ content: getLanguage() === CN ? '启动成功！' : "Launching Successfully!!!", duration: 4 })
+                message.success({ content: getLocale() === CN ? '启动成功！' : "Launching Successfully!!!", duration: 4 })
                 handleModalVisible(false);
               }
               // Launching UnSuccessfully
               else {
-                message.error({ content: getLanguage() === CN ? '启动异常，请联系管理员！' : "Launching Error, Please Contact With Admin!!!", duration: 4 })
+                message.error({ content: getLocale() === CN ? '启动异常，请联系管理员！' : "Launching Error, Please Contact With Admin!!!", duration: 4 })
                 handleModalVisible(false)
               }
               await initialNodeStatus()
-            }  
+            }
           }}
           onCancel={() => handleModalVisible(false)}
           modalVisible={createModalVisible}
@@ -221,22 +392,83 @@ const TableList: React.FC<{}> = () => {
       </>
     )
   }
+  const render_MinerInfo = () => {
+    return (
+      <>
+        <Divider />
+        <ProTable<MinerInfo, MinerInfoQueryParams>
+          headerTitle={<FormattedMessage id='minerInfo.title' defaultMessage='Miner Info' />}
+          actionRef={actionRef}
+          rowKey="stx_address"
+          pagination={{
+            pageSize: 10,
+          }}
+          request={async (params: MinerInfoQueryParams) => {
+            let minerInfo = await getMinerInfo();
+            let data = minerInfo.data.filter((row: MinerInfo) => row.stx_address.includes(params.stx_address || ''));
+            data = data.filter((row: MinerInfo) => row.btc_address.includes(params.btc_address || ''));
+            minerInfo.data = data;
+            return minerInfo;
+          }}
+          columns={minerInfoColumns}
+          size="small"
 
+          search={{ labelWidth: 'auto' }}
+        />
+      </>
+    )
+  }
   const render_MiningInfo = () => {
     return (
       <>
         <Divider />
-        <ProTable<MiningInfo>
-          headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Mining Info' />}
+
+
+
+        <ProTable<MiningInfo, MiningInfoQueryParams>
+          size="small"
+          headerTitle={<FormattedMessage id='miningInfo.title' defaultMessage='Miner Info' />}
           actionRef={actionRef}
-          rowKey="stx_address"
-          request={async () => {
+          rowKey="stacks_block_height"
+          pagination={{
+            pageSize: 10,
+          }}
+          request={async (params: MiningInfoQueryParams) => {
+            console.log('params:', params)
             const miningInfo = await getMiningInfo();
+            let data = miningInfo.data.filter((row: MiningInfo) => row.stx_address.includes(params.stx_address || ''));
+            data = data.filter((row: MiningInfo) => row.btc_address.includes(params.btc_address || ''));
+            miningInfo.data = data;
             return miningInfo;
           }}
           columns={miningInfoColumns}
+          search={{ labelWidth: 'auto' }}
+        />
+      </>
+    )
+  }
+
+  const render_ChainSyncInfo = () => {
+    return (
+      <>
+        <Divider />
+        <ProTable<ChainSyncInfo>
+          headerTitle={<FormattedMessage id='chainSyncInfo.title' defaultMessage='Chain Sync Info' />}
+          actionRef={actionRef}
+          rowKey="type"
+          pagination={{
+            pageSize: 10,
+          }}
+          request={async (params, sorter, filter) => {
+            const chainSyncInfo: API.RequestResult = await getChainSyncInfo();
+            console.log('chainSyncInfo:', chainSyncInfo)
+            if (chainSyncInfo.status === 201) {
+              message.warning(getLocale() === CN ? '链信息无法获取' : 'Can not get chain info');
+            }
+            return chainSyncInfo;
+          }}
+          columns={chainSyncInfoColumns}
           search={false}
-          pagination={false}
         />
       </>
     )
@@ -254,11 +486,11 @@ const TableList: React.FC<{}> = () => {
           title={
             <FormattedMessage
               id="strategy.title"
-              defaultMessage="StrategyLibrary"
+              defaultMessage="Strategy Library"
             />
           }
         >
-            To Complete in Beta Version......
+          To Complete in Beta Version......
         </Card>
       </>
     )
@@ -267,11 +499,11 @@ const TableList: React.FC<{}> = () => {
   return (
     <PageContainer>
       <ConfigProvider
-        value={{
-          intl: getLanguage() === CN ? zhCNIntl : enUSIntl,
-        }}
+        locale={getLocale() === CN ? zhCN : enUS}
       >
         {render_OperationBoard()}
+        {render_ChainSyncInfo()}
+        {render_MinerInfo()}
         {render_MiningInfo()}
         {render_Form()}
         {render_StrategyLibrary()}

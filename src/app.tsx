@@ -78,19 +78,21 @@ const errorHandler = (error: ResponseError) => {
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
-
+    /*
     notification.error({
       message: `Request Error ${status}: ${url}`,
       description: errorText,
     });
+    */
   }
-
+/*
   if (!response) {
     notification.error({
       description: 'Network Error, Cannot Connect to The Server',
       message: 'Network Error',
     });
   }
+*/
   throw error;
 };
 

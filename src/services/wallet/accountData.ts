@@ -1,9 +1,10 @@
 // import { request } from 'umi';
 import { Account } from "./data";
 import request from "umi-request";
-import { message } from "antd";
 
-const { sidecarURL, sidecarURLKrypton } = require('@/services/constants')
+const { sidecarURLKrypton } = require('@/services/constants')
+
+const stacks_blockchain_api_base_url = sidecarURLKrypton
 
 export function getAccount() {
   const stxAccounts: Account[] = [];
@@ -26,39 +27,43 @@ export function updateAccount() {
 }
 
 export async function getStxBalance(stxAddress: string) {
-  const baseUrl = `${sidecarURLKrypton}/v1/address/`;
+  const baseUrl = `${stacks_blockchain_api_base_url}/v1/address/`;
   return request(`${baseUrl + stxAddress}/balances`, {
     method: 'GET',
   });
 }
 
+
+
 export async function getBtcBalance(btcAddress: string) {
-  const btcUrl = `${sidecarURLKrypton}/v1/faucets/btc/`;
-  return request(`${btcUrl + btcAddress}`, {
+  const baseUrl = `${stacks_blockchain_api_base_url}/v1/faucets/btc/`;
+  return request(`${baseUrl + btcAddress}`, {
     method: "GET",
   });
 }
 
-export async function queryAccount(type: number = 0) {
+
+
+export async function queryAccount(type: number = 0): Promise<API.RequestResult> {
   // type 
   // 0 all
   // 1 btc only
   // 2 stx only
-  
+
   const { btcAccounts, stxAccounts } = getAccount();
   const btcAccountsInfo: Account[] = [];
   const stxAccountsInfo: Account[] = [];
   let newAccountsInfo: Account[] = [];
- 
+
   // update btc account balance
-  if (type === 0 || type === 1){
+  if (type === 0 || type === 1) {
     for (var i = 0; i < btcAccounts.length; i++) {
       const row = btcAccounts[i];
       const btcAddress = row.address;
-      const balanceResp = await getBtcBalance(btcAddress);
-      if (!balanceResp || balanceResp.balance === undefined) {
-        message.error(`query address${btcAddress} btc balance time out.`);
-        continue;
+      let balanceResp = { balance: "NaN" };
+      try {
+        balanceResp = await getBtcBalance(btcAddress);
+      } catch (error) {
       }
       const accountInfo: Account = {
         address: row.address,
@@ -71,16 +76,17 @@ export async function queryAccount(type: number = 0) {
       btcAccountsInfo.push(accountInfo);
     }
   }
-  
-  if (type === 0 || type === 2){
+
+  if (type === 0 || type === 2) {
     // update stx account balance
     for (var i = 0; i < stxAccounts.length; i++) {
       const row = stxAccounts[i];
       const stxAddress = row.address;
-      const balanceResp = await getStxBalance(stxAddress);
-      if (!balanceResp || !balanceResp.stx) {
-        message.error(`query address${stxAddress} stx balance time out.`);
-        return;
+      let balanceResp = { stx: { balance: "NaN" } };
+      try {
+        balanceResp = await getStxBalance(stxAddress);
+      } catch (error) {
+
       }
       const accountInfo: Account = {
         address: row.address,
@@ -95,5 +101,5 @@ export async function queryAccount(type: number = 0) {
   }
 
   newAccountsInfo = btcAccountsInfo.concat(stxAccountsInfo);
-  return { 'data': newAccountsInfo };
+  return { data: newAccountsInfo, status: 200 };
 }
