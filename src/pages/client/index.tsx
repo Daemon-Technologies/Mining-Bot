@@ -15,6 +15,7 @@ import { initiateSocket, subscribePercent, subscribeDownloadFinish, startDownloa
 
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
+import { spellNamePath } from '@ant-design/pro-table/lib/defaultRender';
 
 const { Title, Paragraph } = Typography;
 
@@ -206,8 +207,6 @@ const TableList: React.FC<{}> = () => {
         break;
       case -5: t = <a><FormattedMessage id='status.noStacksNodeRunning' defaultMessage='Stacks-node is downloaded but not running!' /></a>
         break;
-      case -6: t = <a><FormattedMessage id='status.isDownloading' defaultMessage='Downloading Stacks-node now!' /></a>
-        break;
       default: t = <a><FormattedMessage id='status.programRunning' defaultMessage='Mining Program is Running, PID is ' /> {nodeStatus}</a>
         break;
     }
@@ -255,6 +254,7 @@ const TableList: React.FC<{}> = () => {
             <Paragraph>
               <Space>
                 <Button
+                  disabled={!nodeStatus}
                   type="default"
                   onClick={async () => {
                     await message.loading({ content: getLocale() === CN ? '环境检查中....' : "Checking Environment...", duration: 2 })
@@ -273,7 +273,7 @@ const TableList: React.FC<{}> = () => {
                     handleModalVisible(true)
                   }
                   }
-                  disabled={!(nodeStatus === -5)}
+                  disabled={!nodeStatus}
                 >
                   <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                 </Button>
@@ -295,14 +295,14 @@ const TableList: React.FC<{}> = () => {
                     setMinerAddress(undefined)
                     console.log(res)
                   }}
-                  disabled={!(nodeStatus > 0)}
+                  disabled={!nodeStatus}
                 >
 
                   <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                 </Button>
               </Space>
             </Paragraph>
-            <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={(nodeStatus !== -2) && (nodeStatus !== -6)}
+            <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={nodeStatus != -2}
               onClick={() => {
                 startDownload()
                 if (!isDownloading) setIsDownloading(true)

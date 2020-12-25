@@ -7,7 +7,7 @@ import { Steps, Divider } from 'antd';
 import { Slider, InputNumber, Row, Col } from 'antd';
 import { getLocale } from 'umi';
 
-const { CN, MIN_MINER_BURN_FEE } = require('@/services/constants');
+const { CN } = require('@/services/constants');
 const { Step } = Steps;
 
 
@@ -79,7 +79,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
           <Row style={{ margin: '10px 5px' }}>
             <Col span={12}>
               <Slider
-                min={MIN_MINER_BURN_FEE}
+                min={100}
                 max={1000000}
                 onChange={onChangeBurnFeeInput}
                 value={typeof inputBurnFee === 'number' ? inputBurnFee : 0}
@@ -88,7 +88,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
             </Col>
             <Col span={4}>
               <InputNumber
-                min={MIN_MINER_BURN_FEE}
+                min={100}
                 max={1000000}
                 style={{ margin: '0 16px' }}
                 step={200}
