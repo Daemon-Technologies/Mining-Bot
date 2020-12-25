@@ -5,10 +5,10 @@ import { getPageQuery } from '@/utils/utils';
 import logo from '@/assets/logo.png';
 import { LoginParamsType, loginByPassword, getUserAuth, setLockPassword } from '@/services/login';
 import Footer from '@/components/Footer';
-import LoginFrom from './components/Login';
+import LoginForm from './components/Login';
 import styles from './style.less';
 
-const { Tab, Password, Submit } = LoginFrom;
+const { Tab, Password, Submit } = LoginForm;
 
 const { CN } = require('@/services/constants')
 
@@ -133,7 +133,7 @@ const Login: React.FC<{}> = () => {
           </div>
 
           <div className={styles.main}>
-            <LoginFrom activeKey={type} onSubmit={handleSubmit}>
+            <LoginForm activeKey={type} onSubmit={handleSubmit}>
               <Tab key="account" tab={<FormattedMessage id='login.unlock' defaultMessage='Unlock Your Account' />}>
                 {status !== 200 && !submitting && (
                   <LoginMessage content={getLocale() === CN ? '密码错误!' : 'password error!'} />
@@ -156,7 +156,7 @@ const Login: React.FC<{}> = () => {
                 />
               </Tab>
               <Submit loading={submitting}><FormattedMessage id='button.unlock' defaultMessage='Unlock' /></Submit>
-            </LoginFrom>
+            </LoginForm>
           </div>
         </div>
         <Footer />
@@ -180,7 +180,7 @@ const Login: React.FC<{}> = () => {
           </div>
 
           <div className={styles.main}>
-            <LoginFrom activeKey={type} onSubmit={handleSetPassword}>
+            <LoginForm activeKey={type} onSubmit={handleSetPassword}>
               <Tab key="account" tab={<FormattedMessage id='login.setLockPwd' defaultMessage='Set Your Lock Password' />}>
                 <Password
                   name="password"
@@ -213,7 +213,7 @@ const Login: React.FC<{}> = () => {
                 />
               </Tab>
               <Submit loading={submitting}><FormattedMessage id='button.login' defaultMessage='Login' /></Submit>
-            </LoginFrom>
+            </LoginForm>
           </div>
         </div>
         <Footer />

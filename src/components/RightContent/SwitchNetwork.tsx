@@ -1,25 +1,67 @@
 import React, {useState, useEffect} from 'react';
-import { useModel } from 'umi';
+
 import { Menu, Dropdown, Button, message, Avatar } from 'antd';
 import styles from './index.less';
+import { networkState, ConnectProps, Loading, connect} from 'umi';
 
-
-
-
+interface PageProps extends ConnectProps {
+    index: networkState;
+}
   
-const SwitchNetwork: React.FC<{}> = () => {
-    const [networkName, setNetworkName] = useState("testnet")
-    const model = useModel('useNetworkModel');
-    const { network, switchNetwork } = model;
+const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
+    const [networkName, setNetworkName] = useState("network")
+    //console.log(network, dispatch)
 
+    const changeNetwork = (newNetwork:any) => {
+        dispatch({
+            type: 'network/save',
+            payload: {
+                network: newNetwork
+            }
+        })
+    }
+
+    const changeNetworkDAO = (newNetwork:any) => {
+        localStorage.setItem("network", newNetwork)
+    }
+
+
+    useEffect((()=>{
+        let networkDAO = localStorage.getItem("network");
+        if (networkDAO == undefined){
+            localStorage.setItem("network", network.network)
+            setNetworkName(network.network)
+        }
+        else if(networkDAO!=network.network){
+            changeNetwork(networkDAO)
+            setNetworkName(networkDAO)
+        }
+        else setNetworkName(network.network)
+        
+    }), [])
+    /*
+    useEffect(()=>{
+        dispatch({
+            type: 'network/save',
+            payload: {
+                network: "xenon"
+            }
+        })
+    } ,[])
+    */
+    
+
+    
     const onClick = ({ key }) => {
         switch (key){
             case "krypton": setNetworkName("Krypton")
-                            switchNetwork("Krypton")
+                            changeNetwork("Krypton")
+                            changeNetworkDAO("Krypton")
                             message.info(`Switch to Krypton network`);
                             break;
             case "xenon": setNetworkName("Xenon")
-                          switchNetwork("Xenon")
+                          changeNetwork("Xenon")
+                          changeNetworkDAO("Xenon")
                           message.info(`Switch to Xenon network`);
                           break;
         }
@@ -37,9 +79,7 @@ const SwitchNetwork: React.FC<{}> = () => {
         </Menu>
     );
 
-    useEffect(()=>{
-        setNetworkName(network)
-    } ,[])
+    
 
     return (<div> 
                 <Dropdown overlay={menu} placement="bottomRight" >
@@ -48,4 +88,6 @@ const SwitchNetwork: React.FC<{}> = () => {
             </div>)
 }
 
-export default SwitchNetwork;
+export default connect(({ network }: { network: networkState;}) => ({
+    network
+  }))(SwitchNetwork);

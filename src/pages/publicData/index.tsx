@@ -1,19 +1,38 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 
 import { TokenPrice, ChainInfo, BlockInfo, TxInfo } from '@/services/publicdata/data'
 import { getTokenPrice } from '@/services/publicdata/tokenInfo';
 import { getChainInfo, getBlockInfo, getTxsInfo } from '@/services/publicdata/chainInfo';
-import { ConfigProvider, Divider, Tag } from 'antd';
+import { ConfigProvider, Divider, Table, Tag } from 'antd';
 import { FormattedMessage, getLocale } from 'umi';
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
 
+import { networkState, ConnectProps, Loading, connect} from 'umi';
+
 const { CN } = require('@/services/constants');
 
-const TableList: React.FC<{}> = () => {
-  const actionRef = useRef<ActionType>();
+interface PageProps extends ConnectProps {
+  index: networkState;
+}
+
+
+
+const TableList: React.FC<PageProps> = ({ network }) => {
+  const [networkName, setNetworkName] = useState("network")
+  const actionRefChainInfo = useRef<ActionType>();
+  const actionRefBlockInfo = useRef<ActionType>();
+  useEffect((()=>{
+    console.log(network.network)
+    setNetworkName(network.network.network)
+    if (actionRefChainInfo.current!== undefined && actionRefBlockInfo.current!== undefined) {
+      console.log("in")
+      actionRefChainInfo.current.reloadAndRest()
+      actionRefBlockInfo.current.reloadAndRest()
+    }
+  }), [network])
   const tokenPriceColumns: ProColumns<TokenPrice>[] = [
     { title: <FormattedMessage id='price.pair' defaultMessage='Trading Pair' />, dataIndex: 'tradingPair', },
     { title: <FormattedMessage id='price.price' defaultMessage='Price' />, dataIndex: 'price', valueType: 'text', },
@@ -98,7 +117,7 @@ const TableList: React.FC<{}> = () => {
         columns={txInfoColumns}
         search={false}
         options={false}
-        request={() => getTxsInfo(TXs)}
+        request={() => getTxsInfo(networkName, TXs)}
         pagination={false}
         key="tx_id"
       />
@@ -113,7 +132,6 @@ const TableList: React.FC<{}> = () => {
       >
         <ProTable<TokenPrice>
           headerTitle={<FormattedMessage id='price.title' defaultMessage='Token Price Info' />}
-          actionRef={actionRef}
           rowKey="tradingPair"
           request={() => getTokenPrice()}
           columns={tokenPriceColumns}
@@ -124,26 +142,26 @@ const TableList: React.FC<{}> = () => {
 
         <ProTable<ChainInfo>
           headerTitle={<FormattedMessage id='chain.title' defaultMessage='Chain Info' />}
-          actionRef={actionRef}
+          actionRef={actionRefChainInfo}
           rowKey="stacksChainHeight"
-          request={() => getChainInfo()}
+          request={() => getChainInfo(networkName)}
           columns={chainInfoColumns}
           search={false}
           pagination={false}
         />
         <Divider type="horizontal" />
-
         <ProTable<BlockInfo>
           headerTitle={<FormattedMessage id='block.title' defaultMessage='Block Info' />}
-          actionRef={actionRef}
+          actionRef={actionRefBlockInfo}
           rowKey="height"
-          request={() => getBlockInfo()}
+          request={() => getBlockInfo(networkName)}
           expandable={{ expandedRowRender: TxTable }}
           columns={blockInfoColumns}
           pagination={false}
           dateFormatter="string"
           search={false}
         />
+        
       </ConfigProvider>
     </PageContainer >
   );
@@ -153,4 +171,6 @@ const TableList: React.FC<{}> = () => {
 // TODO => Add Block TX Info
 
 
-export default TableList;
+export default connect(({ network }: { network: networkState;}) => ({
+  network
+}))(TableList);

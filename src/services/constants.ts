@@ -9,8 +9,9 @@ module.exports = {
   nodeKryptonURL: "http://krypton.blockstack.org:20443",
 
   //Xenon
-  sidecarURL: 'https://stacks-node-api.blockstack.org/extended',
+  sidecarURLXenon: 'https://stacks-node-api.xenon.blockstack.org/extended',
   nodeStatusURL: 'https://status.test-blockstack.com',
+  nodeXenonURL: 'http://xenon.blockstack.org:20443',
 
 
 
