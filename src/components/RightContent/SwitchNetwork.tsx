@@ -1,17 +1,20 @@
 import React, {useState, useEffect} from 'react';
 
-import { Menu, Dropdown, Button, message, Avatar } from 'antd';
+import { Menu, Dropdown, Button, message, Avatar, Tag } from 'antd';
 import styles from './index.less';
 import { networkState, ConnectProps, Loading, connect} from 'umi';
+import logo from '@/assets/stacks_icon.png';
+import {switchPage, getCurrentNetwork, getNetworkFromStorage} from '@/utils/utils'
+import access from '@/access'
 
 interface PageProps extends ConnectProps {
     index: networkState;
 }
   
 const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
-    const [networkName, setNetworkName] = useState("network")
+    const [networkName, setNetworkName] = useState("Krypton")
     //console.log(network, dispatch)
-
+/*
     const changeNetwork = (newNetwork:any) => {
         dispatch({
             type: 'network/save',
@@ -20,12 +23,12 @@ const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
             }
         })
     }
-
+*/
     const changeNetworkDAO = (newNetwork:any) => {
         localStorage.setItem("network", newNetwork)
     }
 
-
+    /*
     useEffect((()=>{
         let networkDAO = localStorage.getItem("network");
         if (networkDAO == undefined){
@@ -39,6 +42,7 @@ const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
         else setNetworkName(network.network)
         
     }), [])
+    */
     /*
     useEffect(()=>{
         dispatch({
@@ -49,32 +53,40 @@ const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
         })
     } ,[])
     */
-    
+   useEffect(()=>{
+        switch(getCurrentNetwork()){
+            case "krypton": setNetworkName("Krypton"); changeNetworkDAO("Krypton"); break;
+            case "xenon": setNetworkName("Xenon"); changeNetworkDAO("Xenon"); break;
+        }
+   } ,[])
 
     
     const onClick = ({ key }) => {
         switch (key){
             case "krypton": setNetworkName("Krypton")
-                            changeNetwork("Krypton")
-                            changeNetworkDAO("Krypton")
                             message.info(`Switch to Krypton network`);
+                            changeNetworkDAO("Krypton")
+                            switchPage('krypton')
                             break;
             case "xenon": setNetworkName("Xenon")
-                          changeNetwork("Xenon")
-                          changeNetworkDAO("Xenon")
                           message.info(`Switch to Xenon network`);
+                          changeNetworkDAO("Xenon")
+                          switchPage('xenon')
                           break;
         }
         
     };
     
     const menu = (
-        <Menu onClick={onClick}>
-          <Menu.Item key="krypton">
-              Krypton Testnet
+        <Menu onClick={onClick} style={{fontSize:12}}>
+          <Menu.Item key="krypton" >
+              Krypton
           </Menu.Item>
           <Menu.Item key="xenon">
-              Xenon Testnet
+              Xenon
+          </Menu.Item>
+          <Menu.Item key="mainnet" disabled>
+              Mainnet
           </Menu.Item>
         </Menu>
     );
@@ -83,8 +95,14 @@ const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
 
     return (<div> 
                 <Dropdown overlay={menu} placement="bottomRight" >
-                    <Button type="text" style={{color: "white"}} size="large">{networkName}</Button>
+                    <Button type="text"  size="large" style={{color: "white"}}>
+                        <img alt="logo" style={{ height: 18, marginRight: 10}} src={logo} /> 
+                    </Button>
                 </Dropdown>
+                <Tag color="cyan">
+                    {networkName}
+                </Tag>
+                
             </div>)
 }
 

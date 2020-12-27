@@ -44,26 +44,50 @@ export default defineConfig({
       ],
     },
     {
-      path: '/publicData',
+      path: '/krypton/publicData',
       name: 'publicData',
       icon: 'LineChartOutlined',
       component: './publicData',
+      access: 'useKrypton'
     },
     {
-      path: '/wallet',
+      path: '/krypton/wallet',
       name: 'wallet',
       icon: 'TeamOutlined',
       component: './wallet',
+      access: 'useKrypton'
     },
     {
-      path: '/client',
+      path: '/krypton/client',
       name: 'client',
       icon: 'FundProjectionScreenOutlined',
       component: './client',
+      access: 'useKrypton'
+    },
+    {
+      path: '/xenon/publicData',
+      name: 'publicData',
+      icon: 'LineChartOutlined',
+      component: './publicData',
+      access: 'useXenon'
+    },
+    {
+      path: '/xenon/wallet',
+      name: 'wallet',
+      icon: 'TeamOutlined',
+      component: './wallet',
+      access: 'useXenon'
+    },
+    {
+      path: '/xenon/client',
+      name: 'client',
+      icon: 'FundProjectionScreenOutlined',
+      component: './client',
+      access: 'useXenon'
     },
     {
       path: '/',
-      redirect: '/publicData',
+      redirect: '/krypton/publicData',
     },
 
     {

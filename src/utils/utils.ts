@@ -100,3 +100,26 @@ export function aes256Decrypt(data: string, key: Buffer, ivStr: string, authTagS
   }
   return null;
 }
+
+export function getCurrentNetwork(){
+  let page = location.pathname.match(/(xenon|krypton)/g)
+  if (page)
+    return page[0]
+  return ""
+}
+
+export function getCurrentPage(){
+  let page = location.pathname.match(/(publicData|client|wallet)/g)
+  if (page)
+    return page[0]
+  return ""
+}
+
+export function switchPage(network: string){
+  let cpage = getCurrentPage()
+  location.href = location.origin + `/${network}/${cpage}`;
+}
+
+export function getNetworkFromStorage(){
+  return localStorage.getItem('network')
+}

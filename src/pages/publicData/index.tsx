@@ -11,19 +11,23 @@ import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
 
 import { networkState, ConnectProps, Loading, connect} from 'umi';
+import {getNetworkFromStorage} from '@/utils/utils'
 
 const { CN } = require('@/services/constants');
 
-interface PageProps extends ConnectProps {
-  index: networkState;
-}
 
 
 
-const TableList: React.FC<PageProps> = ({ network }) => {
+
+const TableList: React.FC<{}> = () => {
   const [networkName, setNetworkName] = useState("network")
   const actionRefChainInfo = useRef<ActionType>();
   const actionRefBlockInfo = useRef<ActionType>();
+  useEffect(()=> {
+    let network = getNetworkFromStorage()
+    setNetworkName(network)
+  }, [])
+  /*
   useEffect((()=>{
     console.log(network.network)
     setNetworkName(network.network.network)
@@ -33,6 +37,7 @@ const TableList: React.FC<PageProps> = ({ network }) => {
       actionRefBlockInfo.current.reloadAndRest()
     }
   }), [network])
+  */
   const tokenPriceColumns: ProColumns<TokenPrice>[] = [
     { title: <FormattedMessage id='price.pair' defaultMessage='Trading Pair' />, dataIndex: 'tradingPair', },
     { title: <FormattedMessage id='price.price' defaultMessage='Price' />, dataIndex: 'price', valueType: 'text', },
@@ -112,6 +117,7 @@ const TableList: React.FC<PageProps> = ({ network }) => {
 
   const TxTable = (record: { txs: any; }) => {
     const TXs = record.txs;
+    console.log(record)
     return (
       <ProTable
         columns={txInfoColumns}
@@ -167,10 +173,4 @@ const TableList: React.FC<PageProps> = ({ network }) => {
   );
 };
 
-// TODO => InitialState store
-// TODO => Add Block TX Info
-
-
-export default connect(({ network }: { network: networkState;}) => ({
-  network
-}))(TableList);
+export default TableList;

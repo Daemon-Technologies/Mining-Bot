@@ -12,7 +12,6 @@ const {
 
 
 export async function getChainInfo(network:string) {
-    console.log(network)
     let baseURL = nodeKryptonURL;
     switch(network) {
         case "Krypton": baseURL = nodeKryptonURL;
@@ -22,7 +21,6 @@ export async function getChainInfo(network:string) {
         case "Mainnet": break; //TODO
         default: break;
     }
-    console.log(baseURL)
     let result;
     try{
         result = await request(`${baseURL}/v2/info`, {
@@ -32,13 +30,12 @@ export async function getChainInfo(network:string) {
     catch (error){
         result = undefined
     }
-    console.log(result)
     const chainInfoList: ChainInfo[] = [];
     chainInfoList.push({
         stacksChainHeight: (result==undefined? "NaN": result.stacks_tip_height),
         burnChainHeight: (result==undefined? "NaN":result.stable_burn_block_height),
     })
-    console.log(chainInfoList)
+
     return {'data': chainInfoList} //new Promise((resolve)=>{resolve(chainInfoList)})
 }
 
@@ -53,7 +50,6 @@ export async function getBlockInfo(network:string) {
     return request(`${baseURL}/v1/block?limit=5`, {
         method: "GET"
     }).then(async (resp) => {
-        console.log(resp)
         const results: BlockInfo = await Promise.all(
             resp.results.map(async (item: BlockInfo) => {
                 const { txs } = item
