@@ -10,9 +10,6 @@ import { FormattedMessage, getLocale } from 'umi';
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
 
-import { networkState, ConnectProps, Loading, connect} from 'umi';
-import {getNetworkFromStorage} from '@/utils/utils'
-
 const { CN } = require('@/services/constants');
 
 
@@ -20,24 +17,9 @@ const { CN } = require('@/services/constants');
 
 
 const TableList: React.FC<{}> = () => {
-  const [networkName, setNetworkName] = useState("network")
   const actionRefChainInfo = useRef<ActionType>();
   const actionRefBlockInfo = useRef<ActionType>();
-  useEffect(()=> {
-    let network = getNetworkFromStorage()
-    setNetworkName(network)
-  }, [])
-  /*
-  useEffect((()=>{
-    console.log(network.network)
-    setNetworkName(network.network.network)
-    if (actionRefChainInfo.current!== undefined && actionRefBlockInfo.current!== undefined) {
-      console.log("in")
-      actionRefChainInfo.current.reloadAndRest()
-      actionRefBlockInfo.current.reloadAndRest()
-    }
-  }), [network])
-  */
+
   const tokenPriceColumns: ProColumns<TokenPrice>[] = [
     { title: <FormattedMessage id='price.pair' defaultMessage='Trading Pair' />, dataIndex: 'tradingPair', },
     { title: <FormattedMessage id='price.price' defaultMessage='Price' />, dataIndex: 'price', valueType: 'text', },
@@ -123,7 +105,7 @@ const TableList: React.FC<{}> = () => {
         columns={txInfoColumns}
         search={false}
         options={false}
-        request={() => getTxsInfo(networkName, TXs)}
+        request={() => getTxsInfo(TXs)}
         pagination={false}
         key="tx_id"
       />
@@ -150,7 +132,7 @@ const TableList: React.FC<{}> = () => {
           headerTitle={<FormattedMessage id='chain.title' defaultMessage='Chain Info' />}
           actionRef={actionRefChainInfo}
           rowKey="stacksChainHeight"
-          request={() => getChainInfo(networkName)}
+          request={() => getChainInfo()}
           columns={chainInfoColumns}
           search={false}
           pagination={false}
@@ -160,7 +142,7 @@ const TableList: React.FC<{}> = () => {
           headerTitle={<FormattedMessage id='block.title' defaultMessage='Block Info' />}
           actionRef={actionRefBlockInfo}
           rowKey="height"
-          request={() => getBlockInfo(networkName)}
+          request={() => getBlockInfo()}
           expandable={{ expandedRowRender: TxTable }}
           columns={blockInfoColumns}
           pagination={false}

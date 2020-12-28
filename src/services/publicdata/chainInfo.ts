@@ -1,6 +1,7 @@
 import { makeNamespaceReadySkeleton } from 'blockstack/lib/operations/skeletons';
 import { request } from 'umi';
 import { ChainInfo, BlockInfo, TxInfo } from './data';
+import {getCurrentNetwork} from '@/utils/utils'
 
 const {
     nodeKryptonURL,
@@ -11,14 +12,14 @@ const {
 
 
 
-export async function getChainInfo(network:string) {
+export async function getChainInfo() {
     let baseURL = nodeKryptonURL;
-    switch(network) {
-        case "Krypton": baseURL = nodeKryptonURL;
+    switch(getCurrentNetwork()) {
+        case "krypton": baseURL = nodeKryptonURL;
                         break;
-        case "Xenon": baseURL = nodeXenonURL;
+        case "xenon": baseURL = nodeXenonURL;
                       break;
-        case "Mainnet": break; //TODO
+        case "mainnet": break; //TODO
         default: break;
     }
     let result;
@@ -39,12 +40,12 @@ export async function getChainInfo(network:string) {
     return {'data': chainInfoList} //new Promise((resolve)=>{resolve(chainInfoList)})
 }
 
-export async function getBlockInfo(network:string) {
+export async function getBlockInfo() {
     let baseURL = sidecarURLKrypton;
-    switch(network) {
-        case "Krypton": baseURL = sidecarURLKrypton; break;
-        case "Xenon": baseURL = sidecarURLXenon; break;
-        case "Mainnet": break; //TODO
+    switch(getCurrentNetwork()) {
+        case "krypton": baseURL = sidecarURLKrypton; break;
+        case "xenon": baseURL = sidecarURLXenon; break;
+        case "mainnet": break; //TODO
         default: break;
     }
     return request(`${baseURL}/v1/block?limit=5`, {
@@ -55,7 +56,7 @@ export async function getBlockInfo(network:string) {
                 const { txs } = item
                 let totalFee = 0;
                 await Promise.all(txs.map(async (itemTxInfo: any) => {
-                    const respTxInfo = await getTxInfo(network, itemTxInfo)
+                    const respTxInfo = await getTxInfo(itemTxInfo)
                     totalFee += parseInt(respTxInfo.data.fee_rate as string, 10);
                     return itemTxInfo
                 }))
@@ -66,12 +67,12 @@ export async function getBlockInfo(network:string) {
     })
 }
 
-export async function getTxInfo(network:string, tx_id: any) {
+export async function getTxInfo(tx_id: any) {
     let baseURL = sidecarURLKrypton;
-    switch(network) {
-        case "Krypton": baseURL = sidecarURLKrypton; break;
-        case "Xenon": baseURL = sidecarURLXenon; break;
-        case "Mainnet": break; //TODO
+    switch(getCurrentNetwork()) {
+        case "krypton": baseURL = sidecarURLKrypton; break;
+        case "xenon": baseURL = sidecarURLXenon; break;
+        case "mainnet": break; //TODO
         default: break;
     }
     return request(`${baseURL}/v1/tx/${tx_id}`, {
@@ -81,11 +82,11 @@ export async function getTxInfo(network:string, tx_id: any) {
     })
 }
 
-export async function getTxsInfo(network:string, txs: string[]) {
+export async function getTxsInfo(txs: string[]) {
     
     const data: TxInfo[] = [];
     await Promise.all(txs.map(async (item: any) => {
-        const resp = await getTxInfo(network, item)
+        const resp = await getTxInfo(item)
         data.push(resp.data as TxInfo)
     }))
     return { data: data }

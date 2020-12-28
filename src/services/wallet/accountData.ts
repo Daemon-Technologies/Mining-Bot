@@ -1,10 +1,10 @@
 // import { request } from 'umi';
 import { Account } from "./data";
 import request from "umi-request";
+import { getCurrentNetwork } from '@/utils/utils'
 
-const { sidecarURLKrypton } = require('@/services/constants')
+const { sidecarURLKrypton, sidecarURLXenon, bitcoinTestnet3 } = require('@/services/constants')
 
-const stacks_blockchain_api_base_url = sidecarURLKrypton
 
 export function getAccount() {
   const stxAccounts: Account[] = [];
@@ -27,8 +27,18 @@ export function updateAccount() {
 }
 
 export async function getStxBalance(stxAddress: string) {
-  const baseUrl = `${stacks_blockchain_api_base_url}/v1/address/`;
-  return request(`${baseUrl + stxAddress}/balances`, {
+
+  let baseURL = sidecarURLKrypton;
+
+  switch(getCurrentNetwork()) {
+      case "krypton": baseURL = `${sidecarURLKrypton}/v1/address/${stxAddress}/balances`;
+                      break;
+      case "xenon": baseURL = `${sidecarURLXenon}/v1/address/${stxAddress}/balances`;
+                    break;
+      case "mainnet": break; //TODO
+      default: break;
+  }
+  return request(`${baseURL}`, {
     method: 'GET',
   });
 }
@@ -36,25 +46,47 @@ export async function getStxBalance(stxAddress: string) {
 
 
 export async function getBtcBalance(btcAddress: string) {
-  const baseUrl = `${stacks_blockchain_api_base_url}/v1/faucets/btc/`;
-  return request(`${baseUrl + btcAddress}`, {
+  let baseURL = sidecarURLKrypton;
+  // https://api.blockcypher.com/v1/btc/test3/addrs/mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj/balance
+  switch(getCurrentNetwork()) {
+      case "krypton": baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
+                      break;
+      //{"balance":0}
+      case "xenon": baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`
+                    //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
+                    break;
+      /*
+        {
+          "address": "mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj",
+          "total_received": 0,
+          "total_sent": 0,
+          "balance": 0,
+          "unconfirmed_balance": 0,
+          "final_balance": 0,
+          "n_tx": 0,
+          "unconfirmed_n_tx": 0,
+          "final_n_tx": 0
+        }
+      */
+      case "mainnet": break; //TODO
+      default: break;
+  }
+  return request(`${baseURL}`, {
     method: "GET",
   });
 }
 
 
 
-export async function queryAccount(type: number = 0): Promise<API.RequestResult> {
+export async function queryAccount(type: number = 0 ): Promise<API.RequestResult> {
   // type 
   // 0 all
   // 1 btc only
   // 2 stx only
-
   const { btcAccounts, stxAccounts } = getAccount();
   const btcAccountsInfo: Account[] = [];
   const stxAccountsInfo: Account[] = [];
   let newAccountsInfo: Account[] = [];
-
   // update btc account balance
   if (type === 0 || type === 1) {
     for (var i = 0; i < btcAccounts.length; i++) {
@@ -64,6 +96,7 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
       try {
         balanceResp = await getBtcBalance(btcAddress);
       } catch (error) {
+        console.log("get btc balance error:",error)
       }
       const accountInfo: Account = {
         address: row.address,
@@ -76,7 +109,6 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
       btcAccountsInfo.push(accountInfo);
     }
   }
-
   if (type === 0 || type === 2) {
     // update stx account balance
     for (var i = 0; i < stxAccounts.length; i++) {
@@ -86,7 +118,7 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
       try {
         balanceResp = await getStxBalance(stxAddress);
       } catch (error) {
-
+        console.log("get stx balance error:",error)
       }
       const accountInfo: Account = {
         address: row.address,
@@ -99,7 +131,6 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
       stxAccountsInfo.push(accountInfo);
     }
   }
-
   newAccountsInfo = btcAccountsInfo.concat(stxAccountsInfo);
   return { data: newAccountsInfo, status: 200 };
 }

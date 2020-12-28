@@ -13,7 +13,8 @@ module.exports = {
   nodeStatusURL: 'https://status.test-blockstack.com',
   nodeXenonURL: 'http://xenon.blockstack.org:20443',
 
-
+  //Bitcoin endpoint
+  bitcoinTestnet3: 'https://api.blockcypher.com/v1/btc/test3',
 
 
 

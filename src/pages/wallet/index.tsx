@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { FooterToolbar, PageContainer } from '@ant-design/pro-layout';
 import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
 import { Button, ConfigProvider, message, Modal } from 'antd';
@@ -11,6 +11,8 @@ import { addAccount, deleteAccount, } from './service';
 import { FormattedMessage, getLocale } from 'umi';
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
+import { getCurrentNetwork } from '@/utils/utils';
+
 
 const { CN } = require('@/services/constants');
 
@@ -81,12 +83,13 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='account.balance' defaultMessage='Balance' />,
       dataIndex: 'balance',
-      hideInForm: true,
+      hideInForm: !(getCurrentNetwork()==="krypton"),
       render: (text, record, index, action) => [<a key="1"> {record.type === "BTC" ? record.balance : parseInt(record.balance) / 1000000} </a>]
     },
     {
       title: <FormattedMessage id='faucet.get' defaultMessage='Get Faucet' />,
       hideInForm: true,
+      hideInTable: true,
       render: (text, record, index, action) => [record.type === "BTC"? <a key="1" onClick={() => getFaucet(record)}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a> : <a></a> ]
     }
   ];
