@@ -1,7 +1,4 @@
 module.exports = {
-
-
-
   // Krypton
   sidecarURLKrypton: 'https://stacks-node-api.krypton.blockstack.org/extended',
   btcFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/btc?address=',
@@ -16,15 +13,11 @@ module.exports = {
   //Bitcoin endpoint
   bitcoinTestnet3: 'https://api.blockcypher.com/v1/btc/test3',
 
-
-
-
   explorerURL: 'https://testnet-explorer.blockstack.org',
   binanceAPIURL: 'https://api.binance.com/api/v3',
   masterNodeKey: 'master_node_ping',
   miningLocalServer_endpoint: 'http://localhost:5000',
   miningMonitorServer_endpoint: 'http://monitor.stxmining.xyz',
-
 
   MIN_MINER_BTC_AMOUNT: 0.005,
   MIN_MINER_BURN_FEE: 11000,
