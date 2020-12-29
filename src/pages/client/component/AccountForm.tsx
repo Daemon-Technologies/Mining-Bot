@@ -1,31 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Card } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { queryAccount } from '@/services/wallet/accountData'
 import { Account } from '@/services/wallet/data'
 import { Steps, Divider } from 'antd';
 import { Slider, InputNumber, Row, Col } from 'antd';
-import { getLocale } from 'umi';
+import { showMessage } from '@/services/locale';
 
-const { CN, MIN_MINER_BURN_FEE } = require('@/services/constants');
+const { MIN_MINER_BURN_FEE } = require('@/services/constants');
 const { Step } = Steps;
 
 
 interface CreateFormProps {
   modalVisible: boolean;
   onCancel: () => void;
-  onSubmit: (values: { account: Account, inputBurnFee: number }) => void;
+  onSubmit: (values: { account: Account, inputBurnFee: number, network: string }) => Promise<void>;
 }
 
 
 const columns: ProColumns<Account>[] = [
   {
-    title: (getLocale() === CN ? "比特币地址" : 'BTC Address'),
+    title: (showMessage("比特币地址", 'BTC Address')),
     dataIndex: 'address',
     render: (text) => <a>{text}</a>,
   },
   {
-    title: (getLocale() === CN ? "余额" : 'Balance'),
+    title: (showMessage("余额", 'Balance')),
     dataIndex: 'balance',
   }
 ];
@@ -33,17 +33,15 @@ const columns: ProColumns<Account>[] = [
 
 const AccountForm: React.FC<CreateFormProps> = (props) => {
   const { modalVisible, onCancel, onSubmit } = props;
-  const [accountSelected, handleAccountSelected] = useState<Account>()
-  const [stepStatus, setStepStatus] = useState(0)
-  const [inputBurnFee, setInputBurnFee] = useState(20000)
-  //console.log("in")
-  //console.log(accountSelected)
+  const [accountSelected, handleAccountSelected] = useState<Account>();
+  const [stepStatus, setStepStatus] = useState(0);
+  const [inputBurnFee, setInputBurnFee] = useState(20000);
+
 
   const rowSelection = {
     onChange: (selectedRowKeys: any, selectedRows: React.SetStateAction<Account | undefined>[]) => {
-      //console.log(`selectedRowKeys: ${selectedRowKeys}, selectedRows: ${selectedRows}`)
-      console.log("selectRows:", selectedRows)
-      handleAccountSelected(selectedRows[0])
+      // console.log("selectRows:", selectedRows);
+      handleAccountSelected(selectedRows[0]);
     }
   }
 
@@ -75,7 +73,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   const renderBurnFeeContent = () => {
     return (
       <>
-        <Card title={(getLocale() === CN ? "设置燃烧量" : "Set Burn Fee")}>
+        <Card title={(showMessage("设置燃烧量", "Set Burn Fee"))}>
           <Row style={{ margin: '10px 5px' }}>
             <Col span={12}>
               <Slider
@@ -110,33 +108,33 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
           (() => {
             switch (stepStatus) {
               case 0: return (<div>
-                <Button danger onClick={() => onCancel()}>{(getLocale() === CN ? "取消" : "Cancel")}</Button>
+                <Button danger onClick={() => onCancel()}>{(showMessage("取消", "Cancel"))}</Button>
                 <Button
                   type="primary"
                   disabled={accountSelected == undefined ? true : false}
                   onClick={() => setStepStatus(1)}>
-                  {(getLocale() === CN ? "下一步" : "Next")}
+                  {(showMessage("下一步", "Next"))}
                 </Button>
               </div>)
               case 1: return (<div>
-                <Button danger onClick={() => onCancel()}>{(getLocale() === CN ? "取消" : "Cancel")}</Button>
-                <Button onClick={() => setStepStatus(0)}>{(getLocale() === CN ? "上一步" : "Back")}</Button>
+                <Button danger onClick={() => onCancel()}>{(showMessage("取消", "Cancel"))}</Button>
+                <Button onClick={() => setStepStatus(0)}>{(showMessage("上一步", "Back"))}</Button>
                 <Button
                   type="primary"
-                  disabled={accountSelected == undefined ? true : false}
+                  disabled={accountSelected === undefined ? true : false}
                   onClick={() => {
-
-                    onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee })
-                    setStepStatus(0)
+                    if (accountSelected) {
+                      onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee, network: 'Krypton' });
+                      setStepStatus(0);
+                      onCancel();
+                    }
                   }
                   }
                 >
-                  {(getLocale() === CN ? "完成" : "Finish")}
-
+                  {(showMessage("完成", "Finish"))}
                 </Button>
               </div>)
-
-
+              default: return (<></>)
             }
           })()
         }
@@ -148,22 +146,23 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   return (
     <Modal
       destroyOnClose
-      title={(getLocale() === CN ? "账户选择" : "Start Mining Configuration")}
+      title={(showMessage("账户选择", "Start Mining Configuration"))}
       visible={modalVisible}
       onCancel={() => onCancel()}
       footer={renderSubmitFooter()}
     >
       <Steps current={stepStatus}>
-        <Step title={(getLocale() === CN ? "账户选择" : "Account Selection")} />
-        <Step title={(getLocale() === CN ? "燃烧量设置" : "Burn Fee Setting")} />
+        <Step title={(showMessage("账户选择", "Account Selection"))} />
+        <Step title={(showMessage("燃烧量设置", "Burn Fee Setting"))} />
       </Steps>
 
       <Divider />
 
       {(() => {
         switch (stepStatus) {
-          case 0: return renderAccountContent()
-          case 1: return renderBurnFeeContent()
+          case 0: return renderAccountContent();
+          case 1: return renderBurnFeeContent();
+          default: return;
         }
       })()}
     </Modal>
