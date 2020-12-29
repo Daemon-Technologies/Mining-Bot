@@ -7,53 +7,30 @@ import { Account } from "@/services/wallet/data";
 
 const { MIN_MINER_BTC_AMOUNT } = require('@/services/constants');
 
-export interface OperationBoardState {
-    minerAddress: string | undefined,
-    isDownloading: boolean,
-    nodeStatus: number,
-    startMiningLoading: boolean,
-    percent: number,
-    processing: boolean,
-    createModalVisible: boolean,
+export type OperationBoardState = {
+    minerAddress?: string | undefined,
+    isDownloading?: boolean,
+    nodeStatus?: number | -1,
+    startMiningLoading?: boolean,
+    percent?: number,
+    processing?: boolean,
+    createModalVisible?: boolean,
 }
 
 export default () => {
     let [operationBoardState, setOperationBoardState] = useState<OperationBoardState>({
-        minerAddress: undefined,
-        isDownloading: false,
+        minerAddress: '',
         nodeStatus: -1,
-        startMiningLoading: false,
-        percent: -1,
-        processing: false,
-        createModalVisible: false,
     });
 
-    const initialNodeStatus = async () => {
-        await message.loading({ content: showMessage('环境检查中....', "Checking Environment..."), duration: 2 })
-        const res = await getNodeStatus()
-        console.log(res)
-        if (res.PID) {
-            setOperationBoardState({
-                ...operationBoardState,
-                nodeStatus: res.PID,
-            });
-        } else {
-            setOperationBoardState({
-                ...operationBoardState,
-                nodeStatus: -1,
-            });
-        }
-        setOperationBoardState({
-            ...operationBoardState,
-            minerAddress: res.address,
-        });
-    }
+    console.log('state1:', operationBoardState)
 
     const downloadStart = () => {
         startDownload();
         setOperationBoardState({
             ...operationBoardState,
             isDownloading: true,
+            nodeStatus: -6,
         });
     }
 
@@ -63,18 +40,14 @@ export default () => {
             if (err) {
                 return;
             }
-            if (!operationBoardState.isDownloading) {
-                setOperationBoardState({
-                    ...operationBoardState,
-                    isDownloading: true,
-                });
-            }
-            console.log((data * 100).toFixed(1));
-            setOperationBoardState({
-                ...operationBoardState,
-                percent: Number((data * 100).toFixed(1)),
-                processing: true,
+            setOperationBoardState(state => {
+                return {
+                    ...state,
+                    percent: Number((data * 100).toFixed(1)),
+                    processing: true,
+                }
             });
+            console.log((data * 100).toFixed(1));
         })
 
         subscribeDownloadFinish((err: Error, data: any) => {
@@ -82,9 +55,12 @@ export default () => {
                 return;
             }
             if (data) {
-                setOperationBoardState({
-                    ...operationBoardState,
-                    isDownloading: false,
+                setOperationBoardState(state => {
+                    return {
+                        ...state,
+                        isDownloading: false,
+                        nodeStatus: -5,
+                    }
                 });
                 message.success(showMessage('下载成功!', "Download successfully!"))
                 window.location.reload()
@@ -95,86 +71,96 @@ export default () => {
         }
     }
 
-    const handleNodeStatus = () => {
-        initialNodeStatus()
-        if (operationBoardState.nodeStatus == -3) {
-            window.location.reload()
-        }
+    const handleNodeStatus = async () => {
+        await message.loading({ content: showMessage('环境检查中....', "Checking Environment..."), duration: 2 })
+        const res = await getNodeStatus();
+        setOperationBoardState(state => {
+            return {
+                ...state,
+                nodeStatus: res.PID ? res.PID : -1,
+                minerAddress: res.address
+            }
+        });
     }
 
     const checkStatus = async () => {
         await message.loading({ content: showMessage('环境检查中....', "Checking Environment..."), duration: 2 });
-        await getNodeStatus();
-        await initialNodeStatus();
+        // await getNodeStatus();
+        await handleNodeStatus();
     }
 
     const handleStopMining = async () => {
         await message.loading({ content: showMessage('环境检查中....', "Checking Environment..."), duration: 2 })
         const res = await stopMining()
-        console.log(res)
         if (res.status === 404) {
             message.success({ content: showMessage('没有挖矿程序在运行!', `${res.data}`), duration: 4 })
         }
         else if (res.status === 200) {
             message.success({ content: showMessage('关闭成功！', `${res.data}`), duration: 4 })
         }
-        await initialNodeStatus()
-        setOperationBoardState({
-            ...operationBoardState,
-            minerAddress: undefined,
+        await handleNodeStatus()
+        setOperationBoardState(state => {
+            return {
+                ...state,
+                minerAddress: undefined,
+            }
         });
         console.log(res)
     }
 
     const handleModalVisible = (visible: boolean) => {
-        setOperationBoardState({
-            ...operationBoardState,
-            createModalVisible: visible,
+        setOperationBoardState(state => {
+            return {
+                ...state,
+                createModalVisible: visible,
+            }
         });
     }
 
     const handleFormSubmit = async (value: { account: Account, inputBurnFee: number, network: string }) => {
         //console.log("value", value)
-        if (value.account.balance < MIN_MINER_BTC_AMOUNT) {
+        if (value.account && value.account.balance < MIN_MINER_BTC_AMOUNT) {
             message.error({ content: showMessage('你的比特币余额不足以继续挖矿，跳转到钱包页面进行充值', "Your Bitcoin is not enough to mine, turn to Wallet page to get faucet."), duration: 3 })
             //openNotification()
             handleModalVisible(false)
         }
         else {
-            setOperationBoardState({
-                ...operationBoardState,
-                startMiningLoading: true,
+            setOperationBoardState(state => {
+                return {
+                    ...state,
+                    startMiningLoading: true,
+                }
             });
             await message.loading({ content: showMessage('检查环境.....', "Checking Environment..."), duration: 1 })
             await message.loading({ content: showMessage('启动Stacks Blockchain', "Launching Stacks Blockchain..."), duration: 1 })
 
             // Add network type
-            value.network = "Krypton"
-            console.log(value)
+            value.network = 'Krypton';
+            // console.log(value)
             // Launching stack-blockchain by rpc
-            const res = await startMining(value)
+            const res = await startMining(value);
             console.log(res)
-            setOperationBoardState({
-                ...operationBoardState,
-                startMiningLoading: !res,
+            setOperationBoardState(state => {
+                return {
+                    ...state,
+                    startMiningLoading: !res,
+                    createModalVisible: false,
+                }
             });
             // Launching Successfully
-            if (res.status == 200) {
-                message.success({ content: showMessage('启动成功！', "Launching Successfully!!!"), duration: 4 })
-                handleModalVisible(false);
+            if (res.status === 200) {
+                message.success({ content: showMessage('启动成功！', "Launching Successfully!!!"), duration: 4 });
             }
             // Launching UnSuccessfully
             else {
-                message.error({ content: showMessage('启动异常，请联系管理员！', "Launching Error, Please Contact With Admin!!!"), duration: 4 })
-                handleModalVisible(false)
+                message.error({ content: showMessage('启动异常，请联系管理员！', "Launching Error, Please Contact With Admin!!!"), duration: 4 });
             }
-            await initialNodeStatus()
+            await handleNodeStatus();
         }
     }
 
     return {
         operationBoardState,
-        initialNodeStatus,
         downloadStart,
         handleDownloadProcess,
         handleNodeStatus,

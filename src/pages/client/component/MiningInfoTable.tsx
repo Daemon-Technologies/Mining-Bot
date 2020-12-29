@@ -9,7 +9,6 @@ const MiningInfoTable: React.FC<{}> = () => {
     const { operationBoardState } = useModel('client.operationBoard');
     const { queryMiningInfo } = useModel('client.miningInfo');
     const { minerAddress } = operationBoardState;
-
     const miningInfoColumns: ProColumns<MiningInfo>[] = [
         {
             title: <FormattedMessage id='miningInfo.stacksHeight' defaultMessage='Stacks Chain Height' />,

@@ -106,7 +106,7 @@ const OperationBoard: React.FC<{}> = () => {
                                 type="primary"
                                 loading={startMiningLoading}
                                 onClick={() => handleModalVisible(true)}
-                                disabled={!(nodeStatus === -5)}
+                                disabled={nodeStatus !== -5}
                             >
                                 <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                             </Button>
@@ -114,13 +114,14 @@ const OperationBoard: React.FC<{}> = () => {
                                 type="primary"
                                 danger={true}
                                 onClick={handleStopMining}
-                                disabled={!(nodeStatus > 0)}
+                                disabled={!(nodeStatus && nodeStatus > 0)}
                             >
 
                                 <FormattedMessage id='opt.button.stop' defaultMessage='Stop Mining' />
                             </Button>
                         </Space>
                     </Paragraph>
+
                     <Button type="primary" shape="round" icon={<DownloadOutlined />} hidden={(nodeStatus !== -2) && (nodeStatus !== -6)}
                         onClick={downloadStart}
                         loading={isDownloading}
@@ -145,7 +146,7 @@ const OperationBoard: React.FC<{}> = () => {
             <AccountForm
                 onSubmit={(value: { account: Account, inputBurnFee: number, network: string }) => handleFormSubmit(value)}
                 onCancel={() => handleModalVisible(false)}
-                modalVisible={createModalVisible}
+                modalVisible={createModalVisible ? createModalVisible : false}
             />
         </>
     )
