@@ -9,10 +9,6 @@ export default {
     'strategy.name': 'Strategy Name',
     'strategy.createAt': 'Create Time',
 
-
-
-    
-
     'minerInfo.title': 'Miner Info',
     'minerInfo.stxAddress': 'STX Address',
     'minerInfo.btcAddress': 'BTC Address',
