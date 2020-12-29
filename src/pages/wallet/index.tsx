@@ -83,20 +83,30 @@ const TableList: React.FC<{}> = () => {
     {
       title: <FormattedMessage id='account.balance' defaultMessage='Balance' />,
       dataIndex: 'balance',
-      hideInForm: !(getCurrentNetwork()==="krypton"),
-      render: (text, record, index, action) => [<a key="1"> {record.type === "BTC" ? record.balance : parseInt(record.balance) / 1000000} </a>]
+      render: (text, record, index, action) => {
+        console.log(record)
+        return [<a key="1"> {record.type === "BTC" ? record.balance : parseInt(record.balance) / 1000000} </a>]
+      }
     },
     {
       title: <FormattedMessage id='faucet.get' defaultMessage='Get Faucet' />,
       hideInForm: true,
-      hideInTable: true,
       render: (text, record, index, action) => [record.type === "BTC"? <a key="1" onClick={() => getFaucet(record)}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a> : <a></a> ]
     }
   ];
 
   const getFaucet = (value: React.SetStateAction<Account | undefined>) => {
     setFaucetAccount(value)
-    setFaucetModalVisible(true)
+    switch (getCurrentNetwork()){
+      case "Krypton":  setFaucetModalVisible(true); break;
+      case "Xenon": async () => {
+                      const w = await window.open('about:blank');
+                      w.location.href = "https://www.blockstack.org/testnet/faucet";
+                    }
+                    break;
+      case "Mainnet": break;
+    }
+    
   }
 
   const handleFaucetOk = async () => {

@@ -454,7 +454,6 @@ const TableList: React.FC<{}> = () => {
         <Divider />
         <ProTable<ChainSyncInfo>
           headerTitle={<FormattedMessage id='chainSyncInfo.title' defaultMessage='Chain Sync Info' />}
-          actionRef={actionRef}
           rowKey="type"
           pagination={{
             pageSize: 10,

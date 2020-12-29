@@ -31,11 +31,11 @@ export async function getStxBalance(stxAddress: string) {
   let baseURL = sidecarURLKrypton;
 
   switch(getCurrentNetwork()) {
-      case "krypton": baseURL = `${sidecarURLKrypton}/v1/address/${stxAddress}/balances`;
+      case "Krypton": baseURL = `${sidecarURLKrypton}/v1/address/${stxAddress}/balances`;
                       break;
-      case "xenon": baseURL = `${sidecarURLXenon}/v1/address/${stxAddress}/balances`;
+      case "Xenon": baseURL = `${sidecarURLXenon}/v1/address/${stxAddress}/balances`;
                     break;
-      case "mainnet": break; //TODO
+      case "Mainnet": break; //TODO
       default: break;
   }
   return request(`${baseURL}`, {
@@ -49,10 +49,10 @@ export async function getBtcBalance(btcAddress: string) {
   let baseURL = sidecarURLKrypton;
   // https://api.blockcypher.com/v1/btc/test3/addrs/mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj/balance
   switch(getCurrentNetwork()) {
-      case "krypton": baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
+      case "Krypton": baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
                       break;
       //{"balance":0}
-      case "xenon": baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`
+      case "Xenon": baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`
                     //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
                     break;
       /*
@@ -68,9 +68,10 @@ export async function getBtcBalance(btcAddress: string) {
           "final_n_tx": 0
         }
       */
-      case "mainnet": break; //TODO
+      case "Mainnet": break; //TODO
       default: break;
   }
+  
   return request(`${baseURL}`, {
     method: "GET",
   });

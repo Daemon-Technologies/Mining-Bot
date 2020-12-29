@@ -2,8 +2,10 @@
 import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
+import { getNetworkFromStorage } from '../src/utils/utils'
 
 const { REACT_APP_ENV } = process.env;
+
 
 export default defineConfig({
   hash: true,
@@ -44,42 +46,42 @@ export default defineConfig({
       ],
     },
     {
-      path: '/krypton/publicData',
+      path: '/Krypton/publicData',
       name: 'publicData',
       icon: 'LineChartOutlined',
       component: './publicData',
       access: 'useKrypton'
     },
     {
-      path: '/krypton/wallet',
+      path: '/Krypton/wallet',
       name: 'wallet',
       icon: 'TeamOutlined',
       component: './wallet',
       access: 'useKrypton'
     },
     {
-      path: '/krypton/client',
+      path: '/Krypton/client',
       name: 'client',
       icon: 'FundProjectionScreenOutlined',
       component: './client',
       access: 'useKrypton'
     },
     {
-      path: '/xenon/publicData',
+      path: '/Xenon/publicData',
       name: 'publicData',
       icon: 'LineChartOutlined',
       component: './publicData',
       access: 'useXenon'
     },
     {
-      path: '/xenon/wallet',
+      path: '/Xenon/wallet',
       name: 'wallet',
       icon: 'TeamOutlined',
       component: './wallet',
       access: 'useXenon'
     },
     {
-      path: '/xenon/client',
+      path: '/Xenon/client',
       name: 'client',
       icon: 'FundProjectionScreenOutlined',
       component: './client',
@@ -87,7 +89,7 @@ export default defineConfig({
     },
     {
       path: '/',
-      redirect: '/krypton/publicData',
+      redirect: `/Krypton/publicData`,
     },
 
     {

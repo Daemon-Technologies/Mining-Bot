@@ -9,6 +9,8 @@ import { ConfigProvider, Divider, Table, Tag } from 'antd';
 import { FormattedMessage, getLocale } from 'umi';
 import enUS from 'antd/lib/locale/en_US';
 import zhCN from 'antd/lib/locale/zh_CN';
+import { switchPage, getNetworkFromStorage, getCurrentNetwork } from "@/utils/utils"
+
 
 const { CN } = require('@/services/constants');
 
@@ -19,6 +21,12 @@ const { CN } = require('@/services/constants');
 const TableList: React.FC<{}> = () => {
   const actionRefChainInfo = useRef<ActionType>();
   const actionRefBlockInfo = useRef<ActionType>();
+
+  useEffect(()=>{
+    console.log(getCurrentNetwork())
+    console.log(getNetworkFromStorage())
+    if (getCurrentNetwork()!==getNetworkFromStorage()) switchPage(getNetworkFromStorage())
+  }, [])
 
   const tokenPriceColumns: ProColumns<TokenPrice>[] = [
     { title: <FormattedMessage id='price.pair' defaultMessage='Trading Pair' />, dataIndex: 'tradingPair', },

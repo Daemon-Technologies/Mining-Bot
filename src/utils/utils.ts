@@ -102,7 +102,7 @@ export function aes256Decrypt(data: string, key: Buffer, ivStr: string, authTagS
 }
 
 export function getCurrentNetwork(){
-  let page = location.pathname.match(/(xenon|krypton)/g)
+  let page = location.pathname.match(/(Xenon|Krypton)/g)
   if (page)
     return page[0]
   return ""
@@ -121,5 +121,6 @@ export function switchPage(network: string){
 }
 
 export function getNetworkFromStorage(){
-  return localStorage.getItem('network')
+  let network = localStorage.getItem('network') 
+  return (network===null? "" : network)
 }
