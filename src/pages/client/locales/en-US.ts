@@ -9,18 +9,6 @@ export default {
     'strategy.name': 'Strategy Name',
     'strategy.createAt': 'Create Time',
 
-    'minerInfo.title': 'Miner Info',
-    'minerInfo.stxAddress': 'STX Address',
-    'minerInfo.btcAddress': 'BTC Address',
-    'minerInfo.actualWins': 'Actual Wins',
-    'minerInfo.totalWins': 'Total Wins',
-    'minerInfo.totalMined': 'Total Mined',
-    'minerInfo.burn': 'Miner Burned',
-
-    'miningInfo.title': 'Mining Info',
-    'miningInfo.stacksHeight': 'Stack Chain Height',
-    'miningInfo.burnfee': 'Burn fee',
-
     'chainSyncInfo.title': 'Chain Sync Info',
     'chainSyncInfo.burn_block_height': 'Burn Chain Block Height',
     'chainSyncInfo.stacks_tip_height': 'Stacks Chain Tip Height',

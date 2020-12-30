@@ -1,13 +1,12 @@
 import { request } from 'umi';
-const { miningMonitorServer_endpoint } = require('@/services/constants')
 import { keyGen, aes256Decrypt } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
 import { ChainSyncInfo } from './data';
 
 
-const { nodeKryptonURL } = require('@/services/constants')
-const miningLocalServer_endpoint: string = "http://" + window.location.hostname + ":5000"
-const localChainURL: string = 'http://' + window.location.hostname + ":20443"
+const { nodeKryptonURL } = require('@/services/constants');
+const miningLocalServer_endpoint: string = "http://" + window.location.hostname + ":5000";
+const localChainURL: string = 'http://' + window.location.hostname + ":20443";
 
 
 export async function getNodeStatus() {
@@ -64,23 +63,6 @@ export async function stopMining() {
   })
 }
 
-export async function getMinerInfo() {
-  return request(`${miningMonitorServer_endpoint}/mining_info`, {
-    method: 'GET',
-    timeout: 30000,
-  }).then(data => {
-    return { 'data': data.miner_info, 'success': true };
-  });
-}
-
-export async function getMiningInfo() {
-  return request(`${miningMonitorServer_endpoint}/mining_info`, {
-    method: 'GET',
-    timeout: 30000,
-  }).then(data => {
-    return { 'data': data.mining_info, 'success': true };
-  });
-}
 
 export async function getChainSyncInfo(): Promise<API.RequestResult> {
   let infoList: ChainSyncInfo[] = [];

@@ -23,8 +23,6 @@ export default () => {
         nodeStatus: -1,
     });
 
-    console.log('state1:', operationBoardState)
-
     const downloadStart = () => {
         startDownload();
         setOperationBoardState({
