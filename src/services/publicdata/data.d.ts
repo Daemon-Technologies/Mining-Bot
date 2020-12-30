@@ -1,8 +1,8 @@
 // wrapped token price entity
 
 export interface BinanceResp {
-  symbol: string,
-  price: string
+    symbol: string,
+    price: string
 }
 
 export interface TokenPrice {
@@ -16,7 +16,7 @@ export interface ChainInfo {
     burnChainHeight: string; // such as 600
 }
 
-export interface BlockInfo{
+export interface BlockInfo {
     results: any;
     canonical: boolean | string;
     height: number;
@@ -25,7 +25,7 @@ export interface BlockInfo{
     burn_block_time: number;
     burn_block_time_iso: string;
     txs: string[];
-    total_fee? : number;
+    total_fee?: number;
 }
 
 export interface TxInfo {
@@ -48,6 +48,40 @@ export interface TxInfo {
     coinbase_payload?: {
         data: string
     };
+}
+
+
+export interface MinerInfo {
+    stx_address: string;
+    btc_address: string;
+    actual_win: number;
+    total_win?: number;
+    total_mined: number;
+    miner_burned: number;
+}
+
+export interface MinerInfoQueryParams {
+    stx_address?: string;
+    btc_address?: string;
+    current?: number;
+    pageSize?: number;
+}
+
+
+export interface MiningInfo {
+    stx_address: string;
+    btc_address: string;
+    burn_fee: number;
+    stacks_block_height: number;
+}
+
+export interface MiningInfoQueryParams {
+    stx_address?: string;
+    btc_address?: string;
+    burn_fee?: number;
+    stacks_block_height?: number;
+    current?: number;
+    pageSize?: number;
 }
 
 /*

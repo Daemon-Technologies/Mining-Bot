@@ -1,4 +1,3 @@
-import { makeNamespaceReadySkeleton } from 'blockstack/lib/operations/skeletons';
 import { request } from 'umi';
 import { ChainInfo, BlockInfo, TxInfo } from './data';
 import {getCurrentNetwork} from '@/utils/utils'
