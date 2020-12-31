@@ -7,7 +7,7 @@ import { getLocale } from 'umi';
 
 const { btcType, stxType, CN } = require('@/services/constants');
 
-interface CreateFormProps {
+interface AddAccountFormProps {
   modalVisible: boolean;
   onCancel: () => void;
   onSubmit: (values: FormValueType) => void;
@@ -20,7 +20,7 @@ export interface FormValueType extends Partial<NewAccount> {
 
 const FormItem = Form.Item;
 
-export interface CreateFormState {
+export interface AddAccountFormState {
   formVals: FormValueType;
 }
 
@@ -29,7 +29,7 @@ const formLayout = {
   wrapperCol: { span: 13 },
 };
 
-const CreateForm: React.FC<CreateFormProps> = (props) => {
+const AddAccountForm: React.FC<AddAccountFormProps> = (props) => {
   const [formVals, setFormVals] = useState<FormValueType>({});
   const { modalVisible, onCancel, onSubmit: handleAdd } = props;
 
@@ -100,4 +100,4 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   );
 };
 
-export default CreateForm;
+export default AddAccountForm;

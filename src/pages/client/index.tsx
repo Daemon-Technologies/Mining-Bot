@@ -17,9 +17,7 @@ const TableList: React.FC<{}> = () => {
         locale={switchConfigProviderLocale()}
       >
         <OperationBoard />
-        <Divider />
         <ChainSyncInfoTable />
-        <Divider />
         <MinerInfoTable />
         <MiningInfoTable />
       </ConfigProvider>
