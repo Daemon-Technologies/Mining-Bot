@@ -2,7 +2,6 @@
 import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
-import { getNetworkFromStorage } from '../src/utils/utils'
 
 const { REACT_APP_ENV } = process.env;
 
@@ -44,6 +43,12 @@ export default defineConfig({
           component: './user/login',
         },
       ],
+    },
+    {
+      path: '/publicData',
+      name: 'publicData',
+      icon: 'LineChartOutlined',
+      component: './publicData',
     },
     {
       path: '/Krypton/publicData',
@@ -89,7 +94,7 @@ export default defineConfig({
     },
     {
       path: '/',
-      redirect: `/Krypton/publicData`,
+      redirect: `/publicData`,
     },
 
     {

@@ -19,4 +19,16 @@ export default {
     'block.info.feeRate': 'Fee Rate',
     'block.info.txType': 'TX Type',
 
+    'minerInfo.title': 'Miner Info',
+    'minerInfo.stxAddress': 'STX Address',
+    'minerInfo.btcAddress': 'BTC Address',
+    'minerInfo.actualWins': 'Actual Wins',
+    'minerInfo.totalWins': 'Total Wins',
+    'minerInfo.totalMined': 'Total Mined',
+    'minerInfo.burn': 'Miner Burned',
+
+    'miningInfo.title': 'Mining Info',
+    'miningInfo.stacksHeight': 'Stack Chain Height',
+    'miningInfo.burnfee': 'Burn fee',
+
 };

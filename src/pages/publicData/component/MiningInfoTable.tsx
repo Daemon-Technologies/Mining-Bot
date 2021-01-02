@@ -1,4 +1,4 @@
-import { MiningInfo, MiningInfoQueryParams } from '@/services/client/data';
+import { MiningInfo, MiningInfoQueryParams } from '@/services/publicdata/data';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { Tag } from 'antd';
 import React from 'react';
@@ -7,7 +7,7 @@ import { FormattedMessage, useModel } from 'umi';
 const MiningInfoTable: React.FC<{}> = () => {
 
     const { operationBoardState } = useModel('client.operationBoard');
-    const { queryMiningInfo } = useModel('client.miningInfo');
+    const { queryMiningInfo } = useModel('publicData.miningInfo');
     const { minerAddress } = operationBoardState;
     const miningInfoColumns: ProColumns<MiningInfo>[] = [
         {

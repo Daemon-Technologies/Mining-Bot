@@ -1,13 +1,13 @@
 import React from 'react';
-import { MinerInfo, MinerInfoQueryParams } from "@/services/client/data";
+import { MinerInfo, MinerInfoQueryParams } from "@/services/publicdata/data";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
 import { Divider } from 'antd';
 
 const MinerInfoTable: React.FC<{}> = () => {
     const { operationBoardState } = useModel('client.operationBoard');
-    const { minerAddress } = operationBoardState;
-    const { queryMinerInfo } = useModel('client.minerInfo');
+    let { minerAddress } = operationBoardState;
+    const { queryMinerInfo } = useModel('publicData.minerInfo');
 
     const minerInfoColumns: ProColumns<MinerInfo>[] = [
         {

@@ -4,9 +4,7 @@ import { ConfigProvider } from 'antd';
 
 import { switchConfigProviderLocale } from '@/services/locale';
 import ChainSyncInfoTable from './component/ChainSyncInfoTable';
-import MinerInfoTable from './component/MinerInfoTable';
 import OperationBoard from './component/OperationBoard';
-import MiningInfoTable from './component/MiningInfoTable';
 
 
 const TableList: React.FC<{}> = () => {
@@ -18,8 +16,6 @@ const TableList: React.FC<{}> = () => {
       >
         <OperationBoard />
         <ChainSyncInfoTable />
-        <MinerInfoTable />
-        <MiningInfoTable />
       </ConfigProvider>
     </PageContainer >
   );
