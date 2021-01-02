@@ -1,6 +1,6 @@
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Divider, ConfigProvider } from 'antd';
+import { ConfigProvider } from 'antd';
 
 import { switchConfigProviderLocale } from '@/services/locale';
 import ChainSyncInfoTable from './component/ChainSyncInfoTable';

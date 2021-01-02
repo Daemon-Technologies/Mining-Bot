@@ -1,6 +1,6 @@
 import { Account } from '@/services/wallet/data';
 import { DownloadOutlined } from '@ant-design/icons';
-import { Button, Card, Progress, Space, Typography } from 'antd';
+import { Divider, Button, Card, Progress, Space, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import { FormattedMessage, useModel } from 'umi';
 import AccountForm from './AccountForm';
@@ -142,7 +142,7 @@ const OperationBoard: React.FC<{}> = () => {
                     </div>
                 </Typography>
             </Card>
-
+            <Divider />
             <AccountForm
                 onSubmit={(value: { account: Account, inputBurnFee: number, network: string }) => handleFormSubmit(value)}
                 onCancel={() => handleModalVisible(false)}

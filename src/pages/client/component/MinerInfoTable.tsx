@@ -2,6 +2,7 @@ import React from 'react';
 import { MinerInfo, MinerInfoQueryParams } from "@/services/client/data";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
+import { Divider } from 'antd';
 
 const MinerInfoTable: React.FC<{}> = () => {
     const { operationBoardState } = useModel('client.operationBoard');
@@ -47,18 +48,21 @@ const MinerInfoTable: React.FC<{}> = () => {
     ]
 
     return (
-        <ProTable<MinerInfo, MinerInfoQueryParams>
-            headerTitle={<FormattedMessage id='minerInfo.title' defaultMessage='Miner Info' />}
-            rowKey="stx_address"
-            pagination={{
-                pageSize: 10,
-            }}
-            request={(params: MinerInfoQueryParams) => queryMinerInfo(params)}
-            columns={minerInfoColumns}
-            size="small"
+        <>
+            <ProTable<MinerInfo, MinerInfoQueryParams>
+                headerTitle={<FormattedMessage id='minerInfo.title' defaultMessage='Miner Info' />}
+                rowKey="stx_address"
+                pagination={{
+                    pageSize: 10,
+                }}
+                request={(params: MinerInfoQueryParams) => queryMinerInfo(params)}
+                columns={minerInfoColumns}
+                size="small"
 
-            search={{ labelWidth: 'auto' }}
-        />
+                search={{ labelWidth: 'auto' }}
+            />
+            <Divider/>
+        </>
     )
 }
 

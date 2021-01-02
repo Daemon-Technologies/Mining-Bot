@@ -18,6 +18,7 @@ const TableList: React.FC<{}> = () => {
       > 
         <FaucetForm/>
         <WalletTable/>
+        <AddAccountForm/>
       </ConfigProvider>
     </PageContainer >
   );

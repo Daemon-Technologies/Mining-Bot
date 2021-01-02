@@ -49,12 +49,16 @@ export default () => {
         setFaucetModalVisible(true);
     }
     
+    const getCurrentAddress = () => {
+        return faucetAccount
+    }
 
     return {
         handleFaucetOk,
         handleFaucetCancel,
         handleGetFaucet,
         showKryptonFaucetModal,
-        isFaucetModalVisible
+        isFaucetModalVisible,
+        getCurrentAddress
     }
 }

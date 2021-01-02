@@ -6,8 +6,8 @@ import { showMessage } from "@/services/locale";
 
 const FaucetForm: React.FC<{}> = () => {
 
-    const {  handleFaucetOk,handleFaucetCancel, isFaucetModalVisible } = useModel('wallet.faucet');
-
+    const {  handleFaucetOk, handleFaucetCancel, isFaucetModalVisible } = useModel('wallet.faucet');
+    
     return (
         <>
             <Modal
@@ -16,7 +16,7 @@ const FaucetForm: React.FC<{}> = () => {
                 onOk={handleFaucetOk}
                 onCancel={handleFaucetCancel}
                 >
-                <FormattedMessage id='faucet.notification.content' defaultMessage='If you want to get Faucet for address : ' />
+                <FormattedMessage id='faucet.notification.content' defaultMessage='If you want to get Faucet?' />
             </Modal>
         </>
     )

@@ -1,20 +1,22 @@
-import React, { useRef, useState, useEffect} from 'react';
-import ProTable, { ProColumns, ActionType } from '@ant-design/pro-table';
+import React, { useState } from 'react';
+import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { Button, notification } from 'antd';
 import { FooterToolbar } from '@ant-design/pro-layout';
 import { FormattedMessage , useModel} from 'umi';
 import { Account } from '@/services/wallet/data'
 import { getNetworkFromStorage } from '@/utils/utils'
 import { showMessage } from "@/services/locale";
+import { PlusOutlined } from '@ant-design/icons';
 
 
 const WalletTable: React.FC<{}> = () => {
 
-    const { removeAccounts, queryAccountList } = useModel('wallet.wallet');
+    const { removeAccounts, queryAccountList, actionRef } = useModel('wallet.wallet');
     const { showKryptonFaucetModal } = useModel('wallet.faucet');
+    const { handleModalVisible } = useModel('wallet.addAccount');
 
     const [selectedRowsState, setSelectedRows] = useState<Account[]>([]);
-    const actionRef = useRef<ActionType>();
+    //const actionRef = useRef<ActionType>();
 
     const openNotification = () => {
       const key = `open${Date.now()}`;
@@ -31,7 +33,7 @@ const WalletTable: React.FC<{}> = () => {
               }
 
           }>
-              Get Bitcoin Faucet for {getNetworkFromStorage()}
+              Get {getNetworkFromStorage()} Faucet 
           </Button>
       );
       notification.info({
@@ -58,16 +60,15 @@ const WalletTable: React.FC<{}> = () => {
           title: <FormattedMessage id='account.balance' defaultMessage='Balance' />,
           dataIndex: 'balance',
           render: (text, record, index, action) => {
-            console.log(record)
+            //console.log(record)
             return [<a key="1"> {record.balance} </a>]
           }
         },
         {
           title: <FormattedMessage id='faucet.get' defaultMessage='Get Faucet' />,
           hideInForm: true,
-
           render: (text, record, index, action) =>{
-            console.log(record)
+            //console.log(record)
             return [record.type === "BTC"? <a key="1" onClick={() => openNotification()}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a> : <a></a> ]
           }
 
@@ -84,12 +85,12 @@ const WalletTable: React.FC<{}> = () => {
               search={false}
               pagination={false}
               request={() => queryAccountList()}
-              /*
+              
               toolBarRender={() => [
                 <Button key="add_account" type="primary" onClick={() => handleModalVisible(true)}>
                   <PlusOutlined /> <FormattedMessage id='account.add' defaultMessage='Add' />
                 </Button>,
-              ]}*/
+              ]}
               rowSelection={{ onChange: (_, selectedRows) => setSelectedRows(selectedRows) }}
         />
 

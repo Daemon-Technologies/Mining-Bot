@@ -53,13 +53,16 @@ export async function getStxBalance(stxAddress: string) {
 
 export async function getBtcBalance(btcAddress: string) {
   let baseURL = sidecarURLKrypton;
+  let balanceCoef = 1;
   // https://api.blockcypher.com/v1/btc/test3/addrs/mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj/balance
   switch(getCurrentNetwork()) {
       case "Krypton": baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
+                      balanceCoef = 1
                       break;
       //{"balance":0}
       case "Xenon": baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`
                     //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
+                    balanceCoef = 100000000
                     break;
       /*
         {
@@ -80,6 +83,9 @@ export async function getBtcBalance(btcAddress: string) {
   
   return request(`${baseURL}`, {
     method: "GET",
+  }).then((resp)=>{
+    console.log(resp)
+    return {'balance': resp.balance/balanceCoef}
   });
 }
 
@@ -185,7 +191,7 @@ export async function addAccount(params: NewAccount): Promise<API.RequestResult>
       const newBtcAccount: Account = {
         address: btcAddress,
         type: 'BTC',
-        balance: btcBalance,
+        balance: btcBalance.balance.toString(),
         skEnc: enc.toString('hex'),
         iv: iv.toString('hex'),
         authTag: authTag.toString('hex'),

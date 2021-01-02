@@ -1,11 +1,12 @@
 import { showMessage } from "@/services/locale";
 import { message } from "antd";
-import { useState } from "react";
-import { queryAccount, addAccount, deleteAccount } from '@/services/wallet/account'
+import { useRef } from "react";
+import { ActionType } from '@ant-design/pro-table';
+import { queryAccount, deleteAccount } from '@/services/wallet/account'
 
 export default () => {
     // state
-
+    const actionRef = useRef<ActionType>();
     /**
     *  删除账户
     * @param selectedRows
@@ -34,8 +35,8 @@ export default () => {
 
     return {
         removeAccounts,
-        queryAccountList
-
+        queryAccountList,
+        actionRef
     }
 
 }
