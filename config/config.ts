@@ -5,6 +5,7 @@ import proxy from './proxy';
 
 const { REACT_APP_ENV } = process.env;
 
+
 export default defineConfig({
   hash: true,
   antd: {},
@@ -44,42 +45,48 @@ export default defineConfig({
       ],
     },
     {
-      path: '/krypton/publicData',
+      path: '/publicData',
+      name: 'publicData',
+      icon: 'LineChartOutlined',
+      component: './publicData',
+    },
+    {
+      path: '/Krypton/publicData',
       name: 'publicData',
       icon: 'LineChartOutlined',
       component: './publicData',
       access: 'useKrypton'
     },
     {
-      path: '/krypton/wallet',
+      path: '/Krypton/wallet',
       name: 'wallet',
       icon: 'TeamOutlined',
       component: './wallet',
       access: 'useKrypton'
     },
     {
-      path: '/krypton/client',
+      path: '/Krypton/client',
       name: 'client',
       icon: 'FundProjectionScreenOutlined',
       component: './client',
       access: 'useKrypton'
     },
     {
-      path: '/xenon/publicData',
+      path: '/Xenon/publicData',
       name: 'publicData',
       icon: 'LineChartOutlined',
       component: './publicData',
       access: 'useXenon'
     },
     {
-      path: '/xenon/wallet',
+      path: '/Xenon/wallet',
       name: 'wallet',
       icon: 'TeamOutlined',
       component: './wallet',
       access: 'useXenon'
     },
     {
-      path: '/xenon/client',
+      path: '/Xenon/client',
       name: 'client',
       icon: 'FundProjectionScreenOutlined',
       component: './client',
@@ -87,7 +94,7 @@ export default defineConfig({
     },
     {
       path: '/',
-      redirect: '/krypton/publicData',
+      redirect: `/publicData`,
     },
 
     {

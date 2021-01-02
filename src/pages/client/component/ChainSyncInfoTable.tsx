@@ -2,6 +2,7 @@ import React from 'react';
 import { ChainSyncInfo } from "@/services/client/data";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
+import { Divider } from 'antd';
 
 const ChainSyncInfoTable: React.FC<{}> = () => {
 
@@ -36,16 +37,19 @@ const ChainSyncInfoTable: React.FC<{}> = () => {
     ]
 
     return (
-        <ProTable<ChainSyncInfo>
-            headerTitle={<FormattedMessage id='chainSyncInfo.title' defaultMessage='Chain Sync Info' />}
-            rowKey="type"
-            pagination={{
-                pageSize: 10,
-            }}
-            request={() => queryChainSyncInfo()}
-            columns={chainSyncInfoColumns}
-            search={false}
-        />
+        <>
+            <ProTable<ChainSyncInfo>
+                headerTitle={<FormattedMessage id='chainSyncInfo.title' defaultMessage='Chain Sync Info' />}
+                rowKey="type"
+                pagination={{
+                    pageSize: 10,
+                }}
+                request={() => queryChainSyncInfo()}
+                columns={chainSyncInfoColumns}
+                search={false}
+            />
+            <Divider/>
+        </>
     )
 }
 

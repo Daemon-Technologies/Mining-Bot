@@ -53,25 +53,26 @@ const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
         })
     } ,[])
     */
+
    useEffect(()=>{
-        switch(getCurrentNetwork()){
-            case "krypton": setNetworkName("Krypton"); changeNetworkDAO("Krypton"); break;
-            case "xenon": setNetworkName("Xenon"); changeNetworkDAO("Xenon"); break;
+        switch(getNetworkFromStorage()){
+            case "Krypton": setNetworkName("Krypton");  break;
+            case "Xenon": setNetworkName("Xenon"); break;
         }
    } ,[])
 
     
     const onClick = ({ key }) => {
         switch (key){
-            case "krypton": setNetworkName("Krypton")
+            case "Krypton": setNetworkName("Krypton")
                             message.info(`Switch to Krypton network`);
                             changeNetworkDAO("Krypton")
-                            switchPage('krypton')
+                            switchPage('Krypton')
                             break;
-            case "xenon": setNetworkName("Xenon")
+            case "Xenon": setNetworkName("Xenon")
                           message.info(`Switch to Xenon network`);
                           changeNetworkDAO("Xenon")
-                          switchPage('xenon')
+                          switchPage('Xenon')
                           break;
         }
         
@@ -79,13 +80,13 @@ const SwitchNetwork: React.FC<PageProps> = ({ network, dispatch }) => {
     
     const menu = (
         <Menu onClick={onClick} style={{fontSize:12}}>
-          <Menu.Item key="krypton" >
+          <Menu.Item key="Krypton" >
               Krypton
           </Menu.Item>
-          <Menu.Item key="xenon">
+          <Menu.Item key="Xenon">
               Xenon
           </Menu.Item>
-          <Menu.Item key="mainnet" disabled>
+          <Menu.Item key="Mainnet" disabled>
               Mainnet
           </Menu.Item>
         </Menu>

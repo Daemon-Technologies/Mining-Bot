@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Card } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
-import { queryAccount } from '@/services/wallet/accountData'
+import { queryAccount } from '@/services/wallet/account'
 import { Account } from '@/services/wallet/data'
 import { Steps, Divider } from 'antd';
 import { Slider, InputNumber, Row, Col } from 'antd';
