@@ -1,14 +1,17 @@
 import { MiningInfo, MiningInfoQueryParams } from '@/services/publicdata/data';
+import { exportInfo } from '@/services/publicdata/exportUtils';
+import { ExportOutlined } from '@ant-design/icons';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
-import { Tag } from 'antd';
+import { Button, Tag } from 'antd';
 import React from 'react';
 import { FormattedMessage, useModel } from 'umi';
 
 const MiningInfoTable: React.FC<{}> = () => {
 
     const { operationBoardState } = useModel('client.operationBoard');
-    const { queryMiningInfo } = useModel('publicData.miningInfo');
+    const { miningInfoState, queryMiningInfo } = useModel('publicData.miningInfo');
     const { minerAddress } = operationBoardState;
+    const { miningInfoList } = miningInfoState;
     const miningInfoColumns: ProColumns<MiningInfo>[] = [
         {
             title: <FormattedMessage id='miningInfo.stacksHeight' defaultMessage='Stacks Chain Height' />,
@@ -52,6 +55,11 @@ const MiningInfoTable: React.FC<{}> = () => {
             }}
             request={async (params: MiningInfoQueryParams) => queryMiningInfo(params)}
             columns={miningInfoColumns}
+            toolBarRender={() => [
+                <Button key="add_account" type="primary" onClick={() => exportInfo(miningInfoList)}>
+                    <ExportOutlined /> <FormattedMessage id='minerInfo.export' defaultMessage='Export' />
+                </Button>,
+            ]}
             search={{ labelWidth: 'auto' }}
         />
     )

@@ -46,9 +46,11 @@ export default defineConfig({
     },
     {
       path: '/publicData',
+      layout: false,
       name: 'publicData',
       icon: 'LineChartOutlined',
       component: './publicData',
+      access: 'hide',
     },
     {
       path: '/Krypton/publicData',

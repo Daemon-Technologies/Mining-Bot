@@ -26,6 +26,7 @@ export default {
     'minerInfo.totalWins': '燃烧链获胜数',
     'minerInfo.totalMined': '总参与挖矿数',
     'minerInfo.burn': '总燃烧量',
+    'minerInfo.export': '导出',
 
     'miningInfo.title': '挖矿信息',
     'miningInfo.stacksHeight': '链高度',

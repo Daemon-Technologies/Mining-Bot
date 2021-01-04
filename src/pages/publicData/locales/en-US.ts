@@ -26,6 +26,7 @@ export default {
     'minerInfo.totalWins': 'Total Wins',
     'minerInfo.totalMined': 'Total Mined',
     'minerInfo.burn': 'Miner Burned',
+    'minerInfo.export': 'Export',
 
     'miningInfo.title': 'Mining Info',
     'miningInfo.stacksHeight': 'Stack Chain Height',
