@@ -2,13 +2,15 @@ import React from 'react';
 import { MinerInfo, MinerInfoQueryParams } from "@/services/publicdata/data";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
-import { Divider } from 'antd';
+import { Button } from 'antd';
+import { ExportOutlined } from '@ant-design/icons';
+import { exportInfo } from '@/services/publicdata/exportUtils';
 
 const MinerInfoTable: React.FC<{}> = () => {
     const { operationBoardState } = useModel('client.operationBoard');
     let { minerAddress } = operationBoardState;
-    const { queryMinerInfo } = useModel('publicData.minerInfo');
-
+    const { minerInfoState, queryMinerInfo } = useModel('publicData.minerInfo');
+    let { minerInfoList } = minerInfoState;
     const minerInfoColumns: ProColumns<MinerInfo>[] = [
         {
             title: <FormattedMessage id='minerInfo.stxAddress' defaultMessage='STX Address' />,
@@ -58,10 +60,13 @@ const MinerInfoTable: React.FC<{}> = () => {
                 request={(params: MinerInfoQueryParams) => queryMinerInfo(params)}
                 columns={minerInfoColumns}
                 size="small"
-
+                toolBarRender={() => [
+                    <Button key="add_account" type="primary" onClick={() => exportInfo(minerInfoList)}>
+                        <ExportOutlined /> <FormattedMessage id='minerInfo.export' defaultMessage='Export' />
+                    </Button>,
+                ]}
                 search={{ labelWidth: 'auto' }}
             />
-            <Divider/>
         </>
     )
 }

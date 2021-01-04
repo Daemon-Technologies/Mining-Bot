@@ -8,7 +8,7 @@ export interface MinerInfoState {
 
 export default () => {
     // state
-    let [minerInfoState, setMinerInfoState] = useState<MinerInfoState>();
+    let [minerInfoState, setMinerInfoState] = useState<MinerInfoState>({ minerInfoList: [] });
     // query funciton
     const queryMinerInfo = async (params: MinerInfoQueryParams) => {
         let minerInfo = await getMinerInfo();

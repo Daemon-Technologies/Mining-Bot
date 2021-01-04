@@ -7,7 +7,7 @@ export interface MiningInfoState {
 }
 
 export default () => {
-    let [minerInfoState, setMiningInfoState] = useState<MiningInfoState>();
+    let [miningInfoState, setMiningInfoState] = useState<MiningInfoState>({ miningInfoList: [] });
     const queryMiningInfo = async (params: MiningInfoQueryParams) => {
         const miningInfo = await getMiningInfo();
         let data = miningInfo.data.filter((row: MiningInfo) => row.stx_address.includes(params.stx_address || ''));
@@ -19,7 +19,7 @@ export default () => {
         return miningInfo;
     }
     return {
-        minerInfoState,
+        miningInfoState,
         queryMiningInfo,
     }
 }
