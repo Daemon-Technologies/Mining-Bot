@@ -1,6 +1,9 @@
 import { request } from 'umi';
+import { getSysConf } from '../sysConf/conf';
 
-const { miningMonitorServer_endpoint } = require('@/services/constants')
+const sysConf = getSysConf();
+const miningMonitorServer_endpoint = sysConf.miningMonitorUrl;
+
 
 export async function getMinerInfo() {
     return request(`${miningMonitorServer_endpoint}/mining_info`, {

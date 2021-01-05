@@ -4,7 +4,9 @@ import { stringify } from "qs";
 import { history, request } from "umi";
 import { NodeInfo, SysConf } from "./data";
 
-const { miningLocalServer_endpoint, miningMonitorServer_endpoint,
+const miningLocalServer_endpoint = "http://" + window.location.hostname;
+
+const { miningMonitorServer_endpoint,
     MiningPasswordAuthorization, MiningPassword,
     miningNodeListServer_endpoint } = require('@/services/constants');
 

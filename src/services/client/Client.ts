@@ -2,11 +2,13 @@ import { request } from 'umi';
 import { keyGen, aes256Decrypt } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
 import { ChainSyncInfo } from './data';
+import { getSysConf } from '../sysConf/conf';
 
 
 const { nodeKryptonURL } = require('@/services/constants');
-const miningLocalServer_endpoint: string = "http://" + window.location.hostname + ":5000";
-const localChainURL: string = 'http://' + window.location.hostname + ":20443";
+const sysConf = getSysConf();
+const miningLocalServer_endpoint: string = sysConf.miningLocalServerUrl + ':5000';
+const localChainURL: string = sysConf.miningLocalServerUrl + ":20443";
 
 
 export async function getNodeStatus() {

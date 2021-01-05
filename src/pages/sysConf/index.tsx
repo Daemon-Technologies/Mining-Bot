@@ -13,7 +13,7 @@ const Option = Select.Option;
 export interface FormValueType extends Partial<SysConf> {
     miningLocalServerUrl: string;
     miningMonitorUrl: string;
-    btcNodeInfo?: NodeInfo;
+    btcNodeInfo: NodeInfo;
 }
 
 const TableList: React.FC<{}> = () => {
@@ -99,7 +99,7 @@ const TableList: React.FC<{}> = () => {
                     initialValues={{
                         miningLocalServerUrl: formVals.miningLocalServerUrl,
                         miningMonitorUrl: formVals.miningMonitorUrl,
-                        btcNodeInfo: formVals.btcNodeInfo?.peerHost
+                        btcNodeInfo: formVals.btcNodeInfo.peerHost
                     }}
                 >
                     {renderContent()}
