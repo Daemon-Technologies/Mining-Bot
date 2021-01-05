@@ -1,5 +1,5 @@
 import { request } from 'umi';
-import { keyGen, aes256Decrypt, keyDerive, aes256Encrypt } from "@/utils/utils";
+import { keyGen, aes256Decrypt, keyDerive, aes256Encrypt, getNetworkFromStorage } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
 import { ChainSyncInfo } from './data';
 import { getSysConf } from '../sysConf/conf';
@@ -14,7 +14,10 @@ const localChainURL: string = sysConf.miningLocalServerUrl + ":20443";
 
 export async function getNodeStatus() {
   return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
-    method: 'GET',
+    method: 'POST',
+    data: {
+      network: getNetworkFromStorage(),
+    }
   }).then((resp) => {
     console.log(resp);
     return resp

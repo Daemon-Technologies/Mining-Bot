@@ -1,3 +1,4 @@
+import { getNetworkFromStorage } from '@/utils/utils';
 import { io } from 'socket.io-client';
 import { getSysConf } from '../sysConf/conf';
 let socket: any;
@@ -26,7 +27,7 @@ export const subscribeDownloadFinish = (cb) => {
 
 export const startDownload = () => {
     console.log("in")
-    if (socket) socket.emit('download', "1");
+    if (socket) socket.emit('download', getNetworkFromStorage());
 }
 
 export const disconnectSocket = () => {
