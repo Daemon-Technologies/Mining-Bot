@@ -1,6 +1,6 @@
 import { request } from 'umi';
 import { ChainInfo, BlockInfo, TxInfo } from './data';
-import {getCurrentNetwork} from '@/utils/utils'
+import { getNetworkFromStorage } from '@/utils/utils'
 
 const {
     nodeKryptonURL,
@@ -13,35 +13,35 @@ const {
 
 export async function getChainInfo() {
     let baseURL = nodeKryptonURL;
-    switch(getCurrentNetwork()) {
+    switch (getNetworkFromStorage()) {
         case "krypton": baseURL = nodeKryptonURL;
-                        break;
+            break;
         case "xenon": baseURL = nodeXenonURL;
-                      break;
+            break;
         case "mainnet": break; //TODO
         default: break;
     }
     let result;
-    try{
+    try {
         result = await request(`${baseURL}/v2/info`, {
             method: 'GET',
         })
     }
-    catch (error){
+    catch (error) {
         result = undefined
     }
     const chainInfoList: ChainInfo[] = [];
     chainInfoList.push({
-        stacksChainHeight: (result==undefined? "NaN": result.stacks_tip_height),
-        burnChainHeight: (result==undefined? "NaN":result.stable_burn_block_height),
+        stacksChainHeight: (result == undefined ? "NaN" : result.stacks_tip_height),
+        burnChainHeight: (result == undefined ? "NaN" : result.stable_burn_block_height),
     })
 
-    return {'data': chainInfoList} //new Promise((resolve)=>{resolve(chainInfoList)})
+    return { 'data': chainInfoList } //new Promise((resolve)=>{resolve(chainInfoList)})
 }
 
 export async function getBlockInfo() {
     let baseURL = sidecarURLKrypton;
-    switch(getCurrentNetwork()) {
+    switch (getNetworkFromStorage()) {
         case "krypton": baseURL = sidecarURLKrypton; break;
         case "xenon": baseURL = sidecarURLXenon; break;
         case "mainnet": break; //TODO
@@ -68,7 +68,7 @@ export async function getBlockInfo() {
 
 export async function getTxInfo(tx_id: any) {
     let baseURL = sidecarURLKrypton;
-    switch(getCurrentNetwork()) {
+    switch (getNetworkFromStorage()) {
         case "krypton": baseURL = sidecarURLKrypton; break;
         case "xenon": baseURL = sidecarURLXenon; break;
         case "mainnet": break; //TODO
@@ -82,7 +82,7 @@ export async function getTxInfo(tx_id: any) {
 }
 
 export async function getTxsInfo(txs: string[]) {
-    
+
     const data: TxInfo[] = [];
     await Promise.all(txs.map(async (item: any) => {
         const resp = await getTxInfo(item)

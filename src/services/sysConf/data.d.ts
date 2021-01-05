@@ -1,7 +1,7 @@
 export interface SysConf {
     miningLocalServerUrl: string;
     miningMonitorUrl: string;
-    btcNodeInfo: NodeInfo;
+    btcNodeInfo?: NodeInfo;
 }
 
 export interface NodeInfo {

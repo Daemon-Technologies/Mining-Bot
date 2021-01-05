@@ -1,6 +1,6 @@
 import { Account, NewAccount } from "./data";
 import request from "umi-request";
-import { getCurrentNetwork } from '@/utils/utils'
+import { getNetworkFromStorage } from '@/utils/utils'
 import { getBtcAddress, mnemonicToEcPair, getPrivateKeyFromEcPair, getStxAddressFromPriKey, isMnemonicValid } from '@/services/wallet/key'
 import { message } from 'antd';
 import { aes256Encrypt, keyGen } from '@/utils/utils';
@@ -9,7 +9,6 @@ import { showMessage } from "@/services/locale";
 const { btcType, stxType } = require('@/services/constants');
 
 const { sidecarURLKrypton, sidecarURLXenon, bitcoinTestnet3 } = require('@/services/constants')
-
 
 export function getAccount() {
   const stxAccounts: Account[] = [];
@@ -31,7 +30,7 @@ export async function getStxBalance(stxAddress: string) {
 
   let baseURL = sidecarURLKrypton;
 
-  switch (getCurrentNetwork()) {
+  switch (getNetworkFromStorage()) {
     case "Krypton": baseURL = `${sidecarURLKrypton}/v1/address/${stxAddress}/balances`;
       break;
     case "Xenon": baseURL = `${sidecarURLXenon}/v1/address/${stxAddress}/balances`;
@@ -51,7 +50,7 @@ export async function getBtcBalance(btcAddress: string) {
   let baseURL = sidecarURLKrypton;
   let balanceCoef = 1;
   // https://api.blockcypher.com/v1/btc/test3/addrs/mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj/balance
-  switch (getCurrentNetwork()) {
+  switch (getNetworkFromStorage()) {
     case "Krypton": baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
       balanceCoef = 1
       break;

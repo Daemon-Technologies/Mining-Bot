@@ -1,6 +1,7 @@
 import { showMessage } from "@/services/locale";
 import { getSysConf, resetLockPassword, updateSysConf } from "@/services/sysConf/conf";
 import { NodeInfo, SysConf } from "@/services/sysConf/data";
+import { getNetworkFromStorage } from "@/utils/utils";
 import { PageContainer } from "@ant-design/pro-layout";
 import { Button, Card, Divider, Form, Input, Modal, Select } from "antd";
 import React, { useEffect, useState } from 'react';
@@ -13,7 +14,7 @@ const Option = Select.Option;
 export interface FormValueType extends Partial<SysConf> {
     miningLocalServerUrl: string;
     miningMonitorUrl: string;
-    btcNodeInfo: NodeInfo;
+    btcNodeInfo?: NodeInfo;
 }
 
 const TableList: React.FC<{}> = () => {
@@ -35,13 +36,15 @@ const TableList: React.FC<{}> = () => {
     const onSubmit = async () => {
         const fieldsValue = await form.validateFields();
         setFormVals({ ...formVals, ...fieldsValue });
-        const { btcNodeInfo } = fieldsValue;
-        const nodeInfo = nodeList.filter(row => row.peerHost === btcNodeInfo)[0];
-        const conf: SysConf = {
+        let conf: SysConf = {
             miningLocalServerUrl: fieldsValue.miningLocalServerUrl,
             miningMonitorUrl: fieldsValue.miningMonitorUrl,
-            btcNodeInfo: nodeInfo,
         };
+        if (fieldsValue.btcNodeInfo) {
+            const { btcNodeInfo } = fieldsValue;
+            const nodeInfo = nodeList.filter(row => row.peerHost === btcNodeInfo)[0];
+            conf.btcNodeInfo = nodeInfo;
+        }
         updateSysConf(conf);
     }
 
@@ -65,7 +68,7 @@ const TableList: React.FC<{}> = () => {
             >
                 <Input placeholder={showMessage('请输入', 'Please input')} />
             </FormItem>
-            <FormItem
+            {getNetworkFromStorage() === 'Xenon' ? <FormItem
                 name='btcNodeInfo'
                 label={showMessage('选择要同步的BTC节点', 'Choose BTC node to sync')}
                 rules={[{ required: true, message: showMessage('同步节点为必选项', 'BTC Node is required') }]}
@@ -77,7 +80,7 @@ const TableList: React.FC<{}> = () => {
                         )
                     })}
                 </Select>
-            </FormItem>
+            </FormItem> : undefined}
             <FormItem>
                 <Button onClick={() => onSubmit()} type='primary'>{showMessage('更新', 'Update')}</Button>
             </FormItem>
@@ -99,7 +102,7 @@ const TableList: React.FC<{}> = () => {
                     initialValues={{
                         miningLocalServerUrl: formVals.miningLocalServerUrl,
                         miningMonitorUrl: formVals.miningMonitorUrl,
-                        btcNodeInfo: formVals.btcNodeInfo.peerHost
+                        btcNodeInfo: formVals.btcNodeInfo?.peerHost
                     }}
                 >
                     {renderContent()}

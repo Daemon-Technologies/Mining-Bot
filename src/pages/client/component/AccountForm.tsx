@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Card } from 'antd';
+import { Modal, Button, Card, Switch, Input } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { queryAccount } from '@/services/wallet/account'
 import { Account } from '@/services/wallet/data'
@@ -14,7 +14,7 @@ const { Step } = Steps;
 interface CreateFormProps {
   modalVisible: boolean;
   onCancel: () => void;
-  onSubmit: (values: { account: Account, inputBurnFee: number, network: string }) => Promise<void>;
+  onSubmit: (values: { account: Account, inputBurnFee: number, debugMode: boolean, authCode: string, network: string }) => Promise<void>;
 }
 
 
@@ -36,6 +36,9 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   const [accountSelected, handleAccountSelected] = useState<Account>();
   const [stepStatus, setStepStatus] = useState(0);
   const [inputBurnFee, setInputBurnFee] = useState(20000);
+  const [debugMode, setDebugMode] = useState(true);
+  const [authVisible, setAuthVisible] = useState(false);
+  const [authCode, setAuthCode] = useState<string>('');
 
 
   const rowSelection = {
@@ -70,6 +73,20 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
     setInputBurnFee(value);
   }
 
+  const onChangeDebugMode = (value: any) => {
+    if (isNaN(value)) {
+      return;
+    }
+    setDebugMode(value);
+  }
+
+  const onChangeAuthCode = (e: any) => {
+    if (isNaN(e.target.value)) {
+      return;
+    }
+    setAuthCode(e.target.value);
+  }
+
   const renderBurnFeeContent = () => {
     return (
       <>
@@ -96,6 +113,8 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
             </Col>
           </Row>
         </Card>
+        <br />
+        {showMessage('是否开启Debug模式:  ', 'Debug Mode:  ')}<Switch onChange={onChangeDebugMode} checkedChildren={showMessage('开启', 'On')} unCheckedChildren={showMessage('关闭', 'Off')} defaultChecked />
       </>
     )
   };
@@ -122,14 +141,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
                 <Button
                   type="primary"
                   disabled={accountSelected === undefined ? true : false}
-                  onClick={() => {
-                    if (accountSelected) {
-                      onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee, network: 'Krypton' });
-                      setStepStatus(0);
-                      onCancel();
-                    }
-                  }
-                  }
+                  onClick={() => setAuthVisible(true)}
                 >
                   {(showMessage("完成", "Finish"))}
                 </Button>
@@ -144,28 +156,48 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   }
 
   return (
-    <Modal
-      destroyOnClose
-      title={(showMessage("账户选择", "Start Mining Configuration"))}
-      visible={modalVisible}
-      onCancel={() => onCancel()}
-      footer={renderSubmitFooter()}
-    >
-      <Steps current={stepStatus}>
-        <Step title={(showMessage("账户选择", "Account Selection"))} />
-        <Step title={(showMessage("燃烧量设置", "Burn Fee Setting"))} />
-      </Steps>
+    <>
+      <Modal
+        destroyOnClose
+        title={(showMessage("账户选择", "Start Mining Configuration"))}
+        visible={modalVisible}
+        onCancel={() => onCancel()}
+        footer={renderSubmitFooter()}
+      >
+        <Steps current={stepStatus}>
+          <Step title={(showMessage("账户选择", "Account Selection"))} />
+          <Step title={(showMessage("燃烧量设置", "Burn Fee Setting"))} />
+        </Steps>
 
-      <Divider />
+        <Divider />
 
-      {(() => {
-        switch (stepStatus) {
-          case 0: return renderAccountContent();
-          case 1: return renderBurnFeeContent();
-          default: return;
-        }
-      })()}
-    </Modal>
+        {(() => {
+          switch (stepStatus) {
+            case 0: return renderAccountContent();
+            case 1: return renderBurnFeeContent();
+            default: return;
+          }
+        })()}
+      </Modal>
+      <Modal
+        destroyOnClose
+        title={(showMessage("授权密码", "Auth Code"))}
+        visible={authVisible}
+        onCancel={() => setAuthVisible(false)}
+        okText={showMessage('授权', 'Authentication')}
+        onOk={async () => {
+          if (accountSelected) {
+            await onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee, debugMode: debugMode, authCode: authCode, network: 'Krypton' });
+            setStepStatus(0);
+            onCancel();
+            setAuthVisible(false);
+          }
+        }}
+        cancelText={showMessage('取消', 'Cancel')}
+      >
+        <Input onChange={onChangeAuthCode} type='password' placeholder={showMessage('输入授权密码', 'input auth code')} />
+      </Modal>
+    </>
   );
 };
 

@@ -46,52 +46,21 @@ export default defineConfig({
     },
     {
       path: '/publicData',
-      layout: false,
-      // name: 'publicData',
-      // icon: 'LineChartOutlined',
-      component: './publicData',
-    },
-    {
-      path: '/Krypton/publicData',
       name: 'publicData',
       icon: 'LineChartOutlined',
       component: './publicData',
-      access: 'useKrypton'
     },
     {
-      path: '/Krypton/wallet',
+      path: '/wallet',
       name: 'wallet',
       icon: 'TeamOutlined',
       component: './wallet',
-      access: 'useKrypton'
     },
     {
-      path: '/Krypton/client',
+      path: '/client',
       name: 'client',
       icon: 'FundProjectionScreenOutlined',
       component: './client',
-      access: 'useKrypton'
-    },
-    {
-      path: '/Xenon/publicData',
-      name: 'publicData',
-      icon: 'LineChartOutlined',
-      component: './publicData',
-      access: 'useXenon'
-    },
-    {
-      path: '/Xenon/wallet',
-      name: 'wallet',
-      icon: 'TeamOutlined',
-      component: './wallet',
-      access: 'useXenon'
-    },
-    {
-      path: '/Xenon/client',
-      name: 'client',
-      icon: 'FundProjectionScreenOutlined',
-      component: './client',
-      access: 'useXenon'
     },
     {
       path: '/sysConf',

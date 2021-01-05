@@ -106,7 +106,7 @@ const OperationBoard: React.FC<{}> = () => {
                                 type="primary"
                                 loading={startMiningLoading}
                                 onClick={() => handleModalVisible(true)}
-                                disabled={nodeStatus !== -5}
+                            // disabled={nodeStatus !== -5}
                             >
                                 <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                             </Button>
@@ -144,7 +144,7 @@ const OperationBoard: React.FC<{}> = () => {
             </Card>
             <Divider />
             <AccountForm
-                onSubmit={(value: { account: Account, inputBurnFee: number, network: string }) => handleFormSubmit(value)}
+                onSubmit={(value: { account: Account, inputBurnFee: number, debugMode: boolean, authCode: string, network: string }) => handleFormSubmit(value)}
                 onCancel={() => handleModalVisible(false)}
                 modalVisible={createModalVisible ? createModalVisible : false}
             />

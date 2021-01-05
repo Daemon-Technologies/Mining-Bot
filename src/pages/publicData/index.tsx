@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import { ConfigProvider, Divider } from 'antd';
 import { switchConfigProviderLocale } from '@/services/locale';
@@ -7,14 +7,8 @@ import ChainInfoTable from './component/ChainInfoTable';
 import BlockInfoTable from './component/BlockInfoTable';
 import MinerInfoTable from './component/MinerInfoTable';
 import MiningInfoTable from './component/MiningInfoTable';
-import {getCurrentNetwork, switchPage, getNetworkFromStorage} from '@/utils/utils'
 
 const TableList: React.FC<{}> = () => {
-  console.log("in")
-  useEffect(()=>{
-    console.log(getCurrentNetwork(), getNetworkFromStorage())
-    if (getCurrentNetwork() !== getNetworkFromStorage()) switchPage(getNetworkFromStorage())
-  }, [])
 
   return (
     <PageContainer>

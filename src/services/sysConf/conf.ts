@@ -19,22 +19,62 @@ const officialNodeInfo: NodeInfo = {
 }
 
 export function getSysConf(): SysConf {
+    const network = getNetworkFromStorage();
     let confInfo: SysConf = {
         miningLocalServerUrl: miningLocalServer_endpoint,
         miningMonitorUrl: miningMonitorServer_endpoint,
-        btcNodeInfo: officialNodeInfo,
-    }
-    const conf_STJ = localStorage.getItem('BOT_SysConf');
-    if (conf_STJ) {
-        confInfo = JSON.parse(conf_STJ);
+    };
+    switch (network) {
+        case 'Krypton': {
+            const conf_STJ = localStorage.getItem('Krypton_SysConf');
+            if (conf_STJ) {
+                confInfo = JSON.parse(conf_STJ);
+            }
+            break;
+        }
+        case 'Xenon': {
+            confInfo = {
+                miningLocalServerUrl: miningLocalServer_endpoint,
+                miningMonitorUrl: miningMonitorServer_endpoint,
+                btcNodeInfo: officialNodeInfo,
+            }
+            const conf_STJ = localStorage.getItem('Xenon_SysConf');
+            if (conf_STJ) {
+                confInfo = JSON.parse(conf_STJ);
+            }
+            break;
+        }
+        case 'Mainnet': {
+            break;
+        }
+        default: {
+            break;
+        }
+
     }
     return confInfo;
 }
 
 export function updateSysConf(conf: SysConf) {
-    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl && conf.btcNodeInfo) {
+    const network = getNetworkFromStorage();
+    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl) {
         const confStr = JSON.stringify(conf);
-        localStorage.setItem('BOT_SysConf', confStr);
+        switch (network) {
+            case 'Krypton': {
+                localStorage.setItem('Krypton_SysConf', confStr);
+                break;
+            }
+            case 'Xenon': {
+                localStorage.setItem('Xenon_SysConf', confStr);
+                break;
+            }
+            case 'Mainnet': {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
         message.success('Update sytem configuraton successfully');
     } else {
         message.error('Params error');
