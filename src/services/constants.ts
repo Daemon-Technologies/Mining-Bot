@@ -19,6 +19,8 @@ module.exports = {
   miningLocalServer_endpoint: 'http://localhost:5000',
   miningMonitorServer_endpoint: 'http://monitor.stxmining.xyz',
 
+  miningNodeListServer_endpoint: 'http://localhost:8888/nodeList',
+
   MIN_MINER_BTC_AMOUNT: 0.005,
   MIN_MINER_BURN_FEE: 11000,
 

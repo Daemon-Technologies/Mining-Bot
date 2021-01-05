@@ -47,10 +47,9 @@ export default defineConfig({
     {
       path: '/publicData',
       layout: false,
-      name: 'publicData',
-      icon: 'LineChartOutlined',
+      // name: 'publicData',
+      // icon: 'LineChartOutlined',
       component: './publicData',
-      access: 'hide',
     },
     {
       path: '/Krypton/publicData',
@@ -93,6 +92,12 @@ export default defineConfig({
       icon: 'FundProjectionScreenOutlined',
       component: './client',
       access: 'useXenon'
+    },
+    {
+      path: '/sysConf',
+      name: 'sysConf',
+      icon: 'UnorderedListOutlined',
+      component: './sysConf',
     },
     {
       path: '/',

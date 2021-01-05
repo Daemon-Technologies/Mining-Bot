@@ -104,8 +104,8 @@ export function aes256Decrypt(data: string, key: Buffer, ivStr: string, authTagS
 export function getCurrentNetwork(){
   let page = location.pathname.match(/(Xenon|Krypton)/g)
   if (page)
-    return page[0]
-  return ""
+    return page[0];
+  return "";
 }
 
 export function getCurrentPage(){

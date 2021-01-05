@@ -2,6 +2,7 @@ export default {
   'menu.publicData': '公共数据',
   'menu.wallet': '钱包账户',
   'menu.client': '挖矿客户端',
+  'menu.sysConf': '系统配置',
 
   'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
