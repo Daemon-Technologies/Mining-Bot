@@ -10,11 +10,11 @@ export default () => {
         let nodeInfo: NodeInfo[] = [];
         if (nodeInfo_STJ) {
             nodeInfo = JSON.parse(nodeInfo_STJ);
-            setNodeList(state => [...state, ...nodeInfo])
+            setNodeList(state => [...nodeInfo])
         }
         const nodeInfoRes: { status: number; data?: any; message?: string; } = await getNodeInfo();
         if (nodeInfoRes && nodeInfoRes.status === 200) {
-            setNodeList(state => [...state, ...nodeInfoRes.data])
+            setNodeList(state => [...nodeInfo, ...nodeInfoRes.data])
         }
 
     }
