@@ -1,9 +1,9 @@
 import { showMessage } from "@/services/locale";
-import { getSysConf, resetLockPassword, updateSysConf } from "@/services/sysConf/conf";
+import { getSysConf, resetLockPassword, updateNodeList, updateSysConf } from "@/services/sysConf/conf";
 import { NodeInfo, SysConf } from "@/services/sysConf/data";
 import { getNetworkFromStorage } from "@/utils/utils";
 import { PageContainer } from "@ant-design/pro-layout";
-import { Button, Card, Divider, Form, Input, Modal, Select } from "antd";
+import { Button, Card, Divider, Form, Input, message, Modal, Select } from "antd";
 import React, { useEffect, useState } from 'react';
 import { useModel } from "umi";
 
@@ -17,11 +17,21 @@ export interface FormValueType extends Partial<SysConf> {
     btcNodeInfo?: NodeInfo;
 }
 
+export interface NodeFormValueType {
+    peerHost: string;
+    username: string;
+    password: string;
+    rpcPort: number;
+    peerPort: number;
+}
+
 const TableList: React.FC<{}> = () => {
 
     const confInfo: SysConf = getSysConf();
 
     const { nodeList, getNodeList } = useModel('sysConf.sysConf');
+
+    const [nodeModal, setNodeModal] = useState(false);
 
     useEffect(() => {
         getNodeList();
@@ -33,6 +43,8 @@ const TableList: React.FC<{}> = () => {
         btcNodeInfo: confInfo.btcNodeInfo,
     });
 
+    const [nodeFormVals, setNodeFormVals] = useState<NodeFormValueType>();
+
     const onSubmit = async () => {
         const fieldsValue = await form.validateFields();
         setFormVals({ ...formVals, ...fieldsValue });
@@ -42,15 +54,34 @@ const TableList: React.FC<{}> = () => {
         };
         if (fieldsValue.btcNodeInfo) {
             const { btcNodeInfo } = fieldsValue;
+            console.log('btc:', btcNodeInfo)
             const nodeInfo = nodeList.filter(row => row.peerHost === btcNodeInfo)[0];
             conf.btcNodeInfo = nodeInfo;
         }
         updateSysConf(conf);
     }
 
+    const onAddNode = async () => {
+        const fieldsValue = await nodeForm.validateFields();
+        setNodeFormVals({ ...nodeFormVals, ...fieldsValue });
+        let nodeInfo: NodeInfo = {
+            peerHost: fieldsValue.peerHost,
+            username: fieldsValue.username,
+            password: fieldsValue.password,
+            rpcPort: fieldsValue.rpcPort,
+            peerPort: fieldsValue.peerPort,
+        }
+        updateNodeList(nodeInfo);
+        message.success(showMessage('添加成功', 'Add successfully'));
+        setNodeModal(false);
+        window.location.reload();
+    }
+
     const [modalVisible, handleModalVisible] = useState(false);
 
     const [form] = Form.useForm();
+
+    const [nodeForm] = Form.useForm();
 
     const renderContent = () => {
         return <>
@@ -81,10 +112,55 @@ const TableList: React.FC<{}> = () => {
                     })}
                 </Select>
             </FormItem> : undefined}
+            <div style={{ paddingLeft: '95%' }}>
+                <Button onClick={() => setNodeModal(true)} type='primary'>{showMessage('添加', 'Add')}</Button>
+            </div>
             <FormItem>
                 <Button onClick={() => onSubmit()} type='primary'>{showMessage('更新', 'Update')}</Button>
             </FormItem>
         </>
+    }
+
+    const renderAddNodeForm = () => {
+        return (
+            <>
+                <FormItem
+                    name='peerHost'
+                    label={showMessage('服务器地址', 'Peer Host')}
+                    rules={[{ required: true, message: showMessage('服务端地址为必填项', 'Server Url is required') }]}
+                >
+                    <Input placeholder={showMessage('请输入', 'Please input')} />
+                </FormItem>
+                <FormItem
+                    name='username'
+                    label={showMessage('用户名', 'Username')}
+                    rules={[{ required: true, message: showMessage('用户名为必填项', 'username is required') }]}
+                >
+                    <Input placeholder={showMessage('请输入', 'Please input')} />
+                </FormItem>
+                <FormItem
+                    name='password'
+                    label={showMessage('密码', 'Password')}
+                    rules={[{ required: true, message: showMessage('密码为必填项', 'Password is required') }]}
+                >
+                    <Input placeholder={showMessage('请输入', 'Please input')} />
+                </FormItem>
+                <FormItem
+                    name='rpcPort'
+                    label={showMessage('RPC端口', 'RPC Port')}
+                    rules={[{ required: true, message: showMessage('RPC端口为必填项', 'RPC Port is required') }]}
+                >
+                    <Input type='number' placeholder={showMessage('请输入', 'Please input')} />
+                </FormItem>
+                <FormItem
+                    name='peerPort'
+                    label={showMessage('节点端口', 'Peer Port')}
+                    rules={[{ required: true, message: showMessage('节点端口为必填项', 'Peer Port is required') }]}
+                >
+                    <Input type='number' placeholder={showMessage('请输入', 'Please input')} />
+                </FormItem>
+            </>
+        )
     }
 
     return (
@@ -129,6 +205,24 @@ const TableList: React.FC<{}> = () => {
                     {showMessage('这将清空你所有的账户信息，请慎重！'
                         , 'Attention plaese! This operation will clear all your account info.')}
                 </span>
+            </Modal>
+
+            <Modal
+                width={640}
+                destroyOnClose
+                title={showMessage('添加BTC节点', 'Add BTC Node')}
+                visible={nodeModal}
+                onCancel={() => setNodeModal(false)}
+                okText={showMessage('添加', 'Add')}
+                cancelText={showMessage('取消', 'Cancel')}
+                onOk={onAddNode}
+            >
+                <Form
+                    form={nodeForm}
+                    layout='vertical'
+                >
+                    {renderAddNodeForm()}
+                </Form>
             </Modal>
         </PageContainer>
     )
