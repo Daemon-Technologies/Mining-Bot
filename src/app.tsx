@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { ResponseError } from 'umi-request';
 import defaultSettings from '../config/defaultSettings';
 import { queryUserInfo } from './services/user';
+import {getNetworkFromStorage} from '@/utils/utils'
 
 export async function getInitialState(): Promise<{
   currentUser?: API.UserInfo;
@@ -24,6 +25,12 @@ export async function getInitialState(): Promise<{
       history.push('/user/login');
     }
   }
+
+  let networkType = getNetworkFromStorage()
+  if (networkType === null){
+    localStorage.setItem('network', 'Krypton')
+  }
+
   return {
     settings: defaultSettings,
   };

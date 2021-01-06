@@ -73,6 +73,12 @@ export function keyGen() {
   return key;
 }
 
+export function keyDerive(password: string) {
+  const salt = 'a5782e4ff88d33106913bd15965d776955e76a1d511359d0f76b89dcbf8ea721fc32f0cf3a3a19c932e44872c141e7d63e8f07aea7da023a38273e6dd1d5b667';
+  const key = kdf(password, salt);
+  return key;
+}
+
 export function aes256Encrypt(data: string, key: Buffer) {
   try {
     const iv = crypto.randomBytes(16);
@@ -99,4 +105,28 @@ export function aes256Decrypt(data: string, key: Buffer, ivStr: string, authTagS
     message.error(error);
   }
   return null;
+}
+
+// export function getCurrentNetwork() {
+//   let page = location.pathname.match(/(Xenon|Krypton)/g)
+//   if (page)
+//     return page[0];
+//   return "";
+// }
+
+// export function getCurrentPage() {
+//   let page = location.pathname.match(/(publicData|client|wallet)/g)
+//   if (page)
+//     return page[0]
+//   return ""
+// }
+
+// export function switchPage(network: string) {
+//   let cpage = getCurrentPage()
+//   location.href = location.origin + `/${network}/${cpage}`;
+// }
+
+export function getNetworkFromStorage() {
+  let network = localStorage.getItem('network')
+  return (network === null ? 'Xenon' : network)
 }

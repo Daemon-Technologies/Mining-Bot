@@ -2,6 +2,7 @@ export default {
   'menu.publicData': 'Public Data',
   'menu.wallet': 'Wallet',
   'menu.client': 'Mining Client',
+  'menu.sysConf': 'System Configuration',
 
   'menu.welcome': 'Welcome',
   'menu.more-blocks': 'More Blocks',
