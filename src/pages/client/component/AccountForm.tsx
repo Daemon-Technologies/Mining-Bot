@@ -7,6 +7,7 @@ import { Steps, Divider } from 'antd';
 import { Slider, InputNumber, Row, Col } from 'antd';
 import { showMessage } from '@/services/locale';
 import { isValidAuthCode } from '@/services/client/Client';
+import { getNetworkFromStorage } from '@/utils/utils';
 
 const { MIN_MINER_BURN_FEE } = require('@/services/constants');
 const { Step } = Steps;
@@ -79,13 +80,6 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
       return;
     }
     setDebugMode(value);
-  }
-
-  const onChangeAuthCode = (e: any) => {
-    if (isNaN(e.target.value)) {
-      return;
-    }
-    setAuthCode(e.target.value);
   }
 
   const renderBurnFeeContent = () => {
@@ -190,10 +184,10 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
           if (accountSelected) {
             const res = await isValidAuthCode(authCode);
             if (res.status === 200) {
-              await onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee, debugMode: debugMode, authCode: authCode, network: 'Krypton' });
+              await onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee, debugMode: debugMode, authCode: authCode, network: getNetworkFromStorage() });
+              setAuthVisible(false);
               setStepStatus(0);
               onCancel();
-              setAuthVisible(false);
             } else {
               message.error('authCode error!');
             }
@@ -201,7 +195,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
         }}
         cancelText={showMessage('取消', 'Cancel')}
       >
-        <Input onChange={onChangeAuthCode} type='password' placeholder={showMessage('输入授权密码', 'input auth code')} />
+        <Input onChange={event => setAuthCode(event.target.value)} type='password' placeholder={showMessage('输入授权密码', 'input auth code')} />
       </Modal>
     </>
   );

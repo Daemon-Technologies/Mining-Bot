@@ -133,11 +133,11 @@ export default () => {
             await message.loading({ content: showMessage('启动Stacks Blockchain', "Launching Stacks Blockchain..."), duration: 1 })
 
             // Add network type
-            value.network = 'Krypton';
+            // value.network =;
             // console.log(value)
             // Launching stack-blockchain by rpc
             const res = await startMining(value);
-            console.log(res)
+            console.log('submit:', res)
             setOperationBoardState(state => {
                 return {
                     ...state,

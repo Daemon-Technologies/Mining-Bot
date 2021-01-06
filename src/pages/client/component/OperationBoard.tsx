@@ -106,7 +106,7 @@ const OperationBoard: React.FC<{}> = () => {
                                 type="primary"
                                 loading={startMiningLoading}
                                 onClick={() => handleModalVisible(true)}
-                            // disabled={nodeStatus !== -5}
+                                disabled={nodeStatus !== -5}
                             >
                                 <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                             </Button>
