@@ -81,7 +81,10 @@ export async function startMining(data: { account: Account, inputBurnFee: number
 
 export async function stopMining() {
   return request(`${miningLocalServer_endpoint}/stopMining`, {
-    method: 'GET',
+    method: 'POST',
+    data: {
+      network: getNetworkFromStorage(),
+    }
   }).then((resp) => {
     console.log(resp);
     return resp
@@ -122,4 +125,24 @@ export async function getLocalChainSyncInfo() {
 
 export async function getMainChainInfo() {
   return request(`${nodeKryptonURL}/v2/info`, { method: 'GET' });
+}
+
+export async function isValidAuthCode(password: string) {
+  const ping = 'ping';
+  const authKey = keyDerive(password);
+  const encInfo = aes256Encrypt(ping, authKey);
+  if (encInfo) {
+    const [enc, iv, authTag] = encInfo;
+    return request(`${miningLocalServer_endpoint}/isValidAuthCode`, {
+      method: 'POST',
+      data: {
+        pingEnc: enc.toString('hex'),
+        iv: iv.toString('hex'),
+        authTag: authTag.toString('hex'),
+      },
+    });
+  } else {
+    message.error('Params error');
+    return { status: 500 };
+  }
 }

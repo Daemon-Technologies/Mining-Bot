@@ -154,6 +154,7 @@ export default () => {
                 message.error({ content: showMessage('启动异常，请联系管理员！', "Launching Error, Please Contact With Admin!!!"), duration: 4 });
             }
             await handleNodeStatus();
+            return res;
         }
     }
 

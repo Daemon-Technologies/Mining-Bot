@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Modal, Button, Card, Switch, Input } from 'antd';
+import { Modal, Button, Card, Switch, Input, message } from 'antd';
 import ProTable, { ProColumns } from '@ant-design/pro-table';
 import { queryAccount } from '@/services/wallet/account'
 import { Account } from '@/services/wallet/data'
 import { Steps, Divider } from 'antd';
 import { Slider, InputNumber, Row, Col } from 'antd';
 import { showMessage } from '@/services/locale';
+import { isValidAuthCode } from '@/services/client/Client';
 
 const { MIN_MINER_BURN_FEE } = require('@/services/constants');
 const { Step } = Steps;
@@ -14,7 +15,7 @@ const { Step } = Steps;
 interface CreateFormProps {
   modalVisible: boolean;
   onCancel: () => void;
-  onSubmit: (values: { account: Account, inputBurnFee: number, debugMode: boolean, authCode: string, network: string }) => Promise<void>;
+  onSubmit: (values: { account: Account, inputBurnFee: number, debugMode: boolean, authCode: string, network: string }) => Promise<API.RequestResult>;
 }
 
 
@@ -187,10 +188,15 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
         okText={showMessage('授权', 'Authentication')}
         onOk={async () => {
           if (accountSelected) {
-            await onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee, debugMode: debugMode, authCode: authCode, network: 'Krypton' });
-            setStepStatus(0);
-            onCancel();
-            setAuthVisible(false);
+            const res = await isValidAuthCode(authCode);
+            if (res.status === 200) {
+              await onSubmit({ account: accountSelected, inputBurnFee: inputBurnFee, debugMode: debugMode, authCode: authCode, network: 'Krypton' });
+              setStepStatus(0);
+              onCancel();
+              setAuthVisible(false);
+            } else {
+              message.error('authCode error!');
+            }
           }
         }}
         cancelText={showMessage('取消', 'Cancel')}
