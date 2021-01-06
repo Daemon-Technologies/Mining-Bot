@@ -85,6 +85,7 @@ export function updateSysConf(conf: SysConf) {
 
 export async function getNodeInfo() {
     const currentNetwork = getNetworkFromStorage();
+
     return request(miningNodeListServer_endpoint, {
         method: 'POST',
         data: {
@@ -106,5 +107,28 @@ export function resetLockPassword() {
                 redirect: window.location.href,
             }),
         });
+    }
+}
+
+export function updateNodeList(node: NodeInfo) {
+    const network = getNetworkFromStorage();
+    let nodeInfo: NodeInfo[] = [];
+    switch (network) {
+        case 'Xenon': {
+            const nodeInfo_STJ = localStorage.getItem('Xenon_NodeInfo');
+            if (nodeInfo_STJ) {
+                nodeInfo = JSON.parse(nodeInfo_STJ);
+            }
+            nodeInfo = nodeInfo.filter(row => row.peerHost !== node.peerHost);
+            nodeInfo.push(node);
+            localStorage.setItem('Xenon_NodeInfo', JSON.stringify(nodeInfo));
+            break;
+        }
+        case 'Mainnet': {
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
