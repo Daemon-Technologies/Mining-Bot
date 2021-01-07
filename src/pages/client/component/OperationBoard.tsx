@@ -99,14 +99,16 @@ const OperationBoard: React.FC<{}> = () => {
                         <Space>
                             <Button
                                 type="default"
-                                onClick={() => checkStatus()}>
+                                onClick={() => checkStatus()}
+                                disabled={nodeStatus === -6}
+                            >
                                 <FormattedMessage id='opt.button.status' defaultMessage='Get Node Status' />
                             </Button>
                             <Button
                                 type="primary"
                                 loading={startMiningLoading}
                                 onClick={() => handleModalVisible(true)}
-                                disabled={nodeStatus !== -5}
+                                // disabled={nodeStatus !== -5}
                             >
                                 <FormattedMessage id='opt.button.start' defaultMessage='Start Mining' />
                             </Button>

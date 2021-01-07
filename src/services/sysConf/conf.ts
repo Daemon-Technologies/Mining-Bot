@@ -10,10 +10,10 @@ const { miningMonitorServer_endpoint,
     MiningPasswordAuthorization, MiningPassword,
     miningNodeListServer_endpoint } = require('@/services/constants');
 
-const officialNodeInfo: NodeInfo = {
-    peerHost: 'bitcoind.xenon.blockstack.org',
-    username: 'blockstack',
-    password: 'blockstacksystem',
+const defaultNodeInfo: NodeInfo = {
+    peerHost: 'Your Bitcoin Peer Host',
+    username: 'Your Username',
+    password: 'Your Password',
     rpcPort: 18332,
     peerPort: 18333,
 }
@@ -36,11 +36,14 @@ export function getSysConf(): SysConf {
             confInfo = {
                 miningLocalServerUrl: miningLocalServer_endpoint,
                 miningMonitorUrl: miningMonitorServer_endpoint,
-                btcNodeInfo: officialNodeInfo,
+                btcNodeInfo: defaultNodeInfo,
             }
             const conf_STJ = localStorage.getItem('Xenon_SysConf');
             if (conf_STJ) {
                 confInfo = JSON.parse(conf_STJ);
+                if (!confInfo.btcNodeInfo) {
+                    confInfo.btcNodeInfo = defaultNodeInfo;
+                }
             }
             break;
         }
@@ -57,7 +60,7 @@ export function getSysConf(): SysConf {
 
 export function updateSysConf(conf: SysConf) {
     const network = getNetworkFromStorage();
-    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl) {
+    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl && conf.btcNodeInfo) {
         const confStr = JSON.stringify(conf);
         switch (network) {
             case 'Krypton': {
@@ -79,7 +82,7 @@ export function updateSysConf(conf: SysConf) {
     } else {
         message.error('Params error');
     }
-    window.location.reload();
+    // window.location.reload();
     return;
 }
 
@@ -107,28 +110,5 @@ export function resetLockPassword() {
                 redirect: window.location.href,
             }),
         });
-    }
-}
-
-export function updateNodeList(node: NodeInfo) {
-    const network = getNetworkFromStorage();
-    let nodeInfo: NodeInfo[] = [];
-    switch (network) {
-        case 'Xenon': {
-            const nodeInfo_STJ = localStorage.getItem('Xenon_NodeInfo');
-            if (nodeInfo_STJ) {
-                nodeInfo = JSON.parse(nodeInfo_STJ);
-            }
-            nodeInfo = nodeInfo.filter(row => row.peerHost !== node.peerHost);
-            nodeInfo.push(node);
-            localStorage.setItem('Xenon_NodeInfo', JSON.stringify(nodeInfo));
-            break;
-        }
-        case 'Mainnet': {
-            break;
-        }
-        default: {
-            break;
-        }
     }
 }

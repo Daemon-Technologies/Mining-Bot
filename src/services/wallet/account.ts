@@ -40,7 +40,7 @@ export async function getStxBalance(stxAddress: string) {
   }
   return request(`${baseURL}`, {
     method: 'GET',
-    timeout: 1000,
+    timeout: 3000,
   });
 }
 
