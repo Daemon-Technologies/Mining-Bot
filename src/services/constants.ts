@@ -1,20 +1,27 @@
 module.exports = {
-
-  sidecarURL: 'https://stacks-node-api.blockstack.org/extended',
+  // Krypton
   sidecarURLKrypton: 'https://stacks-node-api.krypton.blockstack.org/extended',
-  explorerURL: 'https://testnet-explorer.blockstack.org',
   btcFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/btc?address=',
   stxFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/stx?address=',
-
-  binanceAPIURL: 'https://api.binance.com/api/v3',
-
   nodeKryptonURL: "http://krypton.blockstack.org:20443",
 
-  miningLocalServer_endpoint: 'http://localhost:5000',
+  //Xenon
+  sidecarURLXenon: 'https://stacks-node-api.xenon.blockstack.org/extended',
+  nodeStatusURL: 'https://status.test-blockstack.com',
+  nodeXenonURL: 'http://xenon.blockstack.org:20443',
 
+  //Bitcoin endpoint
+  bitcoinTestnet3: 'https://api.blockcypher.com/v1/btc/test3',
+
+  explorerURL: 'https://testnet-explorer.blockstack.org',
+  binanceAPIURL: 'https://api.binance.com/api/v3',
+  masterNodeKey: 'master_node_ping',
+  miningLocalServer_endpoint: 'http://localhost:5000',
   miningMonitorServer_endpoint: 'http://monitor.stxmining.xyz',
 
-  MIN_MINER_BTC_AMOUNT: 0.005,
+  miningNodeListServer_endpoint: 'http://bitcoind-list.stxmining.xyz/nodeList',
+
+  MIN_MINER_BTC_AMOUNT: 0.000011,
   MIN_MINER_BURN_FEE: 11000,
 
   // language

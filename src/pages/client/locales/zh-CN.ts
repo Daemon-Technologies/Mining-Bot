@@ -9,18 +9,6 @@ export default {
     'strategy.name': '策略名称',
     'strategy.createAt': '创建时间',
 
-    'minerInfo.title': '矿工信息',
-    'minerInfo.stxAddress': 'STX地址',
-    'minerInfo.btcAddress': 'BTC地址',
-    'minerInfo.actualWins': '最终获胜数',
-    'minerInfo.totalWins': '燃烧链获胜数',
-    'minerInfo.totalMined': '总参与挖矿数',
-    'minerInfo.burn': '总燃烧量',
-
-    'miningInfo.title': '挖矿信息',
-    'miningInfo.stacksHeight': '链高度',
-    'miningInfo.burnfee': '燃烧量',
-
     'chainSyncInfo.title': '链同步信息',
     'chainSyncInfo.burn_block_height': '燃烧链高度',
     'chainSyncInfo.stacks_tip_height': '主链高度',
@@ -38,7 +26,7 @@ export default {
     'status.noStacksNodeRunning':"stacks-node程序已下载，请点击开始挖矿按钮",
     'status.stacksNodeDeletedSuccessfully': "stacks-node文件存在但是不完整，后台删除成功！请刷新本页面，并重新下载stacks-node",
     'status.stacksNodeDeletedUnsuccessfully': "stacks-node文件存在但是不完整，后台删除失败！！！请手动在文件夹下删除stacks-node文件",
-    'status.status.isDownloading':'正在下载 Stacks-node！',
+    'status.isDownloading':'正在下载 Stacks-node！',
 
     'notification.getNodeStatus.checkEnv': "环境检查中....",
     'notification.getNodeStatus.noProgram': "后台没有挖矿进程！",

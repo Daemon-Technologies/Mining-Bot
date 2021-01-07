@@ -1,28 +1,32 @@
 import { request } from 'umi';
-const { miningMonitorServer_endpoint } = require('@/services/constants')
-import { keyGen, aes256Decrypt } from "@/utils/utils";
+import { keyGen, aes256Decrypt, keyDerive, aes256Encrypt, getNetworkFromStorage } from "@/utils/utils";
 import { Account } from '@/services/wallet/data'
 import { ChainSyncInfo } from './data';
+import { getSysConf } from '../sysConf/conf';
+import { message } from 'antd';
+import { NodeInfo } from '../sysConf/data';
 
 
-const { nodeKryptonURL } = require('@/services/constants')
-const miningLocalServer_endpoint: string = "http://" + window.location.hostname + ":5000"
-const localChainURL: string = 'http://' + window.location.hostname + ":20443"
+const { nodeKryptonURL, nodeXenonURL } = require('@/services/constants');
+const sysConf = getSysConf();
+const miningLocalServer_endpoint: string = sysConf.miningLocalServerUrl;
+const localChainURL: string = sysConf.miningLocalChainUrl;
 
 
 export async function getNodeStatus() {
   return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
-    method: 'GET',
+    method: 'POST',
+    data: {
+      network: getNetworkFromStorage(),
+    }
   }).then((resp) => {
-    console.log(resp);
     return resp
   }).catch((error) => {
-    console.log("catch:", error)
     return error
   })
 }
 
-export async function startMining(data: { account: Account, inputBurnFee: number, network: string }) {
+export async function startMining(data: { account: Account, inputBurnFee: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) {
   /*
     address: "n4e9BRjiNm8ANt94eyoMofxNQoKQxHN2jJ"
     authTag: "a4df9c8972d554a4108b0aaff87e8ccb"
@@ -31,56 +35,61 @@ export async function startMining(data: { account: Account, inputBurnFee: number
     skEnc: "xBw3XtUuI/3sOozEwtKqC5fj/jTt5JLKcpA2enDHuiEZlnPSxVC/rdVdb26RwfFXKQQFK2Jg28c3kBfBAM5FhtuC"
     type: "BTC"
   */
-  console.log(data)
-  const account = data.account
-  const burnFee = data.inputBurnFee
+  const account = data.account;
+  const burnFee = data.inputBurnFee;
+  const debugMode = data.debugMode;
+  const authCode = data.authCode;
+  const nodeInfo = data.nodeInfo;
 
 
-  const key = keyGen()
-  const seed = aes256Decrypt(account.skEnc, key, account.iv, account.authTag)
-  console.log(seed)
-
-  return request(`${miningLocalServer_endpoint}/startMining`, {
-    method: 'POST',
-    data: {
-      address: account.address,
-      seed: seed,
-      burn_fee_cap: burnFee,
-      network: data.network
+  const key = keyGen();
+  const seed = aes256Decrypt(account.skEnc, key, account.iv, account.authTag);
+  const authKey = keyDerive(authCode);
+  if (seed) {
+    const encInfo = aes256Encrypt(seed, authKey);
+    const nodeInfoStr = JSON.stringify(nodeInfo);
+    const encNodeInfo = aes256Encrypt(nodeInfoStr, authKey);
+    if (encInfo && encNodeInfo) {
+      const [enc, iv, authTag] = encInfo;
+      const [nodeEnc, nodeIv, nodeAuthTag] = encNodeInfo;
+      return request(`${miningLocalServer_endpoint}/startMining`, {
+        method: 'POST',
+        data: {
+          address: account.address,
+          seed: {
+            seedEnc: enc.toString('hex'),
+            iv: iv.toString('hex'),
+            authTag: authTag.toString('hex'),
+          },
+          burnchainInfo: {
+            infoEnc: nodeEnc.toString('hex'),
+            iv: nodeIv.toString('hex'),
+            authTag: nodeAuthTag.toString('hex'),
+          },
+          burn_fee_cap: burnFee,
+          debugMode: debugMode,
+          network: data.network
+        }
+      });
     }
-  }).then((resp) => {
-    console.log(resp);
-    return resp
-  })
+  } else {
+    message.error('Params error');
+    return;
+  }
 }
 
 
 export async function stopMining() {
   return request(`${miningLocalServer_endpoint}/stopMining`, {
-    method: 'GET',
+    method: 'POST',
+    data: {
+      network: getNetworkFromStorage(),
+    }
   }).then((resp) => {
-    console.log(resp);
     return resp
   })
 }
 
-export async function getMinerInfo() {
-  return request(`${miningMonitorServer_endpoint}/mining_info`, {
-    method: 'GET',
-    timeout: 30000,
-  }).then(data => {
-    return { 'data': data.miner_info, 'success': true };
-  });
-}
-
-export async function getMiningInfo() {
-  return request(`${miningMonitorServer_endpoint}/mining_info`, {
-    method: 'GET',
-    timeout: 30000,
-  }).then(data => {
-    return { 'data': data.mining_info, 'success': true };
-  });
-}
 
 export async function getChainSyncInfo(): Promise<API.RequestResult> {
   let infoList: ChainSyncInfo[] = [];
@@ -114,5 +123,34 @@ export async function getLocalChainSyncInfo() {
 }
 
 export async function getMainChainInfo() {
-  return request(`${nodeKryptonURL}/v2/info`, { method: 'GET' });
+  let baseURL = nodeXenonURL;
+  switch (getNetworkFromStorage()) {
+    case "Krypton": baseURL = nodeKryptonURL;
+      break;
+    case "Xenon": baseURL = nodeXenonURL;
+      break;
+    case "Mainnet": break; //TODO
+    default: break;
+  }
+  return request(`${baseURL}/v2/info`, { method: 'GET' });
+}
+
+export async function isValidAuthCode(password: string) {
+  const ping = 'ping';
+  const authKey = keyDerive(password);
+  const encInfo = aes256Encrypt(ping, authKey);
+  if (encInfo) {
+    const [enc, iv, authTag] = encInfo;
+    return request(`${miningLocalServer_endpoint}/isValidAuthCode`, {
+      method: 'POST',
+      data: {
+        pingEnc: enc.toString('hex'),
+        iv: iv.toString('hex'),
+        authTag: authTag.toString('hex'),
+      },
+    });
+  } else {
+    message.error('Params error');
+    return { status: 500 };
+  }
 }
