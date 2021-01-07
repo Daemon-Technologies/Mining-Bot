@@ -12,13 +12,13 @@ const {
 
 
 export async function getChainInfo() {
-    let baseURL = nodeKryptonURL;
+    let baseURL = nodeXenonURL;
     switch (getNetworkFromStorage()) {
-        case "krypton": baseURL = nodeKryptonURL;
+        case "Krypton": baseURL = nodeKryptonURL;
             break;
-        case "xenon": baseURL = nodeXenonURL;
+        case "Xenon": baseURL = nodeXenonURL;
             break;
-        case "mainnet": break; //TODO
+        case "Mainnet": break; //TODO
         default: break;
     }
     let result;
@@ -40,11 +40,11 @@ export async function getChainInfo() {
 }
 
 export async function getBlockInfo() {
-    let baseURL = sidecarURLKrypton;
+    let baseURL = sidecarURLXenon;
     switch (getNetworkFromStorage()) {
-        case "krypton": baseURL = sidecarURLKrypton; break;
-        case "xenon": baseURL = sidecarURLXenon; break;
-        case "mainnet": break; //TODO
+        case "Krypton": baseURL = sidecarURLKrypton; break;
+        case "Xenon": baseURL = sidecarURLXenon; break;
+        case "Mainnet": break; //TODO
         default: break;
     }
     return request(`${baseURL}/v1/block?limit=5`, {

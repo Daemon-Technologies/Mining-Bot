@@ -1,20 +1,21 @@
 import { showMessage } from "@/services/locale";
-import { getSysConf, resetLockPassword, updateNodeList, updateSysConf } from "@/services/sysConf/conf";
-import { NodeInfo, SysConf } from "@/services/sysConf/data";
+import { getSysConf, resetLockPassword, updateSysConf } from "@/services/sysConf/conf";
+import { SysConf } from "@/services/sysConf/data";
 import { getNetworkFromStorage } from "@/utils/utils";
 import { PageContainer } from "@ant-design/pro-layout";
-import { Button, Card, Divider, Form, Input, message, Modal, Select } from "antd";
-import React, { useEffect, useState } from 'react';
-import { useModel } from "umi";
+import { Button, Card, Divider, Form, Input, Modal } from "antd";
+import React, { useState } from 'react';
 
 const FormItem = Form.Item;
-
-const Option = Select.Option;
 
 export interface FormValueType extends Partial<SysConf> {
     miningLocalServerUrl: string;
     miningMonitorUrl: string;
-    btcNodeInfo?: NodeInfo;
+    peerHost?: string;
+    username?: string;
+    password?: string;
+    rpcPort?: number;
+    peerPort?: number;
 }
 
 export interface NodeFormValueType {
@@ -29,18 +30,16 @@ const TableList: React.FC<{}> = () => {
 
     const confInfo: SysConf = getSysConf();
 
-    const { nodeList, getNodeList } = useModel('sysConf.sysConf');
-
     const [nodeModal, setNodeModal] = useState(false);
-
-    useEffect(() => {
-        getNodeList();
-    }, []);
 
     const [formVals, setFormVals] = useState<FormValueType>({
         miningLocalServerUrl: confInfo.miningLocalServerUrl,
         miningMonitorUrl: confInfo.miningMonitorUrl,
-        btcNodeInfo: confInfo.btcNodeInfo,
+        peerHost: confInfo.btcNodeInfo?.peerHost,
+        username: confInfo.btcNodeInfo?.username,
+        password: confInfo.btcNodeInfo?.password,
+        rpcPort: confInfo.btcNodeInfo?.rpcPort,
+        peerPort: confInfo.btcNodeInfo?.peerPort,
     });
 
     const [nodeFormVals, setNodeFormVals] = useState<NodeFormValueType>();
@@ -51,30 +50,15 @@ const TableList: React.FC<{}> = () => {
         let conf: SysConf = {
             miningLocalServerUrl: fieldsValue.miningLocalServerUrl,
             miningMonitorUrl: fieldsValue.miningMonitorUrl,
+            btcNodeInfo: {
+                peerHost: fieldsValue.peerHost,
+                username: fieldsValue.username,
+                password: fieldsValue.password,
+                rpcPort: fieldsValue.rpcPort,
+                peerPort: fieldsValue.peerPort,
+            }
         };
-        if (fieldsValue.btcNodeInfo) {
-            const { btcNodeInfo } = fieldsValue;
-            console.log('btc:', btcNodeInfo)
-            const nodeInfo = nodeList.filter(row => row.peerHost === btcNodeInfo)[0];
-            conf.btcNodeInfo = nodeInfo;
-        }
         updateSysConf(conf);
-    }
-
-    const onAddNode = async () => {
-        const fieldsValue = await nodeForm.validateFields();
-        setNodeFormVals({ ...nodeFormVals, ...fieldsValue });
-        let nodeInfo: NodeInfo = {
-            peerHost: fieldsValue.peerHost,
-            username: fieldsValue.username,
-            password: fieldsValue.password,
-            rpcPort: fieldsValue.rpcPort,
-            peerPort: fieldsValue.peerPort,
-        }
-        updateNodeList(nodeInfo);
-        message.success(showMessage('添加成功', 'Add successfully'));
-        setNodeModal(false);
-        window.location.reload();
     }
 
     const [modalVisible, handleModalVisible] = useState(false);
@@ -99,24 +83,47 @@ const TableList: React.FC<{}> = () => {
             >
                 <Input placeholder={showMessage('请输入', 'Please input')} />
             </FormItem>
-            {getNetworkFromStorage() === 'Xenon' ? <FormItem
-                name='btcNodeInfo'
-                label={showMessage('选择要同步的BTC节点', 'Choose BTC node to sync')}
-                rules={[{ required: true, message: showMessage('同步节点为必选项', 'BTC Node is required') }]}
-            >
-                <Select>
-                    {nodeList.map(row => {
-                        return (
-                            <Option key={row.peerHost} value={row.peerHost}>{row.peerHost}</Option>
-                        )
-                    })}
-                </Select>
-            </FormItem> : undefined}
-            <div style={{ paddingLeft: '95%' }}>
-                <Button onClick={() => setNodeModal(true)} type='primary'>{showMessage('添加', 'Add')}</Button>
-            </div>
+            {getNetworkFromStorage() === 'Xenon' ?
+                <>
+                    <FormItem
+                        name='peerHost'
+                        label={showMessage('BTC节点服务器地址', 'BTC Node Peer Host')}
+                        rules={[{ required: true, message: showMessage('服务器地址为必填项', 'Peer Host is required') }]}
+                    >
+                        <Input placeholder={showMessage('请输入', 'Please input')} />
+                    </FormItem>
+                    <FormItem
+                        name='username'
+                        label={showMessage('BTC节点用户名', 'BTC Node Username')}
+                        rules={[{ required: true, message: showMessage('用户名为必填项', 'Username is required') }]}
+                    >
+                        <Input placeholder={showMessage('请输入', 'Please input')} />
+                    </FormItem>
+                    <FormItem
+                        name='password'
+                        label={showMessage('BTC节点密码', 'BTC Node Password')}
+                        rules={[{ required: true, message: showMessage('密码为必填项', 'Password is required') }]}
+                    >
+                        <Input placeholder={showMessage('请输入', 'Please input')} />
+                    </FormItem>
+                    <FormItem
+                        name='rpcPort'
+                        label={showMessage('RPC端口', 'BTC Node RPC Port')}
+                        rules={[{ required: true, message: showMessage('RPC端口为必填项', 'RPC Port is required') }]}
+                    >
+                        <Input placeholder={showMessage('请输入', 'Please input')} />
+                    </FormItem>
+                    <FormItem
+                        name='peerPort'
+                        label={showMessage('节点端口', 'BTC Node Peer Port')}
+                        rules={[{ required: true, message: showMessage('节点端口为必填项', 'Peer Port is required') }]}
+                    >
+                        <Input placeholder={showMessage('请输入', 'Please input')} />
+                    </FormItem>
+                </>
+                : undefined}
             <FormItem>
-                <Button onClick={() => onSubmit()} type='primary'>{showMessage('更新', 'Update')}</Button>
+                <Button onClick={() => onSubmit()} type='primary'>{showMessage('保存', 'Save')}</Button>
             </FormItem>
         </>
     }
@@ -178,7 +185,11 @@ const TableList: React.FC<{}> = () => {
                     initialValues={{
                         miningLocalServerUrl: formVals.miningLocalServerUrl,
                         miningMonitorUrl: formVals.miningMonitorUrl,
-                        btcNodeInfo: formVals.btcNodeInfo?.peerHost
+                        peerHost: formVals.peerHost,
+                        username: formVals.username,
+                        password: formVals.password,
+                        rpcPort: formVals.rpcPort,
+                        peerPort: formVals.peerPort,
                     }}
                 >
                     {renderContent()}
@@ -205,24 +216,6 @@ const TableList: React.FC<{}> = () => {
                     {showMessage('这将清空你所有的账户信息，请慎重！'
                         , 'Attention plaese! This operation will clear all your account info.')}
                 </span>
-            </Modal>
-
-            <Modal
-                width={640}
-                destroyOnClose
-                title={showMessage('添加BTC节点', 'Add BTC Node')}
-                visible={nodeModal}
-                onCancel={() => setNodeModal(false)}
-                okText={showMessage('添加', 'Add')}
-                cancelText={showMessage('取消', 'Cancel')}
-                onOk={onAddNode}
-            >
-                <Form
-                    form={nodeForm}
-                    layout='vertical'
-                >
-                    {renderAddNodeForm()}
-                </Form>
             </Modal>
         </PageContainer>
     )
