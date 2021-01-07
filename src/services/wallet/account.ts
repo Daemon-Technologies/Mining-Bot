@@ -78,7 +78,7 @@ export async function getBtcBalance(btcAddress: string) {
 
   return request(`${baseURL}`, {
     method: "GET",
-    timeout: 1000,
+    timeout: 3000,
   }).then((resp) => {
     console.log(resp)
     return { 'balance': (resp.balance / balanceCoef).toString() }

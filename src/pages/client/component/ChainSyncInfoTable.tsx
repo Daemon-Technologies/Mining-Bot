@@ -41,9 +41,7 @@ const ChainSyncInfoTable: React.FC<{}> = () => {
             <ProTable<ChainSyncInfo>
                 headerTitle={<FormattedMessage id='chainSyncInfo.title' defaultMessage='Chain Sync Info' />}
                 rowKey="type"
-                pagination={{
-                    pageSize: 10,
-                }}
+                pagination={false}
                 request={() => queryChainSyncInfo()}
                 columns={chainSyncInfoColumns}
                 search={false}

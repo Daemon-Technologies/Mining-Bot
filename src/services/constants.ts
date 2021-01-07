@@ -21,7 +21,7 @@ module.exports = {
 
   miningNodeListServer_endpoint: 'http://bitcoind-list.stxmining.xyz/nodeList',
 
-  MIN_MINER_BTC_AMOUNT: 0.005,
+  MIN_MINER_BTC_AMOUNT: 0.000011,
   MIN_MINER_BURN_FEE: 11000,
 
   // language

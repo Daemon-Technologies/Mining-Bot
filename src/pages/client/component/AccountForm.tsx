@@ -199,7 +199,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
       <>
         <Group onChange={e => setNodeType(e.target.value)} value={nodeType}>
           <Radio style={radioStyle} value={1}>
-            {showMessage('本地BTC节点', 'Local BTC Node Info')}
+            {showMessage('本地私有BTC节点', 'Local Private BTC Node Info')}
           </Radio>
           <Form
             form={form}
@@ -219,7 +219,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
         <br />
         <Group onChange={e => setNodeType(e.target.value)} value={nodeType}>
           <Radio style={radioStyle} value={2}>
-            {showMessage('远程BTC节点', 'Remote BTC Node Info')}
+            {showMessage('远程公共BTC节点', 'Remote Public BTC Node Info')}
           </Radio>
           <Select
             disabled={nodeType !== 2}
