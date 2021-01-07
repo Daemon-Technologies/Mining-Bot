@@ -74,9 +74,9 @@ const BlockInfoTable: React.FC<{}> = () => {
 
     const TxTable = (record: { txs: any; }) => {
         const TXs = record.txs;
-        console.log(record)
         return (
             <ProTable
+                rowKey="tx_id"
                 columns={txInfoColumns}
                 search={false}
                 options={false}
