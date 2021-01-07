@@ -4,7 +4,7 @@ import { getSysConf } from '../sysConf/conf';
 let socket: any;
 export const initiateSocket = () => {
     const sysConf = getSysConf();
-    socket = io(sysConf.miningLocalServerUrl + ':5000', { transports: ['websocket'] });
+    socket = io(sysConf.miningLocalServerUrl, { transports: ['websocket'] });
     console.log(`Connecting socket...`);
 
 }

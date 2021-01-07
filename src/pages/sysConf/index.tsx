@@ -30,10 +30,9 @@ const TableList: React.FC<{}> = () => {
 
     const confInfo: SysConf = getSysConf();
 
-    const [nodeModal, setNodeModal] = useState(false);
-
     const [formVals, setFormVals] = useState<FormValueType>({
         miningLocalServerUrl: confInfo.miningLocalServerUrl,
+        miningLocalChainUrl: confInfo.miningLocalChainUrl,
         miningMonitorUrl: confInfo.miningMonitorUrl,
         peerHost: confInfo.btcNodeInfo?.peerHost,
         username: confInfo.btcNodeInfo?.username,
@@ -42,13 +41,12 @@ const TableList: React.FC<{}> = () => {
         peerPort: confInfo.btcNodeInfo?.peerPort,
     });
 
-    const [nodeFormVals, setNodeFormVals] = useState<NodeFormValueType>();
-
     const onSubmit = async () => {
         const fieldsValue = await form.validateFields();
         setFormVals({ ...formVals, ...fieldsValue });
         let conf: SysConf = {
             miningLocalServerUrl: fieldsValue.miningLocalServerUrl,
+            miningLocalChainUrl: fieldsValue.miningLocalChainUrl,
             miningMonitorUrl: fieldsValue.miningMonitorUrl,
             btcNodeInfo: {
                 peerHost: fieldsValue.peerHost,
@@ -65,14 +63,19 @@ const TableList: React.FC<{}> = () => {
 
     const [form] = Form.useForm();
 
-    const [nodeForm] = Form.useForm();
-
     const renderContent = () => {
         return <>
             <FormItem
                 name='miningLocalServerUrl'
                 label={showMessage('挖矿机器人服务端地址', 'Mining-Local-Server Url')}
                 rules={[{ required: true, message: showMessage('挖矿机器人服务端地址为必填项', 'Mining-Local-Server Url is required') }]}
+            >
+                <Input placeholder={showMessage('请输入', 'Please input')} />
+            </FormItem>
+            <FormItem
+                name='miningLocalServerUrl'
+                label={showMessage('本地Stacks链地址', 'Local Stacks Chain Url')}
+                rules={[{ required: true, message: showMessage('本地Stacks链地址为必填项', 'Local Stacks Chain Url is required') }]}
             >
                 <Input placeholder={showMessage('请输入', 'Please input')} />
             </FormItem>
@@ -128,48 +131,6 @@ const TableList: React.FC<{}> = () => {
         </>
     }
 
-    const renderAddNodeForm = () => {
-        return (
-            <>
-                <FormItem
-                    name='peerHost'
-                    label={showMessage('服务器地址', 'Peer Host')}
-                    rules={[{ required: true, message: showMessage('服务端地址为必填项', 'Server Url is required') }]}
-                >
-                    <Input placeholder={showMessage('请输入', 'Please input')} />
-                </FormItem>
-                <FormItem
-                    name='username'
-                    label={showMessage('用户名', 'Username')}
-                    rules={[{ required: true, message: showMessage('用户名为必填项', 'username is required') }]}
-                >
-                    <Input placeholder={showMessage('请输入', 'Please input')} />
-                </FormItem>
-                <FormItem
-                    name='password'
-                    label={showMessage('密码', 'Password')}
-                    rules={[{ required: true, message: showMessage('密码为必填项', 'Password is required') }]}
-                >
-                    <Input placeholder={showMessage('请输入', 'Please input')} />
-                </FormItem>
-                <FormItem
-                    name='rpcPort'
-                    label={showMessage('RPC端口', 'RPC Port')}
-                    rules={[{ required: true, message: showMessage('RPC端口为必填项', 'RPC Port is required') }]}
-                >
-                    <Input type='number' placeholder={showMessage('请输入', 'Please input')} />
-                </FormItem>
-                <FormItem
-                    name='peerPort'
-                    label={showMessage('节点端口', 'Peer Port')}
-                    rules={[{ required: true, message: showMessage('节点端口为必填项', 'Peer Port is required') }]}
-                >
-                    <Input type='number' placeholder={showMessage('请输入', 'Please input')} />
-                </FormItem>
-            </>
-        )
-    }
-
     return (
         <PageContainer>
             <Card
@@ -184,6 +145,7 @@ const TableList: React.FC<{}> = () => {
                     layout='vertical'
                     initialValues={{
                         miningLocalServerUrl: formVals.miningLocalServerUrl,
+                        miningLocalChainUrl: formVals.miningLocalChainUrl,
                         miningMonitorUrl: formVals.miningMonitorUrl,
                         peerHost: formVals.peerHost,
                         username: formVals.username,

@@ -9,8 +9,8 @@ import { NodeInfo } from '../sysConf/data';
 
 const { nodeKryptonURL, nodeXenonURL } = require('@/services/constants');
 const sysConf = getSysConf();
-const miningLocalServer_endpoint: string = sysConf.miningLocalServerUrl + ':5000';
-const localChainURL: string = sysConf.miningLocalServerUrl + ":20443";
+const miningLocalServer_endpoint: string = sysConf.miningLocalServerUrl;
+const localChainURL: string = sysConf.miningLocalChainUrl;
 
 
 export async function getNodeStatus() {

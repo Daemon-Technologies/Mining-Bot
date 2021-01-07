@@ -4,7 +4,8 @@ import { stringify } from "qs";
 import { history, request } from "umi";
 import { NodeInfo, SysConf } from "./data";
 
-const miningLocalServer_endpoint = "http://" + window.location.hostname;
+const miningLocalServer_endpoint = "http://" + window.location.hostname + ':5000';
+const miningLocalChain_endpoint = "http://" + window.location.hostname + ':20443';
 
 const { miningMonitorServer_endpoint,
     MiningPasswordAuthorization, MiningPassword,
@@ -22,6 +23,7 @@ export function getSysConf(): SysConf {
     const network = getNetworkFromStorage();
     let confInfo: SysConf = {
         miningLocalServerUrl: miningLocalServer_endpoint,
+        miningLocalChainUrl: miningLocalChain_endpoint,
         miningMonitorUrl: miningMonitorServer_endpoint,
     };
     switch (network) {
@@ -35,6 +37,7 @@ export function getSysConf(): SysConf {
         case 'Xenon': {
             confInfo = {
                 miningLocalServerUrl: miningLocalServer_endpoint,
+                miningLocalChainUrl: miningLocalChain_endpoint,
                 miningMonitorUrl: miningMonitorServer_endpoint,
                 btcNodeInfo: defaultNodeInfo,
             }
@@ -84,6 +87,14 @@ export function updateSysConf(conf: SysConf) {
     }
     // window.location.reload();
     return;
+}
+
+export function updateNodeInfo(nodeInfo: NodeInfo) {
+    let sysConf = getSysConf();
+    if (nodeInfo) {
+        sysConf.btcNodeInfo = nodeInfo;
+        updateSysConf(sysConf);
+    }
 }
 
 export async function getNodeInfo() {

@@ -67,7 +67,7 @@ export async function getBlockInfo() {
 }
 
 export async function getTxInfo(tx_id: any) {
-    let baseURL = sidecarURLKrypton;
+    let baseURL = sidecarURLXenon;
     switch (getNetworkFromStorage()) {
         case "Krypton": baseURL = sidecarURLKrypton; break;
         case "Xenon": baseURL = sidecarURLXenon; break;

@@ -26,7 +26,7 @@ export default {
     'status.noStacksNodeRunning':"stacks-node程序已下载，请点击开始挖矿按钮",
     'status.stacksNodeDeletedSuccessfully': "stacks-node文件存在但是不完整，后台删除成功！请刷新本页面，并重新下载stacks-node",
     'status.stacksNodeDeletedUnsuccessfully': "stacks-node文件存在但是不完整，后台删除失败！！！请手动在文件夹下删除stacks-node文件",
-    'status.status.isDownloading':'正在下载 Stacks-node！',
+    'status.isDownloading':'正在下载 Stacks-node！',
 
     'notification.getNodeStatus.checkEnv': "环境检查中....",
     'notification.getNodeStatus.noProgram': "后台没有挖矿进程！",

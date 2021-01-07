@@ -26,7 +26,7 @@ export default {
     'status.noStacksNodeRunning':"Stacks-node is downloaded but not running! Please Start Mining!",
     'status.stacksNodeDeletedSuccessfully': "Found stacks-node, but stacks-node file is incomplete and delete successfully! Please Refresh the Mining-bot and redownload stacks-node!",
     'status.stacksNodeDeletedUnsuccessfully': 'Found stacks-node, but stacks-node file is incomplete but delete unsuccessfully!!! Please delete it manually in folder.',
-    'status.status.isDownloading':'Downloading Stacks-node now!',
+    'status.isDownloading':'Downloading Stacks-node now!',
 
     'notification.getNodeStatus.checkEnv' : "Checking Environment...",
     'notification.getNodeStatus.noProgram' : "There is no mining process running!",
