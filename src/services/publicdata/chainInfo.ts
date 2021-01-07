@@ -69,9 +69,9 @@ export async function getBlockInfo() {
 export async function getTxInfo(tx_id: any) {
     let baseURL = sidecarURLKrypton;
     switch (getNetworkFromStorage()) {
-        case "krypton": baseURL = sidecarURLKrypton; break;
-        case "xenon": baseURL = sidecarURLXenon; break;
-        case "mainnet": break; //TODO
+        case "Krypton": baseURL = sidecarURLKrypton; break;
+        case "Xenon": baseURL = sidecarURLXenon; break;
+        case "Mainnet": break; //TODO
         default: break;
     }
     return request(`${baseURL}/v1/tx/${tx_id}`, {
