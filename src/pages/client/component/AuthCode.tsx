@@ -1,6 +1,5 @@
 import { isValidAuthCode } from "@/services/client/Client";
 import { showMessage } from "@/services/locale";
-import { updateNodeInfo } from "@/services/sysConf/conf";
 import { NodeInfo } from "@/services/sysConf/data";
 import { getNetworkFromStorage } from "@/utils/utils";
 import { Input, message, Modal } from 'antd';
@@ -64,11 +63,11 @@ export const renderAuthCode = (props: {
                             rpcPort: fieldsValue.rpcPort,
                             peerPort: fieldsValue.peerPort,
                         };
-                        updateNodeInfo(nodeInfo);
                     } else {
                         nodeInfo = nodeList.filter(row => row.peerHost === btcNode)[0];
                     }
                     if (res.status === 200) {
+                        message.success(showMessage('授权密码正确！正在启动挖矿！', 'Auth code is correct! Now it is starting mining'));
                         await onSubmit({
                             account: accountSelected,
                             inputBurnFee: inputBurnFee,
@@ -77,9 +76,9 @@ export const renderAuthCode = (props: {
                             authCode: authCode,
                             network: getNetworkFromStorage()
                         });
-                        setAuthVisible(false);
-                        setStepStatus(0);
-                        onCancel();
+                        await setAuthVisible(false);
+                        await setStepStatus(0);
+                        await onCancel();
                     } else {
                         message.error('authCode error!');
                     }
@@ -87,6 +86,10 @@ export const renderAuthCode = (props: {
             }}
             cancelText={showMessage('取消', 'Cancel')}
         >
+            <span style={{ color: 'red' }}>
+                {showMessage('请输入你在启动Mining-Local Server时设置的密码！'
+                    , 'Please enter the password you set when starting Mining-Local Server.')}
+            </span>
             <Input onChange={event => setAuthCode(event.target.value)} type='password' placeholder={showMessage('输入授权密码', 'input auth code')} />
         </Modal>
     )

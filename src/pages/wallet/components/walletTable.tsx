@@ -61,7 +61,7 @@ const WalletTable: React.FC<{}> = () => {
           dataIndex: 'balance',
           render: (text, record, index, action) => {
             //console.log(record)
-            return [<a key="1"> {record.balance} </a>]
+            return [<a key={index.toString()}> {record.balance} </a>]
           }
         },
         {
@@ -69,7 +69,14 @@ const WalletTable: React.FC<{}> = () => {
           hideInForm: true,
           render: (text, record, index, action) =>{
             //console.log(record)
-            return [record.type === "BTC"? <a key="1" onClick={() => openNotification()}> <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> </a> : <a></a> ]
+            return [  
+                    record.type === "BTC"? 
+                      <a key={index.toString()} onClick={() => openNotification()}> 
+                        <FormattedMessage id='faucet.add' defaultMessage='Get Faucet' /> 
+                      </a> 
+                    : 
+                      <a key={index.toString()}> </a>
+                    ]
           }
 
           

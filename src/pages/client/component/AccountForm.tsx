@@ -5,7 +5,7 @@ import { Steps, Divider } from 'antd';
 import { showMessage } from '@/services/locale';
 import { useForm } from 'antd/es/form/Form';
 import { useModel } from 'umi';
-import { getSysConf } from '@/services/sysConf/conf';
+import { getSysConf, updateNodeInfo } from '@/services/sysConf/conf';
 import { NodeInfo } from '@/services/sysConf/data';
 import { renderNodeInfo } from './Step3NodeInfoContent';
 import { renderBurnFee } from './Step2BurnFeeContent';
@@ -99,7 +99,18 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
                         ? false : true
                     }
                     onClick={async () => {
-                      await form.validateFields();
+                      if (nodeType === 1) {
+                        const fieldsValue = await form.validateFields();
+                        setFormVals({ ...formVals, ...fieldsValue });
+                        const nodeInfo: NodeInfo = {
+                          peerHost: fieldsValue.peerHost,
+                          username: fieldsValue.username,
+                          password: fieldsValue.password,
+                          rpcPort: fieldsValue.rpcPort,
+                          peerPort: fieldsValue.peerPort,
+                        };
+                        updateNodeInfo(nodeInfo);
+                      }
                       setAuthVisible(true);
                     }}
                   >
