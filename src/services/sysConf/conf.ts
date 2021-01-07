@@ -86,6 +86,14 @@ export function updateSysConf(conf: SysConf) {
     return;
 }
 
+export function updateNodeInfo(nodeInfo: NodeInfo) {
+    let sysConf = getSysConf();
+    if (nodeInfo) {
+        sysConf.btcNodeInfo = nodeInfo;
+        updateSysConf(sysConf);
+    }
+}
+
 export async function getNodeInfo() {
     const currentNetwork = getNetworkFromStorage();
 
