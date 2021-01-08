@@ -63,7 +63,7 @@ export function getSysConf(): SysConf {
 
 export function updateSysConf(conf: SysConf) {
     const network = getNetworkFromStorage();
-    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl && conf.btcNodeInfo) {
+    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl && conf.miningLocalChainUrl && conf.btcNodeInfo) {
         const confStr = JSON.stringify(conf);
         switch (network) {
             case 'Krypton': {

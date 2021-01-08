@@ -87,8 +87,8 @@ export const renderAuthCode = (props: {
             cancelText={showMessage('取消', 'Cancel')}
         >
             <span style={{ color: 'red' }}>
-                {showMessage('请输入你在启动Mining-Local Server时设置的密码！'
-                    , 'Please enter the password you set when starting Mining-Local Server.')}
+                {showMessage('请输入你在启动Mining-Bot时设置的密码！'
+                    , 'Please enter the password you set when starting Mining-Bot.')}
             </span>
             <Input onChange={event => setAuthCode(event.target.value)} type='password' placeholder={showMessage('输入授权密码', 'input auth code')} />
         </Modal>
