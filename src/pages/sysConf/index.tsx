@@ -30,6 +30,8 @@ const TableList: React.FC<{}> = () => {
 
     const confInfo: SysConf = getSysConf();
 
+    console.log('confInfo:', confInfo)
+
     const [formVals, setFormVals] = useState<FormValueType>({
         miningLocalServerUrl: confInfo.miningLocalServerUrl,
         miningLocalChainUrl: confInfo.miningLocalChainUrl,
@@ -73,7 +75,7 @@ const TableList: React.FC<{}> = () => {
                 <Input placeholder={showMessage('请输入', 'Please input')} />
             </FormItem>
             <FormItem
-                name='miningLocalServerUrl'
+                name='miningLocalChainUrl'
                 label={showMessage('本地Stacks链地址', 'Local Stacks Chain Url')}
                 rules={[{ required: true, message: showMessage('本地Stacks链地址为必填项', 'Local Stacks Chain Url is required') }]}
             >

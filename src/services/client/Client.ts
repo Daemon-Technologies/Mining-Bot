@@ -8,13 +8,9 @@ import { NodeInfo } from '../sysConf/data';
 
 
 const { nodeKryptonURL, nodeXenonURL } = require('@/services/constants');
-const sysConf = getSysConf();
-const miningLocalServer_endpoint: string = sysConf.miningLocalServerUrl;
-const localChainURL: string = sysConf.miningLocalChainUrl;
-
 
 export async function getNodeStatus() {
-  return request(`${miningLocalServer_endpoint}/getNodeStatus`, {
+  return request(`${getSysConf().miningLocalServerUrl}/getNodeStatus`, {
     method: 'POST',
     data: {
       network: getNetworkFromStorage(),
@@ -52,7 +48,7 @@ export async function startMining(data: { account: Account, inputBurnFee: number
     if (encInfo && encNodeInfo) {
       const [enc, iv, authTag] = encInfo;
       const [nodeEnc, nodeIv, nodeAuthTag] = encNodeInfo;
-      return request(`${miningLocalServer_endpoint}/startMining`, {
+      return request(`${getSysConf().miningLocalServerUrl}/startMining`, {
         method: 'POST',
         data: {
           address: account.address,
@@ -80,7 +76,7 @@ export async function startMining(data: { account: Account, inputBurnFee: number
 
 
 export async function stopMining() {
-  return request(`${miningLocalServer_endpoint}/stopMining`, {
+  return request(`${getSysConf().miningLocalServerUrl}/stopMining`, {
     method: 'POST',
     data: {
       network: getNetworkFromStorage(),
@@ -119,7 +115,7 @@ export async function getChainSyncInfo(): Promise<API.RequestResult> {
 }
 
 export async function getLocalChainSyncInfo() {
-  return request(`${localChainURL}/v2/info`, { method: 'GET' });
+  return request(`${getSysConf().miningLocalChainUrl}/v2/info`, { method: 'GET' });
 }
 
 export async function getMainChainInfo() {
@@ -141,7 +137,7 @@ export async function isValidAuthCode(password: string) {
   const encInfo = aes256Encrypt(ping, authKey);
   if (encInfo) {
     const [enc, iv, authTag] = encInfo;
-    return request(`${miningLocalServer_endpoint}/isValidAuthCode`, {
+    return request(`${getSysConf().miningLocalServerUrl}/isValidAuthCode`, {
       method: 'POST',
       data: {
         pingEnc: enc.toString('hex'),
