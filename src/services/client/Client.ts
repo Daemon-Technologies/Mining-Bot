@@ -115,7 +115,6 @@ export async function getChainSyncInfo(): Promise<API.RequestResult> {
 }
 
 export async function getLocalChainSyncInfo() {
-  console.log('111')
   return request(`${getSysConf().miningLocalChainUrl}/v2/info`, { method: 'GET' });
 }
 
