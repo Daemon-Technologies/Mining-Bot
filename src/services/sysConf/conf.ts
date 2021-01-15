@@ -7,7 +7,7 @@ import { NodeInfo, SysConf } from "./data";
 const miningLocalServer_endpoint = "http://" + window.location.hostname + ':5000';
 const miningLocalChain_endpoint = "http://" + window.location.hostname + ':20443';
 
-const { miningMonitorServer_endpoint,
+const { miningMonitorServer_endpoint, miningMonitorServer_Mainnet,
     MiningPasswordAuthorization, MiningPassword,
     miningNodeListServer_endpoint } = require('@/services/constants');
 
@@ -51,6 +51,19 @@ export function getSysConf(): SysConf {
             break;
         }
         case 'Mainnet': {
+            confInfo = {
+                miningLocalServerUrl: miningLocalServer_endpoint,
+                miningLocalChainUrl: miningLocalChain_endpoint,
+                miningMonitorUrl: miningMonitorServer_Mainnet,
+                btcNodeInfo: defaultNodeInfo,
+            }
+            const conf_STJ = localStorage.getItem('Mainnet_SysConf');
+            if (conf_STJ) {
+                confInfo = JSON.parse(conf_STJ);
+                if (!confInfo.btcNodeInfo) {
+                    confInfo.btcNodeInfo = defaultNodeInfo;
+                }
+            }
             break;
         }
         default: {
@@ -75,6 +88,7 @@ export function updateSysConf(conf: SysConf) {
                 break;
             }
             case 'Mainnet': {
+                localStorage.setItem('Mainnet_SysConf', confStr);
                 break;
             }
             default: {

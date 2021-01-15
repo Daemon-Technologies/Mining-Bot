@@ -5,8 +5,10 @@ import { getNetworkFromStorage } from '@/utils/utils'
 const {
     nodeKryptonURL,
     nodeXenonURL,
+    nodeMainnetURL,
     sidecarURLXenon,
-    sidecarURLKrypton
+    sidecarURLKrypton,
+    sidecarURLMainnet
 } = require('@/services/constants')
 
 
@@ -18,13 +20,15 @@ export async function getChainInfo() {
             break;
         case "Xenon": baseURL = nodeXenonURL;
             break;
-        case "Mainnet": break; //TODO
+        case "Mainnet": baseURL = nodeMainnetURL;
+            break; //TODO
         default: break;
     }
     let result;
     try {
         result = await request(`${baseURL}/v2/info`, {
             method: 'GET',
+            timeout: 3000,
         })
     }
     catch (error) {
@@ -44,7 +48,7 @@ export async function getBlockInfo() {
     switch (getNetworkFromStorage()) {
         case "Krypton": baseURL = sidecarURLKrypton; break;
         case "Xenon": baseURL = sidecarURLXenon; break;
-        case "Mainnet": break; //TODO
+        case "Mainnet": baseURL = sidecarURLMainnet; break;
         default: break;
     }
     return request(`${baseURL}/v1/block?limit=5`, {
@@ -71,7 +75,7 @@ export async function getTxInfo(tx_id: any) {
     switch (getNetworkFromStorage()) {
         case "Krypton": baseURL = sidecarURLKrypton; break;
         case "Xenon": baseURL = sidecarURLXenon; break;
-        case "Mainnet": break; //TODO
+        case "Mainnet": baseURL = sidecarURLMainnet; break;
         default: break;
     }
     return request(`${baseURL}/v1/tx/${tx_id}`, {

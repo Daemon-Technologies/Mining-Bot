@@ -146,7 +146,7 @@ const OperationBoard: React.FC<{}> = () => {
             </Card>
             <Divider />
             <AccountForm
-                onSubmit={(value: { account: Account, inputBurnFee: number, debugMode: boolean, authCode: string, network: string }) => handleFormSubmit(value)}
+                onSubmit={(value: { account: Account, inputBurnFee: number, inputFeeRate: number, debugMode: boolean, authCode: string, network: string }) => handleFormSubmit(value)}
                 onCancel={() => handleModalVisible(false)}
                 modalVisible={createModalVisible ? createModalVisible : false}
             />

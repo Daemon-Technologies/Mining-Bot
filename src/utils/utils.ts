@@ -45,7 +45,16 @@ export const getPageQuery = () => {
 export function coerceAddress(address: string) {
   // TODO now it is testnet
   const { hash } = bitcoin.address.fromBase58Check(address);
-  let coercedVersion = bitcoin.networks.testnet.pubKeyHash;
+  let coercedVersion = bitcoin.networks.bitcoin.pubKeyHash;
+  switch (getNetworkFromStorage()) {
+    case 'Xenon': {
+      coercedVersion = bitcoin.networks.regtest.pubKeyHash;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
   return bitcoin.address.toBase58Check(hash, coercedVersion);
 }
 

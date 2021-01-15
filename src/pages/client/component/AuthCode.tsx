@@ -16,6 +16,7 @@ export const renderAuthCode = (props: {
     btcNode: string;
     onSubmit: Function;
     inputBurnFee: number;
+    inputFeeRate: number;
     debugMode: boolean;
     setStepStatus: Function;
     onCancel: Function;
@@ -32,6 +33,7 @@ export const renderAuthCode = (props: {
         btcNode,
         onSubmit,
         inputBurnFee,
+        inputFeeRate,
         debugMode,
         setStepStatus,
         onCancel,
@@ -71,6 +73,7 @@ export const renderAuthCode = (props: {
                         await onSubmit({
                             account: accountSelected,
                             inputBurnFee: inputBurnFee,
+                            inputFeeRate: inputFeeRate,
                             debugMode: debugMode,
                             nodeInfo: nodeInfo,
                             authCode: authCode,
