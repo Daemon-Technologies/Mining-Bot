@@ -8,7 +8,7 @@ import { showMessage } from "@/services/locale";
 
 const { btcType, stxType } = require('@/services/constants');
 
-const { sidecarURLKrypton, sidecarURLXenon, bitcoinTestnet3 } = require('@/services/constants')
+const { sidecarURLKrypton, sidecarURLXenon, sidecarURLMainnet, bitcoinTestnet3, bitcoinMainnet } = require('@/services/constants')
 
 export function getAccount() {
   const stxAccounts: Account[] = [];
@@ -31,16 +31,25 @@ export async function getStxBalance(stxAddress: string) {
   let baseURL = sidecarURLKrypton;
 
   switch (getNetworkFromStorage()) {
-    case "Krypton": baseURL = `${sidecarURLKrypton}/v1/address/${stxAddress}/balances`;
+    case "Krypton": {
+      baseURL = `${sidecarURLKrypton}/v1/address/${stxAddress}/balances`;
       break;
-    case "Xenon": baseURL = `${sidecarURLXenon}/v1/address/${stxAddress}/balances`;
+    }
+    case "Xenon": {
+      baseURL = `${sidecarURLXenon}/v1/address/${stxAddress}/balances`;
       break;
-    case "Mainnet": break; //TODO
+    }
+    case "Mainnet": {
+      baseURL = `${sidecarURLMainnet}/v1/address/${stxAddress}/balances`;
+      break;
+    }
     default: break;
   }
   return request(`${baseURL}`, {
     method: 'GET',
     timeout: 3000,
+  }).catch(err => {
+    return { stx: { balance: 'NaN' } };
   });
 }
 
@@ -51,14 +60,18 @@ export async function getBtcBalance(btcAddress: string) {
   let balanceCoef = 1;
   // https://api.blockcypher.com/v1/btc/test3/addrs/mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj/balance
   switch (getNetworkFromStorage()) {
-    case "Krypton": baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
+    case "Krypton": {
+      baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
       balanceCoef = 1
       break;
+    }
     //{"balance":0}
-    case "Xenon": baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`
+    case "Xenon": {
+      baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`
       //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
       balanceCoef = 100000000
       break;
+    }
     /*
       {
         "address": "mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj",
@@ -72,7 +85,12 @@ export async function getBtcBalance(btcAddress: string) {
         "final_n_tx": 0
       }
     */
-    case "Mainnet": break; //TODO
+    case "Mainnet": {
+      baseURL = `${bitcoinMainnet}/addrs/${btcAddress}/balance`
+      //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
+      balanceCoef = 100000000
+      break;
+    }
     default: break;
   }
 
@@ -81,7 +99,9 @@ export async function getBtcBalance(btcAddress: string) {
     timeout: 3000,
   }).then((resp) => {
     console.log(resp)
-    return { 'balance': (resp.balance / balanceCoef).toString() }
+    return { 'balance': (resp.balance / balanceCoef).toString() };
+  }).catch(err => {
+    return { 'balance': 'NaN' };
   });
 }
 

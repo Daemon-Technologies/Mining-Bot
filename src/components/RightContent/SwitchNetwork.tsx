@@ -56,6 +56,7 @@ const SwitchNetwork: React.FC<PageProps> = () => {
         switch (getNetworkFromStorage()) {
             case "Krypton": setNetworkName("Krypton"); break;
             case "Xenon": setNetworkName("Xenon"); break;
+            case "Mainnet": setNetworkName("Mainnet"); break;
         }
     }, [])
 
@@ -78,6 +79,14 @@ const SwitchNetwork: React.FC<PageProps> = () => {
                 // switchPage('Xenon');
                 break;
             }
+            case "Mainnet": {
+                setNetworkName("Mainnet");
+                message.info(`Switch to Mainnet network`);
+                changeNetworkDAO("Mainnet");
+                window.location.reload();
+                // switchPage('Xenon');
+                break;
+            }
         }
 
     };
@@ -90,7 +99,7 @@ const SwitchNetwork: React.FC<PageProps> = () => {
             <Menu.Item key="Xenon">
                 Xenon
           </Menu.Item>
-            <Menu.Item key="Mainnet" disabled>
+            <Menu.Item key="Mainnet">
                 Mainnet
           </Menu.Item>
         </Menu>

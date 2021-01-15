@@ -116,7 +116,7 @@ export default () => {
         });
     }
 
-    const handleFormSubmit = async (value: { account: Account, inputBurnFee: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) => {
+    const handleFormSubmit = async (value: { account: Account, inputBurnFee: number, inputFeeRate: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) => {
         //console.log("value", value)
         if (value.account && value.account.balance < MIN_MINER_BTC_AMOUNT) {
             message.error({ content: showMessage('你的比特币余额不足以继续挖矿，跳转到钱包页面进行充值', "Your Bitcoin is not enough to mine, turn to Wallet page to get faucet."), duration: 3 })

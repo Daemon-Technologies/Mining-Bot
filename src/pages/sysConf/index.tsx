@@ -88,7 +88,7 @@ const TableList: React.FC<{}> = () => {
             >
                 <Input placeholder={showMessage('请输入', 'Please input')} />
             </FormItem>
-            {getNetworkFromStorage() === 'Xenon' ?
+            {getNetworkFromStorage() === 'Xenon' || getNetworkFromStorage() === 'Mainnet' ?
                 <>
                     <FormItem
                         name='peerHost'

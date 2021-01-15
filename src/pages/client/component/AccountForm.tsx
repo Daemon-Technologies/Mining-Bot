@@ -8,7 +8,7 @@ import { useModel } from 'umi';
 import { getSysConf, updateNodeInfo } from '@/services/sysConf/conf';
 import { NodeInfo } from '@/services/sysConf/data';
 import { renderNodeInfo } from './Step3NodeInfoContent';
-import { renderBurnFee } from './Step2BurnFeeContent';
+import { renderFeeInfo } from './Step2BurnFeeContent';
 import { renderAccount } from './Step1AccountContent';
 import { renderAuthCode } from './AuthCode';
 
@@ -17,7 +17,7 @@ const { Step } = Steps;
 interface CreateFormProps {
   modalVisible: boolean;
   onCancel: () => void;
-  onSubmit: (values: { account: Account, inputBurnFee: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) => Promise<API.RequestResult>;
+  onSubmit: (values: { account: Account, inputBurnFee: number, inputFeeRate: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) => Promise<API.RequestResult>;
 }
 
 interface FormValueType {
@@ -33,6 +33,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
   const [accountSelected, handleAccountSelected] = useState<Account>();
   const [stepStatus, setStepStatus] = useState(0);
   const [inputBurnFee, setInputBurnFee] = useState(20000);
+  const [inputFeeRate, setInputFeeRate] = useState(50);
   const [debugMode, setDebugMode] = useState(false);
   const [authVisible, setAuthVisible] = useState(false);
   const [authCode, setAuthCode] = useState<string>('');
@@ -77,7 +78,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
                 <Button onClick={() => setStepStatus(0)}>{(showMessage("上一步", "Back"))}</Button>
                 <Button
                   type="primary"
-                  disabled={accountSelected == undefined ? true : false}
+                  disabled={accountSelected === undefined ? true : false}
                   onClick={() => setStepStatus(2)}>
                   {(showMessage("下一步", "Next"))}
                 </Button>
@@ -150,9 +151,11 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
                 handleAccountSelected: handleAccountSelected,
               }
             );
-            case 1: return renderBurnFee({
+            case 1: return renderFeeInfo({
               inputBurnFee: inputBurnFee,
               setInputBurnFee: setInputBurnFee,
+              inputFeeRate: inputFeeRate,
+              setInputFeeRate: setInputFeeRate,
               setDebugMode: setDebugMode,
             }
             );
@@ -181,6 +184,7 @@ const AccountForm: React.FC<CreateFormProps> = (props) => {
         btcNode: btcNode,
         onSubmit: onSubmit,
         inputBurnFee: inputBurnFee,
+        inputFeeRate: inputFeeRate,
         debugMode: debugMode,
         setStepStatus: setStepStatus,
         onCancel: onCancel,
