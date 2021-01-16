@@ -8,6 +8,14 @@ export interface Account {
     authTag: string;
 }
 
+export interface AccountPk {
+    pk: string;
+    type: string;
+    skEnc: string;
+    iv: string;
+    authTag: string;
+}
+
 export interface NewAccount {
     mnemonic?: string;
     type?: 1 | 2;

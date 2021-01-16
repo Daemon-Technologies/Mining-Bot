@@ -8,7 +8,7 @@ const miningLocalServer_endpoint = "http://" + window.location.hostname + ':5000
 const miningLocalChain_endpoint = "http://" + window.location.hostname + ':20443';
 
 const { miningMonitorServer_endpoint, miningMonitorServer_Mainnet,
-    MiningPasswordAuthorization, MiningPassword,
+    MiningPasswordAuthorization, MiningPassword, sidecarURLMainnet, sidecarURLXenon,
     miningNodeListServer_endpoint } = require('@/services/constants');
 
 const defaultNodeInfo: NodeInfo = {
@@ -25,6 +25,7 @@ export function getSysConf(): SysConf {
         miningLocalServerUrl: miningLocalServer_endpoint,
         miningLocalChainUrl: miningLocalChain_endpoint,
         miningMonitorUrl: miningMonitorServer_endpoint,
+        sidecarUrl: sidecarURLMainnet,
     };
     switch (network) {
         case 'Krypton': {
@@ -39,6 +40,7 @@ export function getSysConf(): SysConf {
                 miningLocalServerUrl: miningLocalServer_endpoint,
                 miningLocalChainUrl: miningLocalChain_endpoint,
                 miningMonitorUrl: miningMonitorServer_endpoint,
+                sidecarUrl: sidecarURLXenon,
                 btcNodeInfo: defaultNodeInfo,
             }
             const conf_STJ = localStorage.getItem('Xenon_SysConf');
@@ -55,6 +57,7 @@ export function getSysConf(): SysConf {
                 miningLocalServerUrl: miningLocalServer_endpoint,
                 miningLocalChainUrl: miningLocalChain_endpoint,
                 miningMonitorUrl: miningMonitorServer_Mainnet,
+                sidecarUrl: sidecarURLMainnet,
                 btcNodeInfo: defaultNodeInfo,
             }
             const conf_STJ = localStorage.getItem('Mainnet_SysConf');
@@ -76,7 +79,7 @@ export function getSysConf(): SysConf {
 
 export function updateSysConf(conf: SysConf) {
     const network = getNetworkFromStorage();
-    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl && conf.miningLocalChainUrl && conf.btcNodeInfo) {
+    if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl && conf.miningLocalChainUrl && conf.sidecarUrl && conf.btcNodeInfo) {
         const confStr = JSON.stringify(conf);
         switch (network) {
             case 'Krypton': {
