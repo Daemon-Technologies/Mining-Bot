@@ -58,7 +58,8 @@ export async function getStxAddressFromPriKey(priKey: string) {
 export async function getStxAddressFromPublicKey(pk: string) {
   const pubKey = Buffer.from(pk, 'hex');
   const addr = blockstack.publicKeyToAddress(pubKey);
-  return c32check.b58ToC32(addr);
+  const stxAddr = coerceAddress(addr);
+  return c32check.b58ToC32(stxAddr);
 }
 
 export async function getBtcAddress(ecPair: bitcoin.ECPair.ECPairInterface) {
