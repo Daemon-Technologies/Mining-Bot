@@ -16,7 +16,7 @@ module.exports = {
 
   //Bitcoin endpoint
   bitcoinTestnet3: 'https://api.blockcypher.com/v1/btc/test3',
-  bitcoinMainnet: 'https://api.blockcypher.com/v1/btc/main',
+  bitcoinMainnet: 'https://blockchain.info',
 
   explorerURL: 'https://testnet-explorer.blockstack.org',
   binanceAPIURL: 'https://api.binance.com/api/v3',

@@ -72,21 +72,8 @@ export async function getBtcBalance(btcAddress: string) {
       balanceCoef = 100000000
       break;
     }
-    /*
-      {
-        "address": "mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj",
-        "total_received": 0,
-        "total_sent": 0,
-        "balance": 0,
-        "unconfirmed_balance": 0,
-        "final_balance": 0,
-        "n_tx": 0,
-        "unconfirmed_n_tx": 0,
-        "final_n_tx": 0
-      }
-    */
     case "Mainnet": {
-      baseURL = `${bitcoinMainnet}/addrs/${btcAddress}/balance`
+      baseURL = `${bitcoinMainnet}/balance?active=${btcAddress}&cors=true`;
       //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
       balanceCoef = 100000000
       break;
@@ -97,9 +84,9 @@ export async function getBtcBalance(btcAddress: string) {
   return request(`${baseURL}`, {
     method: "GET",
     timeout: 3000,
+
   }).then((resp) => {
-    console.log(resp)
-    return { 'balance': (resp.balance / balanceCoef).toString() };
+    return { 'balance': (resp[`${btcAddress}`].final_balance / balanceCoef).toString() };
   }).catch(err => {
     return { 'balance': 'NaN' };
   });
