@@ -5,6 +5,7 @@ import proxy from './proxy';
 
 const { REACT_APP_ENV } = process.env;
 
+
 export default defineConfig({
   hash: true,
   antd: {},
@@ -62,8 +63,14 @@ export default defineConfig({
       component: './client',
     },
     {
+      path: '/sysConf',
+      name: 'sysConf',
+      icon: 'UnorderedListOutlined',
+      component: './sysConf',
+    },
+    {
       path: '/',
-      redirect: '/publicData',
+      redirect: `/publicData`,
     },
 
     {

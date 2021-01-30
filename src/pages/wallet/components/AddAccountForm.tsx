@@ -3,14 +3,9 @@ import { Modal, Button, Select } from 'antd';
 import Form from 'antd/es/form';
 import TextArea from 'antd/lib/input/TextArea';
 import { NewAccount } from '@/services/wallet/data';
-
+import { useModel } from 'umi';
+import { showMessage } from "@/services/locale";
 const { btcType, stxType } = require('@/services/constants');
-
-interface CreateFormProps {
-  modalVisible: boolean;
-  onCancel: () => void;
-  onSubmit: (values: FormValueType) => void;
-}
 
 export interface FormValueType extends Partial<NewAccount> {
   mnemonic?: string;
@@ -19,31 +14,35 @@ export interface FormValueType extends Partial<NewAccount> {
 
 const FormItem = Form.Item;
 
-export interface CreateFormState {
-  formVals: FormValueType;
-}
-
 const formLayout = {
   labelCol: { span: 7 },
   wrapperCol: { span: 13 },
 };
 
-const CreateForm: React.FC<CreateFormProps> = (props) => {
+const AddAccountForm: React.FC<{}> = () => {
   const [formVals, setFormVals] = useState<FormValueType>({});
-  const { modalVisible, onCancel, onSubmit: handleAdd } = props;
-
+  const { handleAddNewAccount, getVisible, handleModalVisible } = useModel('wallet.addAccount');
+  const { actionRef } = useModel('wallet.wallet');
   const [form] = Form.useForm();
 
   const handleCancel = async () => {
     form.resetFields();
-    onCancel();
+    handleModalVisible(false)
   }
 
-  const handleAddNewAccount = async () => {
+  const handleFormData = async () => {
     const fieldsValue = await form.validateFields();
     setFormVals({ ...formVals, ...fieldsValue });
-    handleAdd({ ...formVals, ...fieldsValue });
+    let success = await handleAddNewAccount({ ...formVals, ...fieldsValue });
     form.resetFields();
+    
+    if (success) {
+      handleModalVisible(false);
+      if (actionRef.current) {
+        actionRef.current.reload();
+      }
+    }
+    
   }
 
   const renderContent = () => {
@@ -51,15 +50,15 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
       <>
         <FormItem
           name="mnemonic"
-          label="Mnemonic"
-          rules={[{ required: true, message: 'Please input your mnemonic!' }]}
+          label={showMessage('助记词' , "Mnemonic")}
+          rules={[{ required: true, message: showMessage('请输入你的助记词！', 'Please input your mnemonic!') }]}
         >
-          <TextArea rows={5} placeholder="Please input your 24 words mnemonic." />
+          <TextArea rows={5} placeholder={showMessage('请输入你24个单词的助记词', 'Please input your 24 words mnemonic.')} />
         </FormItem>
         <FormItem
           name="type"
-          label="Type"
-          rules={[{ required: true, message: 'Please select your address type!' }]}
+          label={showMessage('地址类型', 'Type')}
+          rules={[{ required: true, message: showMessage('请选择你的地址类型', 'Please select your address type!') }]}
         >
           <Select>
             <Select.Option value={btcType}>BTC</Select.Option>
@@ -73,9 +72,9 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   const renderFooter = () => {
     return (
       <>
-        <Button onClick={() => handleCancel()}>Cancel</Button>
-        <Button type="primary" onClick={() => handleAddNewAccount()}>
-          Submit
+        <Button onClick={() => handleCancel()}>{showMessage('取消','Cancel')}</Button>
+        <Button type="primary" onClick={() => handleFormData()}>
+          {showMessage('创建', 'Submit')}
         </Button>
       </>
     )
@@ -84,10 +83,11 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   return (
     <Modal
       destroyOnClose
-      title="new account"
-      visible={modalVisible}
+      title={showMessage('新建账户' , 'new account')}
+      visible={getVisible()}
       onCancel={() => handleCancel()}
       footer={renderFooter()}
+      
     >
       <Form
         {...formLayout}
@@ -99,4 +99,4 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
   );
 };
 
-export default CreateForm;
+export default AddAccountForm;

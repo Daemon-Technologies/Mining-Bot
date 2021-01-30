@@ -65,9 +65,11 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-helmet-async": "^1.0.4",
+    "socket.io-client": "^3.0.4",
     "umi": "^3.2.14",
     "umi-request": "^1.0.8",
-    "use-merge-value": "^1.0.1"
+    "use-merge-value": "^1.0.1",
+    "xlsx": "^0.16.9"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.0.2",

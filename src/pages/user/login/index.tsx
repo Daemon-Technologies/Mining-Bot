@@ -5,13 +5,11 @@ import { getPageQuery } from '@/utils/utils';
 import logo from '@/assets/logo.png';
 import { LoginParamsType, loginByPassword, getUserAuth, setLockPassword } from '@/services/login';
 import Footer from '@/components/Footer';
-import LoginFrom from './components/Login';
+import LoginForm from './components/Login';
 import styles from './style.less';
-import { getLanguage } from '@ant-design/pro-layout/lib/locales';
+import { showMessage } from '@/services/locale';
 
-const { Tab, Password, Submit } = LoginFrom;
-
-const { CN } = require('@/services/constants')
+const { Tab, Password, Submit } = LoginForm;
 
 const LoginMessage: React.FC<{
   content: string;
@@ -62,7 +60,7 @@ const Login: React.FC<{}> = () => {
       const password = values.password
       const result = await setLockPassword(password);
       if (result.status === 200) {
-        message.success(getLanguage() === CN ? '锁定密码成功！' : 'Set your lock password successfully!');
+        message.success(showMessage('锁定密码成功！', 'Set your lock password successfully!'));
         replaceGoto();
         setTimeout(() => {
           refresh();
@@ -70,7 +68,7 @@ const Login: React.FC<{}> = () => {
         return;
       }
     } catch (error) {
-      message.error(getLanguage() === CN ? '设置锁定密码失败，请重试！' : 'Set your lock password error, please try it again');
+      message.error(showMessage('设置锁定密码失败，请重试！', 'Set your lock password error, please try it again'));
     }
     setSubmitting(false);
   }
@@ -83,7 +81,7 @@ const Login: React.FC<{}> = () => {
       const result = await loginByPassword(password);
       if (result.status === 200) {
         setInitialState({ currentUser: { password: password } });
-        message.success(getLanguage() === CN ? '解锁成功！' : 'Unlock Successfully！');
+        message.success(showMessage('解锁成功！', 'Unlock Successfully！'));
         replaceGoto();
         setTimeout(() => {
           refresh();
@@ -92,7 +90,7 @@ const Login: React.FC<{}> = () => {
       }
       setUserLoginState(result);
     } catch (error) {
-      message.error(getLanguage() === CN ? '解锁账户失败！请重试！' : 'Unlock your account error! Please try it again');
+      message.error(showMessage('解锁账户失败！请重试！', 'Unlock your account error! Please try it again'));
     }
     setSubmitting(false);
   };
@@ -106,7 +104,7 @@ const Login: React.FC<{}> = () => {
   // validate password
   const checkPassword = (_: any, value: string, callback: any) => {
     if (value && value !== passwordValue) {
-      callback(getLanguage() === CN ? '两次输入密码不一致！' : "Input passwords are inconsistent!");
+      callback(showMessage('两次输入密码不一致！', "Input passwords are inconsistent!"));
     } else {
       callback();
     }
@@ -134,15 +132,15 @@ const Login: React.FC<{}> = () => {
           </div>
 
           <div className={styles.main}>
-            <LoginFrom activeKey={type} onSubmit={handleSubmit}>
+            <LoginForm activeKey={type} onSubmit={handleSubmit}>
               <Tab key="account" tab={<FormattedMessage id='login.unlock' defaultMessage='Unlock Your Account' />}>
                 {status !== 200 && !submitting && (
-                  <LoginMessage content={getLanguage() === CN ? '密码错误!' : 'password error!'} />
+                  <LoginMessage content={showMessage('密码错误!', 'password error!')} />
                 )}
 
                 <Password
                   name="password"
-                  placeholder={getLanguage() === CN ? '密码' : 'password'}
+                  placeholder={showMessage('密码', 'password')}
                   onChange={onPasswordChange}
                   rules={[
                     {
@@ -157,7 +155,7 @@ const Login: React.FC<{}> = () => {
                 />
               </Tab>
               <Submit loading={submitting}><FormattedMessage id='button.unlock' defaultMessage='Unlock' /></Submit>
-            </LoginFrom>
+            </LoginForm>
           </div>
         </div>
         <Footer />
@@ -181,11 +179,11 @@ const Login: React.FC<{}> = () => {
           </div>
 
           <div className={styles.main}>
-            <LoginFrom activeKey={type} onSubmit={handleSetPassword}>
+            <LoginForm activeKey={type} onSubmit={handleSetPassword}>
               <Tab key="account" tab={<FormattedMessage id='login.setLockPwd' defaultMessage='Set Your Lock Password' />}>
                 <Password
                   name="password"
-                  placeholder={getLanguage() === CN ? '输入密码' : 'type your password'}
+                  placeholder={showMessage('输入密码', 'type your password')}
                   onChange={onPasswordChange}
                   rules={[
                     {
@@ -201,7 +199,7 @@ const Login: React.FC<{}> = () => {
 
                 <Password
                   name="password2"
-                  placeholder={getLanguage() === CN ? '再次输入密码' : 'type your password again'}
+                  placeholder={showMessage('再次输入密码', 'type your password again')}
                   rules={[
                     {
                       required: true,
@@ -214,7 +212,7 @@ const Login: React.FC<{}> = () => {
                 />
               </Tab>
               <Submit loading={submitting}><FormattedMessage id='button.login' defaultMessage='Login' /></Submit>
-            </LoginFrom>
+            </LoginForm>
           </div>
         </div>
         <Footer />

@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { ResponseError } from 'umi-request';
 import defaultSettings from '../config/defaultSettings';
 import { queryUserInfo } from './services/user';
+import {getNetworkFromStorage} from '@/utils/utils'
 
 export async function getInitialState(): Promise<{
   currentUser?: API.UserInfo;
@@ -24,6 +25,12 @@ export async function getInitialState(): Promise<{
       history.push('/user/login');
     }
   }
+
+  let networkType = getNetworkFromStorage()
+  if (networkType === null){
+    localStorage.setItem('network', 'Krypton')
+  }
+
   return {
     settings: defaultSettings,
   };
@@ -78,19 +85,21 @@ const errorHandler = (error: ResponseError) => {
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
     const { status, url } = response;
-
+    /*
     notification.error({
       message: `Request Error ${status}: ${url}`,
       description: errorText,
     });
+    */
   }
-
+/*
   if (!response) {
     notification.error({
       description: 'Network Error, Cannot Connect to The Server',
       message: 'Network Error',
     });
   }
+*/
   throw error;
 };
 

@@ -45,7 +45,16 @@ export const getPageQuery = () => {
 export function coerceAddress(address: string) {
   // TODO now it is testnet
   const { hash } = bitcoin.address.fromBase58Check(address);
-  let coercedVersion = bitcoin.networks.testnet.pubKeyHash;
+  let coercedVersion = bitcoin.networks.bitcoin.pubKeyHash;
+  switch (getNetworkFromStorage()) {
+    case 'Xenon': {
+      coercedVersion = bitcoin.networks.regtest.pubKeyHash;
+      break;
+    }
+    default: {
+      break;
+    }
+  }
   return bitcoin.address.toBase58Check(hash, coercedVersion);
 }
 
@@ -70,6 +79,12 @@ export function keyGen() {
     throw Error("You need to unlock your account first");
   }
   const key = kdf(password, aesSalt.toString('hex'));
+  return key;
+}
+
+export function keyDerive(password: string) {
+  const salt = 'a5782e4ff88d33106913bd15965d776955e76a1d511359d0f76b89dcbf8ea721fc32f0cf3a3a19c932e44872c141e7d63e8f07aea7da023a38273e6dd1d5b667';
+  const key = kdf(password, salt);
   return key;
 }
 
@@ -99,4 +114,28 @@ export function aes256Decrypt(data: string, key: Buffer, ivStr: string, authTagS
     message.error(error);
   }
   return null;
+}
+
+// export function getCurrentNetwork() {
+//   let page = location.pathname.match(/(Xenon|Krypton)/g)
+//   if (page)
+//     return page[0];
+//   return "";
+// }
+
+// export function getCurrentPage() {
+//   let page = location.pathname.match(/(publicData|client|wallet)/g)
+//   if (page)
+//     return page[0]
+//   return ""
+// }
+
+// export function switchPage(network: string) {
+//   let cpage = getCurrentPage()
+//   location.href = location.origin + `/${network}/${cpage}`;
+// }
+
+export function getNetworkFromStorage() {
+  let network = localStorage.getItem('network')
+  return (network === null ? 'Xenon' : network)
 }

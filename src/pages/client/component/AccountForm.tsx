@@ -1,171 +1,195 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Card } from 'antd';
-import ProTable, { ProColumns} from '@ant-design/pro-table';
-import { queryAccount } from '@/services/wallet/accountData'
+import React, { useEffect, useState } from 'react';
+import { Modal, Button } from 'antd';
 import { Account } from '@/services/wallet/data'
 import { Steps, Divider } from 'antd';
-import { Slider, InputNumber, Row, Col } from 'antd';
-import { getLanguage } from '@ant-design/pro-layout/lib/locales';
-const { CN } = require('@/services/constants');
-const { Step } = Steps;
+import { showMessage } from '@/services/locale';
+import { useForm } from 'antd/es/form/Form';
+import { useModel } from 'umi';
+import { getSysConf, updateNodeInfo } from '@/services/sysConf/conf';
+import { NodeInfo } from '@/services/sysConf/data';
+import { renderNodeInfo } from './Step3NodeInfoContent';
+import { renderFeeInfo } from './Step2BurnFeeContent';
+import { renderAccount } from './Step1AccountContent';
+import { renderAuthCode } from './AuthCode';
 
+const { Step } = Steps;
 
 interface CreateFormProps {
   modalVisible: boolean;
   onCancel: () => void;
-  onSubmit: (values: {account: Account, inputBurnFee: number}) => void;
+  onSubmit: (values: { account: Account, inputBurnFee: number, inputFeeRate: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) => Promise<API.RequestResult>;
 }
 
-
-const columns : ProColumns<Account>[]  = [
-  {
-    title: (getLanguage() === CN ? "比特币地址" : 'BTC Address'),
-    dataIndex: 'address',
-    render: (text) => <a>{text}</a>,
-  },
-  {
-    title: (getLanguage() === CN ? "余额" : 'Balance'),
-    dataIndex: 'balance',
-  }
-];
-
+interface FormValueType {
+  peerHost?: string;
+  username?: string;
+  password?: string;
+  rpcPort?: number;
+  peerPort?: number;
+}
 
 const AccountForm: React.FC<CreateFormProps> = (props) => {
   const { modalVisible, onCancel, onSubmit } = props;
-  const [accountSelected, handleAccountSelected] = useState<Account>()
-  const [stepStatus, setStepStatus] = useState(0)
-  const [inputBurnFee, setInputBurnFee] = useState(20000)
-  //console.log("in")
-  //console.log(accountSelected)
+  const [accountSelected, handleAccountSelected] = useState<Account>();
+  const [stepStatus, setStepStatus] = useState(0);
+  const [inputBurnFee, setInputBurnFee] = useState(20000);
+  const [inputFeeRate, setInputFeeRate] = useState(50);
+  const [debugMode, setDebugMode] = useState(false);
+  const [authVisible, setAuthVisible] = useState(false);
+  const [authCode, setAuthCode] = useState<string>('');
+  const [btcNode, setBtcNode] = useState<string>('');
+  const [nodeType, setNodeType] = useState(1);
+  const [form] = useForm();
 
-  const rowSelection = {
-    onChange : (selectedRowKeys: any, selectedRows: React.SetStateAction<Account | undefined>[]) => {
-      //console.log(`selectedRowKeys: ${selectedRowKeys}, selectedRows: ${selectedRows}`)
-      console.log("selectRows:", selectedRows)
-      handleAccountSelected(selectedRows[0])
-    }
-  }
+  const { nodeList, getNodeList } = useModel('client.nodeList');
 
-  const renderAccountContent = () => {
-    return (
-      <>
-        <ProTable<Account>
-          rowSelection={{
-            type: 'radio',
-            ...rowSelection
-          }}
-          rowKey="address"
-          search={false}
-          columns={columns}
-          request={()=>queryAccount(1)}
-        />
-      </>
-    )
-  };
+  const confInfo = getSysConf();
 
+  const [formVals, setFormVals] = useState<FormValueType>({
+    peerHost: confInfo.btcNodeInfo?.peerHost,
+    username: confInfo.btcNodeInfo?.username,
+    password: confInfo.btcNodeInfo?.password,
+    rpcPort: confInfo.btcNodeInfo?.rpcPort,
+    peerPort: confInfo.btcNodeInfo?.peerPort,
+  });
 
-  const onChangeBurnFeeInput = (value:any) => {
-    if (isNaN(value)) {
-      return;
-    }
-    setInputBurnFee(value);
-  }
-
-  const renderBurnFeeContent = () => {
-    return (
-      <>
-        <Card title={(getLanguage() === CN ? "设置燃烧量" : "Set Burn Fee")}>
-          <Row style={{ margin: '10px 5px' }}>
-            <Col span={12}>
-              <Slider
-                min={1000}
-                max={200000}
-                onChange={onChangeBurnFeeInput}
-                value={typeof inputBurnFee === 'number' ? inputBurnFee : 0}
-                step={200}
-              /> 
-            </Col>
-            <Col span={4}>
-                <InputNumber
-                  min={1000}
-                  max={1000000}
-                  style={{ margin: '0 16px' }}
-                  step={200}
-                  value={inputBurnFee}
-                  onChange={onChangeBurnFeeInput}
-                /> 
-            </Col>
-          </Row>
-        </Card>
-      </>
-    )
-  };
+  useEffect(() => {
+    getNodeList();
+  }, [])
 
 
   const renderSubmitFooter = () => {
     return (
       <>
-        { 
+        {
           (() => {
-            switch (stepStatus){
-              case 0 :  return  (<div> 
-                                  <Button danger onClick={() => onCancel()}>{(getLanguage() === CN ? "取消" : "Cancel")}</Button>
-                                  <Button 
-                                      type="primary" 
-                                      disabled={accountSelected == undefined? true:false}
-                                      onClick={()=> setStepStatus(1)}>
-                                      {(getLanguage() === CN ? "下一步" : "Next")}    
-                                  </Button>
-                                </div>)
-              case 1 :  return  (<div> 
-                                  <Button danger onClick={() => onCancel()}>{(getLanguage() === CN ? "取消" : "Cancel")}</Button>
-                                  <Button onClick={()=> setStepStatus(0)}>{(getLanguage() === CN ? "上一步" : "Back")}</Button>
-                                  <Button 
-                                      type="primary" 
-                                      disabled={accountSelected == undefined? true:false}
-                                      onClick={()=> {
-                                
-                                          onSubmit({account : accountSelected, inputBurnFee : inputBurnFee})
-                                          setStepStatus(0)
-                                        }
-                                      }
-                                  >
-                                      {(getLanguage() === CN ? "完成" : "Finish")}   
-                                      
-                                  </Button>
-                                </div>)
+            switch (stepStatus) {
+              case 0: return (<div>
+                <Button danger onClick={() => onCancel()}>{(showMessage("取消", "Cancel"))}</Button>
+                <Button
+                  type="primary"
+                  disabled={accountSelected == undefined ? true : false}
+                  onClick={() => setStepStatus(1)}>
+                  {(showMessage("下一步", "Next"))}
+                </Button>
+              </div>)
+              case 1: return (<div>
+                <Button danger onClick={() => onCancel()}>{(showMessage("取消", "Cancel"))}</Button>
+                <Button onClick={() => setStepStatus(0)}>{(showMessage("上一步", "Back"))}</Button>
+                <Button
+                  type="primary"
+                  disabled={accountSelected === undefined ? true : false}
+                  onClick={() => setStepStatus(2)}>
+                  {(showMessage("下一步", "Next"))}
+                </Button>
 
-
+              </div>)
+              case 2: return (
+                <div>
+                  <Button danger onClick={() => onCancel()}>{(showMessage("取消", "Cancel"))}</Button>
+                  <Button onClick={() => setStepStatus(1)}>{(showMessage("上一步", "Back"))}</Button>
+                  <Button
+                    type="primary"
+                    disabled={
+                      accountSelected !== undefined
+                        && (
+                          (nodeType === 2 && btcNode !== '')
+                          ||
+                          (nodeType === 1 && form.validateFields())
+                        )
+                        ? false : true
+                    }
+                    onClick={async () => {
+                      if (nodeType === 1) {
+                        const fieldsValue = await form.validateFields();
+                        setFormVals({ ...formVals, ...fieldsValue });
+                        const nodeInfo: NodeInfo = {
+                          peerHost: fieldsValue.peerHost,
+                          username: fieldsValue.username,
+                          password: fieldsValue.password,
+                          rpcPort: fieldsValue.rpcPort,
+                          peerPort: fieldsValue.peerPort,
+                        };
+                        updateNodeInfo(nodeInfo);
+                      }
+                      setAuthVisible(true);
+                    }}
+                  >
+                    {(showMessage("完成", "Finish"))}
+                  </Button>
+                </div>
+              )
+              default: return (<></>)
             }
           })()
         }
-        
+
       </>
     )
   }
 
   return (
-    <Modal
-      destroyOnClose
-      title={(getLanguage() === CN ? "账户选择" : "Start Mining Configuration")}
-      visible={modalVisible}
-      onCancel={() => onCancel()}
-      footer={renderSubmitFooter()}
-    > 
-      <Steps current={stepStatus}>
-        <Step title={(getLanguage() === CN ? "账户选择" : "Account Selection")} />
-        <Step title={(getLanguage() === CN ? "燃烧量设置" : "Burn Fee Setting")}/>
-      </Steps>
-      
-      <Divider/>
+    <>
+      <Modal
+        destroyOnClose
+        title={(showMessage("账户选择", "Start Mining Configuration"))}
+        visible={modalVisible}
+        onCancel={() => onCancel()}
+        footer={renderSubmitFooter()}
+      >
+        <Steps current={stepStatus}>
+          <Step title={(showMessage("账户选择", "Account"))} />
+          <Step title={(showMessage("燃烧量设置", "Burn Fee"))} />
+          <Step title={(showMessage("节点设置", "BTC Node"))} />
+        </Steps>
+        <Divider />
 
-      {(() => {
-        switch (stepStatus){
-          case 0 :  return  renderAccountContent()
-          case 1 :  return  renderBurnFeeContent()
-        }
-      })()}
-    </Modal>
+        {(() => {
+          switch (stepStatus) {
+            case 0: return renderAccount(
+              {
+                handleAccountSelected: handleAccountSelected,
+              }
+            );
+            case 1: return renderFeeInfo({
+              inputBurnFee: inputBurnFee,
+              setInputBurnFee: setInputBurnFee,
+              inputFeeRate: inputFeeRate,
+              setInputFeeRate: setInputFeeRate,
+              setDebugMode: setDebugMode,
+            }
+            );
+            case 2: return renderNodeInfo(
+              {
+                nodeType: nodeType,
+                setNodeType: setNodeType,
+                form: form,
+                setBtcNode: setBtcNode,
+                formVals: formVals,
+                nodeList: nodeList,
+              }
+            );
+            default: return;
+          }
+        })()}
+      </Modal>
+      {renderAuthCode({
+        authVisible: authVisible, setAuthVisible: setAuthVisible,
+        accountSelected: accountSelected,
+        nodeType: nodeType,
+        authCode: authCode, setAuthCode: setAuthCode,
+        form: form,
+        formVals: formVals, setFormVals: setFormVals,
+        nodeList: nodeList,
+        btcNode: btcNode,
+        onSubmit: onSubmit,
+        inputBurnFee: inputBurnFee,
+        inputFeeRate: inputFeeRate,
+        debugMode: debugMode,
+        setStepStatus: setStepStatus,
+        onCancel: onCancel,
+      })}
+    </>
   );
 };
 
