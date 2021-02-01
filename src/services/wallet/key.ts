@@ -23,13 +23,18 @@ export async function mnemonicToPrivateKey(mnemonic: string) {
   if (ecPair === null) {
     return null;
   }
-  const priKey = blockstack.ecPairToHexString(ecPair);
+  const priKey = await getPrivateKeyFromEcPair(ecPair);
   return priKey;
 }
 
 export async function getPrivateKeyFromEcPair(ecPair: bitcoin.ECPair.ECPairInterface) {
   const priKey = blockstack.ecPairToHexString(ecPair);
   return priKey;
+}
+
+export async function getPublicKeyFromEcPair(ecPair: bitcoin.ECPair.ECPairInterface) {
+  const pk = ecPair.publicKey.toString('hex');
+  return pk;
 }
 
 export async function getStxAddressFromEcPair(ecPair: bitcoin.ECPair.ECPairInterface) {
@@ -46,6 +51,13 @@ export async function getStxAddressFromEcPair(ecPair: bitcoin.ECPair.ECPairInter
 export async function getStxAddressFromPriKey(priKey: string) {
   const ecKeyPair = blockstack.hexStringToECPair(priKey);
   const addr = blockstack.ecPairToAddress(ecKeyPair);
+  const stxAddr = coerceAddress(addr);
+  return c32check.b58ToC32(stxAddr);
+}
+
+export async function getStxAddressFromPublicKey(pk: string) {
+  const pubKey = Buffer.from(pk, 'hex');
+  const addr = blockstack.publicKeyToAddress(pubKey);
   const stxAddr = coerceAddress(addr);
   return c32check.b58ToC32(stxAddr);
 }
@@ -75,6 +87,10 @@ export async function getBtcAddressFromPubkey(pubKey: string) {
   switch (getNetworkFromStorage()) {
     case 'Xenon': {
       btcNetwork = bitcoin.networks.regtest;
+      break;
+    }
+    case 'Mainnet': {
+      btcNetwork = bitcoin.networks.bitcoin;
       break;
     }
     default: {

@@ -37,8 +37,6 @@ export async function startMining(data: { account: Account, inputBurnFee: number
   const debugMode = data.debugMode;
   const authCode = data.authCode;
   const nodeInfo = data.nodeInfo;
-
-
   const key = keyGen();
   const seed = aes256Decrypt(account.skEnc, key, account.iv, account.authTag);
   const authKey = keyDerive(authCode);
