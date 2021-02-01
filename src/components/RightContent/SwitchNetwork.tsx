@@ -113,19 +113,9 @@ const SwitchNetwork: React.FC<PageProps> = () => {
                 <img alt="logo" style={{ height: 18, marginRight: 10 }} src={logo} />
             </Button>
         </Dropdown>
-        {networkName === 'Krypton' ?
-            <Tag color="cyan">
-                {networkName}
-            </Tag>
-            :
-            networkName === 'Xenon' ?
-                <Tag color='pink'>
-                    {networkName}
-                </Tag>
-                :
-                <Tag color='orange'>
-                    {networkName}
-                </Tag>}
+        <Tag color="cyan">
+            {networkName}
+        </Tag>
 
     </div>)
 }

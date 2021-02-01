@@ -3,7 +3,6 @@ import { message } from "antd";
 import { useRef } from "react";
 import { ActionType } from '@ant-design/pro-table';
 import { queryAccount, deleteAccount } from '@/services/wallet/account'
-import { Account } from "@/services/wallet/data";
 
 export default () => {
     // state
@@ -25,7 +24,7 @@ export default () => {
             return true;
         } catch (error) {
             hide();
-            message.error(showMessage('删除失败，请重试', 'Delete fail, please try again!'));
+            message.error(showMessage('删除失败，请重试','Delete fail, please try again!'));
             return false;
         }
     };
@@ -42,7 +41,7 @@ export default () => {
 
 }
 
-
+  
 
 
 

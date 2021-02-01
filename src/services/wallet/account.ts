@@ -1,7 +1,7 @@
-import { Account, AccountPk, NewAccount } from "./data";
+import { Account, NewAccount } from "./data";
 import request from "umi-request";
 import { getNetworkFromStorage } from '@/utils/utils'
-import { getBtcAddress, mnemonicToEcPair, getPrivateKeyFromEcPair, isMnemonicValid, getBtcAddressFromPubkey, getPublicKeyFromEcPair, getStxAddressFromPublicKey, getPublickeyFromPrivate } from '@/services/wallet/key'
+import { getBtcAddress, mnemonicToEcPair, getPrivateKeyFromEcPair, getStxAddressFromPriKey, isMnemonicValid } from '@/services/wallet/key'
 import { message } from 'antd';
 import { aes256Encrypt, keyGen } from '@/utils/utils';
 import { showMessage } from "@/services/locale";
@@ -11,16 +11,16 @@ const { btcType, stxType } = require('@/services/constants');
 const { sidecarURLKrypton, sidecarURLXenon, sidecarURLMainnet, bitcoinTestnet3, bitcoinMainnet } = require('@/services/constants')
 
 export function getAccount() {
-  const stxAccounts: AccountPk[] = [];
-  const btcAccounts: AccountPk[] = [];
+  const stxAccounts: Account[] = [];
+  const btcAccounts: Account[] = [];
   const STX_STJ = localStorage.getItem("STX");
   const BTC_STJ = localStorage.getItem("BTC");
   if (STX_STJ) {
-    const STX_RES: AccountPk[] = JSON.parse(STX_STJ);
+    const STX_RES: Account[] = JSON.parse(STX_STJ);
     stxAccounts.push(...STX_RES);
   }
   if (BTC_STJ) {
-    const BTC_RES: AccountPk[] = JSON.parse(BTC_STJ);
+    const BTC_RES: Account[] = JSON.parse(BTC_STJ);
     btcAccounts.push(...BTC_RES);
   }
   return { stxAccounts, btcAccounts };
@@ -72,8 +72,21 @@ export async function getBtcBalance(btcAddress: string) {
       balanceCoef = 100000000
       break;
     }
+    /*
+      {
+        "address": "mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj",
+        "total_received": 0,
+        "total_sent": 0,
+        "balance": 0,
+        "unconfirmed_balance": 0,
+        "final_balance": 0,
+        "n_tx": 0,
+        "unconfirmed_n_tx": 0,
+        "final_n_tx": 0
+      }
+    */
     case "Mainnet": {
-      baseURL = `${bitcoinMainnet}/balance?active=${btcAddress}&cors=true`;
+      baseURL = `${bitcoinMainnet}/addrs/${btcAddress}/balance`
       //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
       balanceCoef = 100000000
       break;
@@ -84,9 +97,9 @@ export async function getBtcBalance(btcAddress: string) {
   return request(`${baseURL}`, {
     method: "GET",
     timeout: 3000,
-
   }).then((resp) => {
-    return { 'balance': (resp[`${btcAddress}`].final_balance / balanceCoef).toString() };
+    console.log(resp)
+    return { 'balance': (resp.balance / balanceCoef).toString() };
   }).catch(err => {
     return { 'balance': 'NaN' };
   });
@@ -107,11 +120,7 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
   if (type === 0 || type === 1) {
     for (var i = 0; i < btcAccounts.length; i++) {
       const row = btcAccounts[i];
-      const btcAddress = await getBtcAddressFromPubkey(row.pk);
-      if (!btcAddress) {
-        localStorage.removeItem('BTC');
-        break;
-      }
+      const btcAddress = row.address;
       let balanceResp = { balance: "NaN" };
       try {
         balanceResp = await getBtcBalance(btcAddress);
@@ -119,7 +128,7 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
         console.log("get btc balance error:", error)
       }
       const accountInfo: Account = {
-        address: btcAddress,
+        address: row.address,
         type: row.type,
         balance: balanceResp.balance,
         skEnc: row.skEnc,
@@ -133,7 +142,7 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
     // update stx account balance
     for (var i = 0; i < stxAccounts.length; i++) {
       const row = stxAccounts[i];
-      const stxAddress = await getStxAddressFromPublicKey(row.pk);
+      const stxAddress = row.address;
       let balanceResp = { stx: { balance: "NaN" } };
       try {
         balanceResp = await getStxBalance(stxAddress);
@@ -141,7 +150,7 @@ export async function queryAccount(type: number = 0): Promise<API.RequestResult>
         console.log("get stx balance error:", error)
       }
       const accountInfo: Account = {
-        address: stxAddress,
+        address: row.address,
         type: row.type,
         balance: balanceResp.stx.balance,
         skEnc: row.skEnc,
@@ -173,9 +182,9 @@ export async function addAccount(params: NewAccount): Promise<API.RequestResult>
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw message.error(showMessage('非法助记词', 'invalid mnemonic'));
     }
+
     // get private key
     const priKey = await getPrivateKeyFromEcPair(ecPair);
-    const pk = await getPublicKeyFromEcPair(ecPair);
     // encrypt private key by password and salt
     const key = keyGen();
     const encryptedData = aes256Encrypt(priKey, key);
@@ -191,11 +200,14 @@ export async function addAccount(params: NewAccount): Promise<API.RequestResult>
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw message.error(showMessage('获取BTC地址失败', 'invalid btc address'));
       }
+      // get btc balance
+      const btcBalance = await getBtcBalance(btcAddress);
       // find if the address is already exist
-      btcAccounts = btcAccounts.filter(row => row.pk !== pk)
-      const newBtcAccount: AccountPk = {
-        pk: pk,
+      btcAccounts = btcAccounts.filter(row => row.address !== btcAddress)
+      const newBtcAccount: Account = {
+        address: btcAddress,
         type: 'BTC',
+        balance: btcBalance.balance.toString(),
         skEnc: enc.toString('hex'),
         iv: iv.toString('hex'),
         authTag: authTag.toString('hex'),
@@ -204,11 +216,20 @@ export async function addAccount(params: NewAccount): Promise<API.RequestResult>
       btcAccounts.push(newBtcAccount);
       localStorage.setItem('BTC', JSON.stringify(btcAccounts));
     } else if (type === stxType) {
+      // get stx address
+      const stxAddress = await getStxAddressFromPriKey(priKey);
+      if (stxAddress === null) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw message.error(showMessage('获取STX地址失败', 'invalid stx address'));
+      }
+      // get stx balance
+      const stxBalance = await getStxBalance(stxAddress);
       // find if the address is already exist
-      stxAccounts = stxAccounts.filter(row => row.pk !== pk)
-      const newStxAccount: AccountPk = {
-        pk: pk,
+      stxAccounts = stxAccounts.filter(row => row.address !== stxAddress)
+      const newStxAccount: Account = {
+        address: stxAddress,
         type: 'STX',
+        balance: stxBalance,
         skEnc: enc.toString('hex'),
         iv: iv.toString('hex'),
         authTag: authTag.toString('hex'),
@@ -225,49 +246,27 @@ export async function addAccount(params: NewAccount): Promise<API.RequestResult>
 
 export async function deleteAccount(accounts: Account[]): Promise<API.RequestResult> {
   const result: API.RequestResult = { status: 200, data: {} };
-  let stxAccounts: AccountPk[] = [];
-  let btcAccounts: AccountPk[] = [];
-  let newStxAccounts: AccountPk[] = [];
-  let newBtcAccounts: AccountPk[] = [];
-  let stxAccountsChanged = false;
-  let btcAccountsChanged = false;
+  let stxAccounts: Account[] = [];
+  let btcAccounts: Account[] = [];
   const STX_STJ = localStorage.getItem("STX");
   const BTC_STJ = localStorage.getItem("BTC");
   if (STX_STJ) {
-    const STX_RES: AccountPk[] = JSON.parse(STX_STJ);
+    const STX_RES: Account[] = JSON.parse(STX_STJ);
     stxAccounts.push(...STX_RES);
   }
   if (BTC_STJ) {
-    const BTC_RES: AccountPk[] = JSON.parse(BTC_STJ);
+    const BTC_RES: Account[] = JSON.parse(BTC_STJ);
     btcAccounts.push(...BTC_RES);
   }
   for (var i = 0; i < accounts.length; i++) {
     const type = accounts[i].type;
-    const address = accounts[i].address;
     if (type === 'STX') {
-      for (var j = 0; j < stxAccounts.length; j++) {
-        stxAccountsChanged = true;
-        const localAddr = await getStxAddressFromPublicKey(stxAccounts[j].pk);
-        if (localAddr && localAddr !== address) {
-          newStxAccounts.push(stxAccounts[i]);
-        }
-      }
+      stxAccounts = stxAccounts.filter(row => row.address !== accounts[i].address);
     } else if (type === 'BTC') {
-      for (var j = 0; j < btcAccounts.length; j++) {
-        btcAccountsChanged = true;
-        const localAddr = await getBtcAddressFromPubkey(btcAccounts[j].pk);
-        if (localAddr && localAddr !== address) {
-          newBtcAccounts.push(btcAccounts[i]);
-        }
-      }
+      btcAccounts = btcAccounts.filter(row => row.address !== accounts[i].address);
     }
   }
-  if (stxAccountsChanged) {
-    localStorage.setItem('STX', JSON.stringify(newStxAccounts));
-  }
-  if (btcAccountsChanged) {
-    localStorage.setItem('BTC', JSON.stringify(newBtcAccounts));
-  }
-
+  localStorage.setItem('STX', JSON.stringify(stxAccounts));
+  localStorage.setItem('BTC', JSON.stringify(btcAccounts));
   return result;
 }
