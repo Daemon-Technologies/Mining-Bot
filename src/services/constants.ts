@@ -1,9 +1,4 @@
 module.exports = {
-  // Krypton
-  sidecarURLKrypton: 'https://stacks-node-api.krypton.blockstack.org/extended',
-  btcFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/btc?address=',
-  stxFaucetURL: 'https://stacks-node-api.krypton.blockstack.org/extended/v1/faucets/stx?address=',
-  nodeKryptonURL: "http://krypton.blockstack.org:20443",
 
   //Xenon
   sidecarURLXenon: 'https://stacks-node-api.xenon.blockstack.org/extended',
@@ -27,7 +22,7 @@ module.exports = {
 
   miningNodeListServer_endpoint: 'http://bitcoind-list.stxmining.xyz/nodeList',
 
-  MIN_MINER_BTC_AMOUNT: 0.000011,
+  MIN_MINER_BTC_AMOUNT: 0.0005,
   MIN_MINER_BURN_FEE: 11000,
 
   MIN_FEE_RATE: 50,

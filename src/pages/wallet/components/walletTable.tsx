@@ -12,7 +12,6 @@ import { PlusOutlined } from '@ant-design/icons';
 const WalletTable: React.FC<{}> = () => {
 
   const { removeAccounts, queryAccountList, actionRef } = useModel('wallet.wallet');
-  const { showKryptonFaucetModal } = useModel('wallet.faucet');
   const { handleModalVisible } = useModel('wallet.addAccount');
 
   const [selectedRowsState, setSelectedRows] = useState<Account[]>([]);
@@ -25,7 +24,6 @@ const WalletTable: React.FC<{}> = () => {
         disabled={getNetworkFromStorage() === 'Mainnet'}
         onClick={async () => {
           switch (getNetworkFromStorage()) {
-            case "Krypton": { showKryptonFaucetModal(); break; }
             case "Xenon": {
               const w = window.open('about:blank');
               w.location.href = "https://testnet-faucet.mempool.co/";

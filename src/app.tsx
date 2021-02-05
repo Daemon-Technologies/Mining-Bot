@@ -28,7 +28,7 @@ export async function getInitialState(): Promise<{
 
   let networkType = getNetworkFromStorage()
   if (networkType === null){
-    localStorage.setItem('network', 'Krypton')
+    localStorage.setItem('network', 'Xenon')
   }
 
   return {

@@ -8,7 +8,7 @@ import { showMessage } from "@/services/locale";
 
 const { btcType, stxType } = require('@/services/constants');
 
-const { sidecarURLKrypton, sidecarURLXenon, sidecarURLMainnet, bitcoinTestnet3, bitcoinMainnet } = require('@/services/constants')
+const { sidecarURLXenon, sidecarURLMainnet, bitcoinTestnet3, bitcoinMainnet } = require('@/services/constants')
 
 export function getAccount() {
   const stxAccounts: AccountPk[] = [];
@@ -28,13 +28,9 @@ export function getAccount() {
 
 export async function getStxBalance(stxAddress: string) {
 
-  let baseURL = sidecarURLKrypton;
+  let baseURL = sidecarURLXenon;
 
   switch (getNetworkFromStorage()) {
-    case "Krypton": {
-      baseURL = `${sidecarURLKrypton}/v1/address/${stxAddress}/balances`;
-      break;
-    }
     case "Xenon": {
       baseURL = `${sidecarURLXenon}/v1/address/${stxAddress}/balances`;
       break;
@@ -56,15 +52,10 @@ export async function getStxBalance(stxAddress: string) {
 
 
 export async function getBtcBalance(btcAddress: string) {
-  let baseURL = sidecarURLKrypton;
+  let baseURL = sidecarURLXenon;
   let balanceCoef = 1;
   // https://api.blockcypher.com/v1/btc/test3/addrs/mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj/balance
   switch (getNetworkFromStorage()) {
-    case "Krypton": {
-      baseURL = `${sidecarURLKrypton}/v1/faucets/btc/${btcAddress}`;
-      balanceCoef = 1
-      break;
-    }
     //{"balance":0}
     case "Xenon": {
       baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`

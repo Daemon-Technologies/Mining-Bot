@@ -7,7 +7,7 @@ import { message } from 'antd';
 import { NodeInfo } from '../sysConf/data';
 
 
-const { nodeKryptonURL, nodeXenonURL, nodeMainnetURL } = require('@/services/constants');
+const { nodeXenonURL, nodeMainnetURL } = require('@/services/constants');
 
 export async function getNodeStatus() {
   return request(`${getSysConf().miningLocalServerUrl}/getNodeStatus`, {
@@ -121,8 +121,6 @@ export async function getLocalChainSyncInfo() {
 export async function getMainChainInfo() {
   let baseURL = nodeXenonURL;
   switch (getNetworkFromStorage()) {
-    case "Krypton": baseURL = nodeKryptonURL;
-      break;
     case "Xenon": baseURL = nodeXenonURL;
       break;
     case "Mainnet": baseURL = nodeMainnetURL;

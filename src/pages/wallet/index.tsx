@@ -4,7 +4,7 @@ import { ConfigProvider } from 'antd';
 
 import { switchConfigProviderLocale } from '@/services/locale';
 import AddAccountForm from './components/AddAccountForm';
-import FaucetForm from './components/FaucetForm';
+
 import WalletTable from './components/walletTable';
 
 const TableList: React.FC<{}> = () => {
@@ -16,7 +16,7 @@ const TableList: React.FC<{}> = () => {
       <ConfigProvider
         locale={switchConfigProviderLocale()}
       >
-        <FaucetForm />
+
         <WalletTable />
         <AddAccountForm />
       </ConfigProvider>

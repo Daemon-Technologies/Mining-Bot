@@ -28,13 +28,6 @@ export function getSysConf(): SysConf {
         sidecarUrl: sidecarURLMainnet,
     };
     switch (network) {
-        case 'Krypton': {
-            const conf_STJ = localStorage.getItem('Krypton_SysConf');
-            if (conf_STJ) {
-                confInfo = JSON.parse(conf_STJ);
-            }
-            break;
-        }
         case 'Xenon': {
             confInfo = {
                 miningLocalServerUrl: miningLocalServer_endpoint,
@@ -82,10 +75,6 @@ export function updateSysConf(conf: SysConf) {
     if (conf && conf.miningMonitorUrl && conf.miningLocalServerUrl && conf.miningLocalChainUrl && conf.sidecarUrl && conf.btcNodeInfo) {
         const confStr = JSON.stringify(conf);
         switch (network) {
-            case 'Krypton': {
-                localStorage.setItem('Krypton_SysConf', confStr);
-                break;
-            }
             case 'Xenon': {
                 localStorage.setItem('Xenon_SysConf', confStr);
                 break;

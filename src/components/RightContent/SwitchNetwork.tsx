@@ -10,7 +10,7 @@ interface PageProps extends ConnectProps {
 }
 
 const SwitchNetwork: React.FC<PageProps> = () => {
-    const [networkName, setNetworkName] = useState("Krypton");
+    const [networkName, setNetworkName] = useState("Xenon");
     //console.log(network, dispatch)
     /*
         const changeNetwork = (newNetwork:any) => {
@@ -26,35 +26,9 @@ const SwitchNetwork: React.FC<PageProps> = () => {
         localStorage.setItem("network", newNetwork)
     }
 
-    /*
-    useEffect((()=>{
-        let networkDAO = localStorage.getItem("network");
-        if (networkDAO == undefined){
-            localStorage.setItem("network", network.network)
-            setNetworkName(network.network)
-        }
-        else if(networkDAO!=network.network){
-            changeNetwork(networkDAO)
-            setNetworkName(networkDAO)
-        }
-        else setNetworkName(network.network)
-        
-    }), [])
-    */
-    /*
-    useEffect(()=>{
-        dispatch({
-            type: 'network/save',
-            payload: {
-                network: "xenon"
-            }
-        })
-    } ,[])
-    */
 
     useEffect(() => {
         switch (getNetworkFromStorage()) {
-            case "Krypton": setNetworkName("Krypton"); break;
             case "Xenon": setNetworkName("Xenon"); break;
             case "Mainnet": setNetworkName("Mainnet"); break;
         }
@@ -63,14 +37,6 @@ const SwitchNetwork: React.FC<PageProps> = () => {
 
     const onClick = ({ key }) => {
         switch (key) {
-            case "Krypton": {
-                setNetworkName("Krypton");
-                message.info(`Switch to Krypton network`);
-                changeNetworkDAO("Krypton");
-                window.location.reload();
-                // switchPage('Krypton');
-                break;
-            }
             case "Xenon": {
                 setNetworkName("Xenon");
                 message.info(`Switch to Xenon network`);
@@ -93,9 +59,6 @@ const SwitchNetwork: React.FC<PageProps> = () => {
 
     const menu = (
         <Menu onClick={onClick} style={{ fontSize: 12 }}>
-            <Menu.Item key="Krypton" >
-                Krypton
-          </Menu.Item>
             <Menu.Item key="Xenon">
                 Xenon
           </Menu.Item>
@@ -113,19 +76,15 @@ const SwitchNetwork: React.FC<PageProps> = () => {
                 <img alt="logo" style={{ height: 18, marginRight: 10 }} src={logo} />
             </Button>
         </Dropdown>
-        {networkName === 'Krypton' ?
-            <Tag color="cyan">
+        {
+        networkName === 'Xenon' ?
+            <Tag color='pink'>
                 {networkName}
             </Tag>
             :
-            networkName === 'Xenon' ?
-                <Tag color='pink'>
-                    {networkName}
-                </Tag>
-                :
-                <Tag color='orange'>
-                    {networkName}
-                </Tag>}
+            <Tag color='orange'>
+                {networkName}
+            </Tag>}
 
     </div>)
 }
