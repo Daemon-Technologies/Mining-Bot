@@ -8,6 +8,23 @@ export interface BitcoinAccountInfo {
   balance: string; // such as 0.093812
 }
 
+export interface MinerInfo {
+  stx_address: string;
+  btc_address: string;
+  actual_win: number;
+  total_win?: number;
+  total_mined: number;
+  miner_burned: number;
+}
+
+export interface MinerInfoQueryParams {
+  stx_address?: string;
+  btc_address?: string;
+  current?: number;
+  pageSize?: number;
+}
+
+
 export interface MiningInfo {
   stx_address: string;
   btc_address: string;

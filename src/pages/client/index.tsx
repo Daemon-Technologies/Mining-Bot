@@ -1,10 +1,12 @@
 import React from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Divider } from 'antd';
 
 import { switchConfigProviderLocale } from '@/services/locale';
 import ChainSyncInfoTable from './component/ChainSyncInfoTable';
 import OperationBoard from './component/OperationBoard';
+import MinerInfoTable from './component/MinerInfoTable';
+import MiningInfoTable from './component/MiningInfoTable';
 
 
 const TableList: React.FC<{}> = () => {
@@ -16,6 +18,10 @@ const TableList: React.FC<{}> = () => {
       >
         <OperationBoard />
         <ChainSyncInfoTable />
+        <Divider type="horizontal" />
+        <MinerInfoTable />
+        <Divider type="horizontal" />
+        <MiningInfoTable />
       </ConfigProvider>
     </PageContainer >
   );

@@ -6,7 +6,7 @@ const miningMonitorServer_endpoint = sysConf.miningMonitorUrl;
 
 
 export async function getMinerInfo() {
-    return request(`${miningMonitorServer_endpoint}/mining_info`, {
+    return request(`${miningMonitorServer_endpoint}/miner_info`, {
         method: 'GET',
         timeout: 30000,
     }).then(data => {

@@ -79,6 +79,8 @@ export const renderFeeInfo = (props: { inputBurnFee: number; setInputBurnFee: Fu
                 </Row>
             </Card>
             <br />
+            Based on burn_fee: {inputBurnFee} and fee_rate: {inputFeeRate}
+            <br />
             {showMessage('是否开启Debug模式:  ', 'Debug Mode:  ')}<Switch onChange={onChangeDebugMode} checkedChildren={showMessage('开启', 'On')} unCheckedChildren={showMessage('关闭', 'Off')} />
         </>
     )

@@ -43,7 +43,7 @@ export async function getStxBalance(stxAddress: string) {
   }
   return request(`${baseURL}`, {
     method: 'GET',
-    timeout: 3000,
+    timeout: 5000,
   }).catch(err => {
     return { stx: { balance: 'NaN' } };
   });
@@ -74,7 +74,7 @@ export async function getBtcBalance(btcAddress: string) {
 
   return request(`${baseURL}`, {
     method: "GET",
-    timeout: 3000,
+    timeout: 5000,
 
   }).then((resp) => {
     return { 'balance': (resp[`${btcAddress}`].final_balance / balanceCoef).toString() };

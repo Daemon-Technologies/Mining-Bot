@@ -7,7 +7,7 @@ module.exports = {
 
   //Mainnet
   sidecarURLMainnet: 'https://stacks-node-api.stacks.co/extended',
-  nodeMainnetURL: 'https://stacks-node-api.stacks.co',
+  nodeMainnetURL: 'http://seed-0.mainnet.stacks.co:20443',
 
   //Bitcoin endpoint
   bitcoinTestnet3: 'https://api.blockcypher.com/v1/btc/test3',
@@ -18,7 +18,7 @@ module.exports = {
   masterNodeKey: 'master_node_ping',
   miningLocalServer_endpoint: 'http://localhost:5000',
   miningMonitorServer_endpoint: 'http://monitor.stxmining.xyz',
-  miningMonitorServer_Mainnet: 'http://47.242.239.96:23456',
+  miningMonitorServer_Mainnet: 'http://47.242.239.96:8887',
 
   miningNodeListServer_endpoint: 'http://bitcoind-list.stxmining.xyz/nodeList',
 
