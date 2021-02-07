@@ -1,20 +1,27 @@
+import { SpendInfo } from '@/services/client/data';
 import { showMessage } from '@/services/locale';
-import { Card, Col, InputNumber, Row, Slider, Switch } from 'antd';
+import { Account } from '@/services/wallet/data';
+import { Card, Col, Divider, InputNumber, Row, Slider, Switch } from 'antd';
 import React from 'react';
 
 const { MIN_MINER_BURN_FEE, MIN_FEE_RATE, MAX_FEE_RATE } = require('@/services/constants');
 
-export const renderFeeInfo = (props: { inputBurnFee: number; setInputBurnFee: Function; inputFeeRate: number; setInputFeeRate: Function; setDebugMode: Function; }) => {
+export const renderFeeInfo = (props: { inputBurnFee: number; setInputBurnFee: Function; inputFeeRate: number; setInputFeeRate: Function; setDebugMode: Function; accountSelected: Account | undefined; btcPrice: number; spendInfo: SpendInfo | undefined; setSpendInfo: Function; }) => {
     const {
         inputBurnFee, setInputBurnFee,
         inputFeeRate, setInputFeeRate,
-        setDebugMode,
+        setDebugMode, accountSelected,
+        spendInfo, setSpendInfo,
+        btcPrice,
     } = props;
 
     const onChangeBurnFeeInput = (value: any) => {
         if (isNaN(value)) {
             return;
         }
+        const per_tx = (350 * inputFeeRate) / 100000000 * btcPrice + value / 100000000 * btcPrice;
+        const one_hour_spend = 7 * per_tx;
+        setSpendInfo({ per_tx: parseInt(per_tx.toString()), one_hour_spend: parseInt(one_hour_spend.toString()), register_spend: 0 });
         setInputBurnFee(value);
     }
 
@@ -22,6 +29,10 @@ export const renderFeeInfo = (props: { inputBurnFee: number; setInputBurnFee: Fu
         if (isNaN(value)) {
             return;
         }
+        // re-calculate spend info
+        const per_tx = (350 * value) / 100000000 * btcPrice + inputBurnFee / 100000000 * btcPrice;
+        const one_hour_spend = 7 * per_tx;
+        setSpendInfo({ per_tx: parseInt(per_tx.toString()), one_hour_spend: parseInt(one_hour_spend.toString()), register_spend: 0 });
         setInputFeeRate(value);
     }
 
@@ -79,9 +90,12 @@ export const renderFeeInfo = (props: { inputBurnFee: number; setInputBurnFee: Fu
                 </Row>
             </Card>
             <br />
-            Based on burn_fee: {inputBurnFee} and fee_rate: {inputFeeRate}
-            <br />
             {showMessage('是否开启Debug模式:  ', 'Debug Mode:  ')}<Switch onChange={onChangeDebugMode} checkedChildren={showMessage('开启', 'On')} unCheckedChildren={showMessage('关闭', 'Off')} />
+            <Divider type="horizontal" />
+            <span style={{ color: 'red' }}>
+                {showMessage(`基于这个设计，你平均每笔交易大约花费${spendInfo?.per_tx}$，平均每小时花费为${spendInfo?.one_hour_spend}$`,
+                    `Based on this setting, you will spend almost ${spendInfo?.per_tx}$ per transaction, almost ${spendInfo?.one_hour_spend}$ per hour.`)}
+            </span>
         </>
     )
 };

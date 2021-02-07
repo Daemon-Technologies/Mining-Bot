@@ -47,3 +47,9 @@ export interface ChainSyncInfo {
   stacks_tip: string;
   type: number;
 }
+
+export interface SpendInfo {
+  per_tx: number;
+  register_spend: number;
+  one_hour_spend: number;
+}
