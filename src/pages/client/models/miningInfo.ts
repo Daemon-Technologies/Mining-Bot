@@ -1,5 +1,5 @@
-import { getMiningInfo } from "@/services/publicdata/miningInfo";
-import { MiningInfo, MiningInfoQueryParams } from "@/services/publicdata/data";
+import { getMiningInfo } from "@/services/client/miningInfo";
+import { MiningInfo, MiningInfoQueryParams } from "@/services/client/data";
 import { useState } from "react";
 
 export interface MiningInfoState {

@@ -126,7 +126,7 @@ export async function getMainChainInfo() {
     case "Mainnet": baseURL = nodeMainnetURL;
     default: break;
   }
-  return request(`${baseURL}/v2/info`, { method: 'GET', timeout: 3000, });
+  return request(`${baseURL}/v2/info`, { method: 'GET', timeout: 5000, });
 }
 
 export async function isValidAuthCode(password: string) {

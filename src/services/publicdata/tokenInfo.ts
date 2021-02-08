@@ -35,3 +35,12 @@ export async function getTokenPrice() {
         return { 'data': tokenInfo }
     });
 }
+
+export async function getBtcPrice() {
+    // get price of BTCUSDT
+    return request(`${binanceAPIURL}/ticker/price?symbol=BTCUSDT`, {
+        method: 'GET',
+    }).then((resp: BinanceResp) => {
+        return parseInt(resp.price);
+    });
+}

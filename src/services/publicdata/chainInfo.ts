@@ -24,7 +24,7 @@ export async function getChainInfo() {
     try {
         result = await request(`${baseURL}/v2/info`, {
             method: 'GET',
-            timeout: 3000,
+            timeout: 8000,
         })
     }
     catch (error) {
