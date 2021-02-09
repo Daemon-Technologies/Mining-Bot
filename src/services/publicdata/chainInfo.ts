@@ -1,12 +1,12 @@
 import { request } from 'umi';
 import { ChainInfo, BlockInfo, TxInfo } from './data';
 import { getNetworkFromStorage } from '@/utils/utils'
+import { getSysConf } from '../sysConf/conf';
 
 const {
-    nodeKryptonURL,
     nodeXenonURL,
-    sidecarURLXenon,
-    sidecarURLKrypton
+    nodeMainnetURL,
+    sidecarURLMainnet
 } = require('@/services/constants')
 
 
@@ -14,17 +14,17 @@ const {
 export async function getChainInfo() {
     let baseURL = nodeXenonURL;
     switch (getNetworkFromStorage()) {
-        case "Krypton": baseURL = nodeKryptonURL;
-            break;
         case "Xenon": baseURL = nodeXenonURL;
             break;
-        case "Mainnet": break; //TODO
+        case "Mainnet": baseURL = nodeMainnetURL;
+            break; //TODO
         default: break;
     }
     let result;
     try {
         result = await request(`${baseURL}/v2/info`, {
             method: 'GET',
+            timeout: 8000,
         })
     }
     catch (error) {
@@ -40,11 +40,11 @@ export async function getChainInfo() {
 }
 
 export async function getBlockInfo() {
-    let baseURL = sidecarURLXenon;
+    let baseURL = sidecarURLMainnet;
+    const confInfo = getSysConf();
     switch (getNetworkFromStorage()) {
-        case "Krypton": baseURL = sidecarURLKrypton; break;
-        case "Xenon": baseURL = sidecarURLXenon; break;
-        case "Mainnet": break; //TODO
+        case "Xenon": baseURL = confInfo.sidecarUrl; break;
+        case "Mainnet": baseURL = confInfo.sidecarUrl; break;
         default: break;
     }
     return request(`${baseURL}/v1/block?limit=5`, {
@@ -67,11 +67,12 @@ export async function getBlockInfo() {
 }
 
 export async function getTxInfo(tx_id: any) {
-    let baseURL = sidecarURLXenon;
+    let baseURL = sidecarURLMainnet;
+    const confInfo = getSysConf();
+    console.log('confINfo:', confInfo.sidecarUrl)
     switch (getNetworkFromStorage()) {
-        case "Krypton": baseURL = sidecarURLKrypton; break;
-        case "Xenon": baseURL = sidecarURLXenon; break;
-        case "Mainnet": break; //TODO
+        case "Xenon": baseURL = confInfo.sidecarUrl; break;
+        case "Mainnet": baseURL = confInfo.sidecarUrl; break;
         default: break;
     }
     return request(`${baseURL}/v1/tx/${tx_id}`, {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MinerInfo, MinerInfoQueryParams } from "@/services/publicdata/data";
+import { MinerInfo, MinerInfoQueryParams } from "@/services/client/data";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
 import { Button } from 'antd';
@@ -9,7 +9,7 @@ import { exportInfo } from '@/services/publicdata/exportUtils';
 const MinerInfoTable: React.FC<{}> = () => {
     const { operationBoardState } = useModel('client.operationBoard');
     let { minerAddress } = operationBoardState;
-    const { minerInfoState, queryMinerInfo } = useModel('publicData.minerInfo');
+    const { minerInfoState, queryMinerInfo } = useModel('client.minerInfo');
     let { minerInfoList } = minerInfoState;
     const minerInfoColumns: ProColumns<MinerInfo>[] = [
         {

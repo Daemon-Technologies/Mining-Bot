@@ -12,28 +12,29 @@ const BlockInfoTable: React.FC<{}> = () => {
             title: <FormattedMessage id='block.height' defaultMessage='Height' />,
             dataIndex: 'height',
             render: (_) => <Tag color="blue">{_}</Tag>,
-            width: 35,
-            align: 'center'
+            align: 'center',
+            width: 100
         },
         {
             title: <FormattedMessage id='block.hash' defaultMessage='Block Hash' />,
             dataIndex: 'hash',
-            width: 100,
-            ellipsis: true
+            width: 400,
+            ellipsis: true,
+            copyable: true
         },
         {
             title: <FormattedMessage id='block.fee' defaultMessage='Total Fee' />,
             dataIndex: 'total_fee',
-            width: 50
+            width: 100,
         },
         {
             title: <FormattedMessage id='block.status' defaultMessage='Status' />, dataIndex: 'canonical',
             initialValue: 'success',
+            width: 100,
             valueEnum: {
                 success: { text: <FormattedMessage id='block.status.success' defaultMessage='Success' />, status: 'Success' },
                 pending: { text: <FormattedMessage id='block.status.pending' defaultMessage='Pending' />, status: 'Processing' }
-            },
-            width: 50
+            }
         }
     ];
 
@@ -42,7 +43,8 @@ const BlockInfoTable: React.FC<{}> = () => {
             title: <FormattedMessage id='block.info.txHash' defaultMessage='TX Hash' />,
             dataIndex: 'tx_id',
             key: 'tx_id',
-            ellipsis: true
+            ellipsis: true,
+            copyable: true
         },
         {
             title: <FormattedMessage id='block.info.status' defaultMessage='Status' />,

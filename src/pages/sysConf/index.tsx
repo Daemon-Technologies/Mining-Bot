@@ -11,6 +11,7 @@ const FormItem = Form.Item;
 export interface FormValueType extends Partial<SysConf> {
     miningLocalServerUrl: string;
     miningMonitorUrl: string;
+    sidecarUrl: string;
     peerHost?: string;
     username?: string;
     password?: string;
@@ -30,12 +31,11 @@ const TableList: React.FC<{}> = () => {
 
     const confInfo: SysConf = getSysConf();
 
-    console.log('confInfo:', confInfo)
-
     const [formVals, setFormVals] = useState<FormValueType>({
         miningLocalServerUrl: confInfo.miningLocalServerUrl,
         miningLocalChainUrl: confInfo.miningLocalChainUrl,
         miningMonitorUrl: confInfo.miningMonitorUrl,
+        sidecarUrl: confInfo.sidecarUrl,
         peerHost: confInfo.btcNodeInfo?.peerHost,
         username: confInfo.btcNodeInfo?.username,
         password: confInfo.btcNodeInfo?.password,
@@ -50,6 +50,7 @@ const TableList: React.FC<{}> = () => {
             miningLocalServerUrl: fieldsValue.miningLocalServerUrl,
             miningLocalChainUrl: fieldsValue.miningLocalChainUrl,
             miningMonitorUrl: fieldsValue.miningMonitorUrl,
+            sidecarUrl: fieldsValue.sidecarUrl,
             btcNodeInfo: {
                 peerHost: fieldsValue.peerHost,
                 username: fieldsValue.username,
@@ -88,7 +89,14 @@ const TableList: React.FC<{}> = () => {
             >
                 <Input placeholder={showMessage('请输入', 'Please input')} />
             </FormItem>
-            {getNetworkFromStorage() === 'Xenon' ?
+            <FormItem
+                name='sidecarUrl'
+                label={showMessage('Stacks链Sidecar地址', 'Stacks Sidecar Url')}
+                rules={[{ required: true, message: showMessage('Stacks链Sidecar地址为必填项', 'Stacks Sidecar Url is required') }]}
+            >
+                <Input placeholder={showMessage('请输入', 'Please input')} />
+            </FormItem>
+            {getNetworkFromStorage() === 'Xenon' || getNetworkFromStorage() === 'Mainnet' ?
                 <>
                     <FormItem
                         name='peerHost'
@@ -149,6 +157,7 @@ const TableList: React.FC<{}> = () => {
                         miningLocalServerUrl: formVals.miningLocalServerUrl,
                         miningLocalChainUrl: formVals.miningLocalChainUrl,
                         miningMonitorUrl: formVals.miningMonitorUrl,
+                        sidecarUrl: formVals.sidecarUrl,
                         peerHost: formVals.peerHost,
                         username: formVals.username,
                         password: formVals.password,

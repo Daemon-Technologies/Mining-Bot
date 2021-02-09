@@ -7,7 +7,7 @@ import { message } from 'antd';
 import { NodeInfo } from '../sysConf/data';
 
 
-const { nodeKryptonURL, nodeXenonURL } = require('@/services/constants');
+const { nodeXenonURL, nodeMainnetURL } = require('@/services/constants');
 
 export async function getNodeStatus() {
   return request(`${getSysConf().miningLocalServerUrl}/getNodeStatus`, {
@@ -22,7 +22,7 @@ export async function getNodeStatus() {
   })
 }
 
-export async function startMining(data: { account: Account, inputBurnFee: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) {
+export async function startMining(data: { account: Account, inputBurnFee: number, inputFeeRate: number, debugMode: boolean, nodeInfo: NodeInfo, authCode: string, network: string }) {
   /*
     address: "n4e9BRjiNm8ANt94eyoMofxNQoKQxHN2jJ"
     authTag: "a4df9c8972d554a4108b0aaff87e8ccb"
@@ -33,11 +33,10 @@ export async function startMining(data: { account: Account, inputBurnFee: number
   */
   const account = data.account;
   const burnFee = data.inputBurnFee;
+  const feeRate = data.inputFeeRate;
   const debugMode = data.debugMode;
   const authCode = data.authCode;
   const nodeInfo = data.nodeInfo;
-
-
   const key = keyGen();
   const seed = aes256Decrypt(account.skEnc, key, account.iv, account.authTag);
   const authKey = keyDerive(authCode);
@@ -63,6 +62,7 @@ export async function startMining(data: { account: Account, inputBurnFee: number
             authTag: nodeAuthTag.toString('hex'),
           },
           burn_fee_cap: burnFee,
+          satoshi_per_bytes: feeRate,
           debugMode: debugMode,
           network: data.network
         }
@@ -115,20 +115,18 @@ export async function getChainSyncInfo(): Promise<API.RequestResult> {
 }
 
 export async function getLocalChainSyncInfo() {
-  return request(`${getSysConf().miningLocalChainUrl}/v2/info`, { method: 'GET' });
+  return request(`${getSysConf().miningLocalChainUrl}/v2/info`, { method: 'GET', timeout: 3000, });
 }
 
 export async function getMainChainInfo() {
   let baseURL = nodeXenonURL;
   switch (getNetworkFromStorage()) {
-    case "Krypton": baseURL = nodeKryptonURL;
-      break;
     case "Xenon": baseURL = nodeXenonURL;
       break;
-    case "Mainnet": break; //TODO
+    case "Mainnet": baseURL = nodeMainnetURL;
     default: break;
   }
-  return request(`${baseURL}/v2/info`, { method: 'GET' });
+  return request(`${baseURL}/v2/info`, { method: 'GET', timeout: 5000, });
 }
 
 export async function isValidAuthCode(password: string) {

@@ -19,17 +19,6 @@ export default {
     'block.info.feeRate': '交易费率',
     'block.info.txType': '交易类型',
 
-    'minerInfo.title': '矿工信息',
-    'minerInfo.stxAddress': 'STX地址',
-    'minerInfo.btcAddress': 'BTC地址',
-    'minerInfo.actualWins': '最终获胜数',
-    'minerInfo.totalWins': '燃烧链获胜数',
-    'minerInfo.totalMined': '总参与挖矿数',
-    'minerInfo.burn': '总燃烧量',
-    'minerInfo.export': '导出',
 
-    'miningInfo.title': '挖矿信息',
-    'miningInfo.stacksHeight': '链高度',
-    'miningInfo.burnfee': '燃烧量',
 
 };
