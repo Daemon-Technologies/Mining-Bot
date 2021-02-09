@@ -40,6 +40,20 @@ export default {
     'notification.startMining.succeed' : "Launching Successfully!!!",
     'notification.startMining.error' : "Launching Error, Please Contact With Admin!!!",
     
+    'minerInfo.title': 'Miner Info',
+    'minerInfo.stxAddress': 'STX Address',
+    'minerInfo.btcAddress': 'BTC Address',
+    'minerInfo.actualWins': 'Actual Wins',
+    'minerInfo.totalWins': 'Total Wins',
+    'minerInfo.totalMined': 'Total Mined',
+    'minerInfo.burn': 'Miner Burned',
+    'minerInfo.export': 'Export',
+
+    'miningInfo.title': 'Mining Info',
+    'miningInfo.stacksHeight': 'Stack Chain Height',
+    'miningInfo.burnfee': 'Burn fee',
+
+    'blockInfo.title': 'Latest Block Commit Info'
     
     
     

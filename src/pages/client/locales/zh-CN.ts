@@ -40,7 +40,20 @@ export default {
     'notification.startMining.succeed': "启动成功！",
     'notification.startMining.error': "启动异常，请联系管理员！",
 
+    'minerInfo.title': '矿工信息',
+    'minerInfo.stxAddress': 'STX地址',
+    'minerInfo.btcAddress': 'BTC地址',
+    'minerInfo.actualWins': '最终获胜数',
+    'minerInfo.totalWins': '燃烧链获胜数',
+    'minerInfo.totalMined': '总参与挖矿数',
+    'minerInfo.burn': '总燃烧量',
+    'minerInfo.export': '导出',
 
+    'miningInfo.title': '挖矿信息',
+    'miningInfo.stacksHeight': '链高度',
+    'miningInfo.burnfee': '燃烧量',
+
+    'blockInfo.title': '最新区块挖矿提交信息'
 
 
 
