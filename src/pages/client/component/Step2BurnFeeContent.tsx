@@ -14,7 +14,7 @@ export const renderFeeInfo = (props: { inputBurnFee: number; setInputBurnFee: Fu
         spendInfo, setSpendInfo,
         btcPrice,
     } = props;
-
+    console.log(spendInfo, btcPrice)
     const onChangeBurnFeeInput = (value: any) => {
         if (isNaN(value)) {
             return;
