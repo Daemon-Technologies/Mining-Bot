@@ -32,6 +32,19 @@ export interface MiningInfo {
   stacks_block_height: number;
 }
 
+export interface BlockCommitInfo {
+  leader_key_address: string;
+  btc_address: string;
+  burn_fee: string;
+}
+
+export interface BlockInfo {
+  block_commit: BlockCommitInfo;
+  stacks_block_height: number;
+  sum_miners_amount: number;
+  sum_burn_fee: number;
+}
+
 export interface MiningInfoQueryParams {
   stx_address?: string;
   btc_address?: string;

@@ -7,6 +7,7 @@ import ChainSyncInfoTable from './component/ChainSyncInfoTable';
 import OperationBoard from './component/OperationBoard';
 import MinerInfoTable from './component/MinerInfoTable';
 import MiningInfoTable from './component/MiningInfoTable';
+import BlockCommitInfoTable from './component/BlockInfoTable';
 
 
 const TableList: React.FC<{}> = () => {
@@ -18,10 +19,11 @@ const TableList: React.FC<{}> = () => {
       >
         <OperationBoard />
         <ChainSyncInfoTable />
-        <Divider type="horizontal" />
         <MinerInfoTable />
         <Divider type="horizontal" />
         <MiningInfoTable />
+        <Divider type="horizontal" />
+        <BlockCommitInfoTable />
       </ConfigProvider>
     </PageContainer >
   );
