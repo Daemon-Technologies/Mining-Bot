@@ -4,11 +4,8 @@ import { getNetworkFromStorage } from '@/utils/utils'
 import { getSysConf } from '../sysConf/conf';
 
 const {
-    nodeKryptonURL,
     nodeXenonURL,
     nodeMainnetURL,
-    sidecarURLXenon,
-    sidecarURLKrypton,
     sidecarURLMainnet
 } = require('@/services/constants')
 
@@ -17,8 +14,6 @@ const {
 export async function getChainInfo() {
     let baseURL = nodeXenonURL;
     switch (getNetworkFromStorage()) {
-        case "Krypton": baseURL = nodeKryptonURL;
-            break;
         case "Xenon": baseURL = nodeXenonURL;
             break;
         case "Mainnet": baseURL = nodeMainnetURL;
@@ -29,7 +24,7 @@ export async function getChainInfo() {
     try {
         result = await request(`${baseURL}/v2/info`, {
             method: 'GET',
-            timeout: 3000,
+            timeout: 8000,
         })
     }
     catch (error) {
@@ -48,7 +43,6 @@ export async function getBlockInfo() {
     let baseURL = sidecarURLMainnet;
     const confInfo = getSysConf();
     switch (getNetworkFromStorage()) {
-        case "Krypton": baseURL = sidecarURLKrypton; break;
         case "Xenon": baseURL = confInfo.sidecarUrl; break;
         case "Mainnet": baseURL = confInfo.sidecarUrl; break;
         default: break;
@@ -77,7 +71,6 @@ export async function getTxInfo(tx_id: any) {
     const confInfo = getSysConf();
     console.log('confINfo:', confInfo.sidecarUrl)
     switch (getNetworkFromStorage()) {
-        case "Krypton": baseURL = sidecarURLKrypton; break;
         case "Xenon": baseURL = confInfo.sidecarUrl; break;
         case "Mainnet": baseURL = confInfo.sidecarUrl; break;
         default: break;

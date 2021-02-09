@@ -16,7 +16,7 @@ export interface networkType {
 const IndexModel: networkType = {
   namespace: 'network',
   state: {
-    network: 'krypton'
+    network: 'Xenon'
   },
   effects: {
     *query({ payload }, { call, put }) {

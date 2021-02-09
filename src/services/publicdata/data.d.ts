@@ -51,38 +51,7 @@ export interface TxInfo {
 }
 
 
-export interface MinerInfo {
-    stx_address: string;
-    btc_address: string;
-    actual_win: number;
-    total_win?: number;
-    total_mined: number;
-    miner_burned: number;
-}
 
-export interface MinerInfoQueryParams {
-    stx_address?: string;
-    btc_address?: string;
-    current?: number;
-    pageSize?: number;
-}
-
-
-export interface MiningInfo {
-    stx_address: string;
-    btc_address: string;
-    burn_fee: number;
-    stacks_block_height: number;
-}
-
-export interface MiningInfoQueryParams {
-    stx_address?: string;
-    btc_address?: string;
-    burn_fee?: number;
-    stacks_block_height?: number;
-    current?: number;
-    pageSize?: number;
-}
 
 /*
 STX address - actual wins/total wins/total mined - % won - % actual wins - burn satoshis

@@ -5,8 +5,6 @@ import { switchConfigProviderLocale } from '@/services/locale';
 import TokenPriceInfoTable from './component/TokenPriceInfoTable';
 import ChainInfoTable from './component/ChainInfoTable';
 import BlockInfoTable from './component/BlockInfoTable';
-import MinerInfoTable from './component/MinerInfoTable';
-import MiningInfoTable from './component/MiningInfoTable';
 
 const TableList: React.FC<{}> = () => {
 
@@ -16,10 +14,6 @@ const TableList: React.FC<{}> = () => {
         locale={switchConfigProviderLocale()}
       >
         <TokenPriceInfoTable />
-        <Divider type="horizontal" />
-        <MinerInfoTable />
-        <Divider type="horizontal" />
-        <MiningInfoTable />
         <Divider type="horizontal" />
         <ChainInfoTable />
         <Divider type="horizontal" />
