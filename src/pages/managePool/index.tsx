@@ -36,7 +36,9 @@ const TableList: React.FC<{}> = () => {
     localStorage.setItem("pooledBtcAddress", fieldsValue.poolBtcAddress);
   };
 
-  const [isPooling, setIsPooling] = useState<boolean>(false);
+  const [isPooling, setIsPooling] = useState<boolean>(
+    localStorage.getItem("isPooling") === "true" ?? false
+  );
 
   useEffect(() => {
     queryAccount(1).then(({ data }) => {
@@ -97,7 +99,14 @@ const TableList: React.FC<{}> = () => {
     <PageContainer>
       <ConfigProvider locale={switchConfigProviderLocale()}>
         <Card bordered={false} title={showMessage("TODO", "Manage Pool")}>
-          <Switch style={{marginRight: "5px"}} onChange={() => setIsPooling(!isPooling)} />
+          <Switch
+            style={{ marginRight: "5px" }}
+            checked={isPooling}
+            onChange={() => {
+              setIsPooling(!isPooling);
+              localStorage.setItem("isPooling", (!isPooling).toString());
+            }}
+          />
           {isPooling
             ? showMessage("TODO", "Pooling is On")
             : showMessage("TODO", "Pooling is Off")}
