@@ -187,7 +187,7 @@ const TableList: React.FC<{}> = () => {
             >
                 <span style={{ color: 'red' }}>
                     {showMessage('这将清空你所有的账户信息，请慎重！'
-                        , 'Attention plaese! This operation will clear all your account info.')}
+                        , 'Attention please! This operation will clear all your account info.')}
                 </span>
             </Modal>
         </PageContainer>

@@ -3,6 +3,8 @@ export default {
   'menu.wallet': 'Wallet',
   'menu.client': 'Mining Client',
   'menu.sysConf': 'System Configuration',
+  'menu.managePool': 'Manage Pool',
+  'menu.joinPool': 'Join Pool',
 
   'menu.welcome': 'Welcome',
   'menu.more-blocks': 'More Blocks',
