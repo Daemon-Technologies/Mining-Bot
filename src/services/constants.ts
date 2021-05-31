@@ -46,4 +46,7 @@ module.exports = {
   // address type
   btcType: 1,
   stxType: 2,
+
+  // pooling 
+  firstStackingBlock: 668050
 }

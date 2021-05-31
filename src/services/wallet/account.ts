@@ -86,7 +86,9 @@ export async function getBtcBalance(btcAddress: string) {
         return { 'balance': 'NaN' };
       });
     }
-    default: break;
+    default: {
+      return {'balance': 'NaN'}
+    };
   }
 
 

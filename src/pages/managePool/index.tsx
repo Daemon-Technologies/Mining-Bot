@@ -51,45 +51,44 @@ const TableList: React.FC<{}> = () => {
     return (
       <>
         <Divider />
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={{ poolBtcAddress: formVals.poolBtcAddress }}
-        >
-          <FormItem
-            name="poolBtcAddress"
-            label={showMessage("TODO", "Pool BTC Address")}
-            //TODO: validate btc address
-            rules={[
-              {
-                required: true,
-                message: showMessage("TODO", "Pooled BTC Address is Required"),
-              },
-            ]}
+        <Card bordered={false} title={showMessage("TODO", "Pool Config")}>
+          <Form
+            form={form}
+            layout="vertical"
+            initialValues={{ poolBtcAddress: formVals.poolBtcAddress }}
           >
-            <Select loading={loadingAccounts}>
-              {accounts.map((account: Account) => {
-                return (
-                  <Option
-                    value={account.address}
-                    key={account.address}
-                  >{`${account.address} (${account.balance} BTC)`}</Option>
-                );
-              })}
-            </Select>
-            {/* <Input
-                placeholder={showMessage(
-                  "TODO",
-                  "Please input pooled BTC address"
-                )}
-              /> */}
-          </FormItem>
-          <FormItem>
-            <Button onClick={() => onSubmit()} type="primary">
-              {showMessage("TODO", "Save")}
-            </Button>
-          </FormItem>
-        </Form>
+            <FormItem
+              name="poolBtcAddress"
+              label={showMessage("TODO", "Pool BTC Address")}
+              //TODO: validate btc address
+              rules={[
+                {
+                  required: true,
+                  message: showMessage(
+                    "TODO",
+                    "Pooled BTC Address is Required"
+                  ),
+                },
+              ]}
+            >
+              <Select loading={loadingAccounts}>
+                {accounts.map((account: Account) => {
+                  return (
+                    <Option
+                      value={account.address}
+                      key={account.address}
+                    >{`${account.address} (${account.balance} BTC)`}</Option>
+                  );
+                })}
+              </Select>
+            </FormItem>
+            <FormItem>
+              <Button onClick={() => onSubmit()} type="primary">
+                {showMessage("TODO", "Save")}
+              </Button>
+            </FormItem>
+          </Form>
+        </Card>
       </>
     );
   };
@@ -110,8 +109,8 @@ const TableList: React.FC<{}> = () => {
           {isPooling
             ? showMessage("TODO", "Pooling is On")
             : showMessage("TODO", "Pooling is Off")}
-          {isPooling && renderForm()}
         </Card>
+        {isPooling && renderForm()}
       </ConfigProvider>
     </PageContainer>
   );

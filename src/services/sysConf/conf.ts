@@ -115,6 +115,7 @@ export async function getNodeInfo() {
 }
 
 export function resetLockPassword() {
+    //TODO: reset pooling stuff
     localStorage.removeItem(MiningPasswordAuthorization);
     localStorage.removeItem('BTC');
     localStorage.removeItem('STX');
