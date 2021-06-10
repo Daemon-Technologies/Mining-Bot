@@ -19,3 +19,10 @@ export interface TXRef {
   receive_count?: number;
   double_of?: string;
 }
+
+export interface PoolContributerInfo {
+  address: string;
+  contribution: number;
+  lastCycleContribution?: number;
+  lastBlockContribution?: number;
+}

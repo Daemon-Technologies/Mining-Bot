@@ -23,7 +23,7 @@ export async function getCurrentCycle() {
         })
         .catch((err) => {
           console.log(err);
-          return { cycle: null };
+          return { cycle: -1 };
         });
     }
     case "Mainnet": {
@@ -39,13 +39,13 @@ export async function getCurrentCycle() {
         })
         .catch((err) => {
           console.log(err);
-          return { cycle: null };
+          return { cycle: -1 };
         });
     }
     default:
       break;
   }
-  return { cycle: null };
+  return { cycle: -1 };
 }
 
 export function getCycleBlocks(cycle: number) {
@@ -55,14 +55,13 @@ export function getCycleBlocks(cycle: number) {
   };
 }
 
-export function getPoolContributors(cycle: number) {
+export async function getPoolContributors(cycle: number) {
   if (
     localStorage.getItem("isPooling") !== "true" ||
-    !localStorage.getItem("pooledBtcAddress")
+    !localStorage.getItem("pooledBtcAddress") ||
+    cycle < 0
   ) {
-    return new Promise((resolve, reject) => {
-      reject("Pooling must be on and a pooled btc address must be specified");
-    });
+    return {};
   }
 
   let baseURL = sidecarURLXenon;
@@ -79,7 +78,7 @@ export function getPoolContributors(cycle: number) {
       baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?limit=2000`;
       console.log(baseURL);
       balanceCoef = 100000000;
-      return request(`${baseURL}`, { method: "GET", timeout: 6000 })
+      await request(`${baseURL}`, { method: "GET", timeout: 6000 })
         .then((resp) => {
           if (resp.txrefs) {
             let transactions: TXRef[] = resp.txrefs;
@@ -90,14 +89,14 @@ export function getPoolContributors(cycle: number) {
         })
         .catch((err) => {
           console.log(err);
-          return {};
+          return { transactions: null };
         });
       break;
     }
     case "Mainnet": {
       baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}`;
       balanceCoef = 100000000;
-      return request(`${baseURL}`, { method: "GET", timeout: 6000 })
+      await request(`${baseURL}`, { method: "GET", timeout: 6000 })
         .then((resp) => {
           let transactions: TXRef[] = resp.txrefs;
           console.log(transactions);
@@ -105,14 +104,12 @@ export function getPoolContributors(cycle: number) {
         })
         .catch((err) => {
           console.log(err);
-          return {};
+          return { transactions: null };
         });
       break;
     }
     default:
       break;
   }
-  return new Promise((resolve, reject) => {
-    resolve({ transactions: null });
-  });
+  return { transactions: null };
 }

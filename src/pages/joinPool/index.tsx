@@ -32,7 +32,7 @@ const TableList: React.FC<{}> = () => {
         <div>joinPool</div>
         <div>Cycle #{currentCycle}</div>
         <div>
-          From block {getCycleBlocks(currentCycle).startBlock} to
+          From block {getCycleBlocks(currentCycle).startBlock} to 
           {getCycleBlocks(currentCycle).endBlock}
         </div>
       </ConfigProvider>

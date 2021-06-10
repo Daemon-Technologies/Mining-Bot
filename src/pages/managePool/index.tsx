@@ -16,7 +16,7 @@ import { Account } from "@/services/wallet/data";
 import { showMessage, switchConfigProviderLocale } from "@/services/locale";
 import FormItem from "antd/lib/form/FormItem";
 import { FormattedMessage } from "react-intl";
-
+import PoolContributerTable from "./component/PoolContributerTable";
 export interface FormValueType {
   poolBtcAddress: string;
 }
@@ -111,6 +111,8 @@ const TableList: React.FC<{}> = () => {
             : showMessage("TODO", "Pooling is Off")}
         </Card>
         {isPooling && renderForm()}
+        {isPooling && <Divider />}
+        {isPooling && <PoolContributerTable />}
       </ConfigProvider>
     </PageContainer>
   );

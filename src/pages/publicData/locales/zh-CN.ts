@@ -18,7 +18,10 @@ export default {
     'block.info.status.pending': '待处理',
     'block.info.feeRate': '交易费率',
     'block.info.txType': '交易类型',
-
+    // TODO
+    'pool.address': "",
+    'pool.contribution': "",
+    'pool.title': ""
 
 
 };

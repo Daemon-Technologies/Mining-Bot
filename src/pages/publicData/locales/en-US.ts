@@ -18,6 +18,7 @@ export default {
     'block.info.status.pending': 'Pending',
     'block.info.feeRate': 'Fee Rate',
     'block.info.txType': 'TX Type',
-
-
+    'pool.address': "Address",
+    'pool.contribution': "Contribution",
+    'pool.title': "Pool Contributors"
 };
