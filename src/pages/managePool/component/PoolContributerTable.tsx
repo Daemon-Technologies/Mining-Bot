@@ -34,6 +34,7 @@ const PoolContributerTable: React.FC<{}> = () => {
       columns={poolContributerColumns}
       //TODO: finish rest of this table like request and rowkey
       request={() => queryPoolContributerInfo()}
+      rowKey={"address"}
     />
   );
 };

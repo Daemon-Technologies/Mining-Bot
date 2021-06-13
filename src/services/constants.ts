@@ -48,5 +48,7 @@ module.exports = {
   stxType: 2,
 
   // pooling 
-  firstStackingBlock: 668050
+  firstStackingBlock: 668050,
+
+  balanceCoef : 100000000
 }

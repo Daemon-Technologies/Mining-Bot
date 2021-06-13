@@ -1,6 +1,6 @@
 import { getNetworkFromStorage } from "@/utils/utils";
 import request from "umi-request";
-import { TXRef } from "./data";
+import { Address, Tx } from "./data";
 
 const {
   sidecarURLXenon,
@@ -55,18 +55,10 @@ export function getCycleBlocks(cycle: number) {
   };
 }
 
-export async function getPoolContributors(cycle: number) {
-  if (
-    localStorage.getItem("isPooling") !== "true" ||
-    !localStorage.getItem("pooledBtcAddress") ||
-    cycle < 0
-  ) {
-    return {};
-  }
-
+export async function getPoolContributors(
+  cycle: number
+): Promise<{ data: Tx[] }> {
   let baseURL = sidecarURLXenon;
-  let balanceCoef = 1;
-
   let pooledBtcAddress = localStorage.getItem("pooledBtcAddress");
 
   const { startBlock, endBlock } = getCycleBlocks(cycle);
@@ -75,41 +67,21 @@ export async function getPoolContributors(cycle: number) {
     case "Xenon": {
       //TODO: remember to add before and after
       //   baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}&limit=2000`;
-      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?limit=2000`;
-      console.log(baseURL);
-      balanceCoef = 100000000;
-      await request(`${baseURL}`, { method: "GET", timeout: 6000 })
-        .then((resp) => {
-          if (resp.txrefs) {
-            let transactions: TXRef[] = resp.txrefs;
-            console.log(transactions);
-            return { transactions: transactions };
-          }
-          return { transactions: null };
-        })
-        .catch((err) => {
-          console.log(err);
-          return { transactions: null };
-        });
+      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=2000`;
       break;
     }
     case "Mainnet": {
       baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}`;
-      balanceCoef = 100000000;
-      await request(`${baseURL}`, { method: "GET", timeout: 6000 })
-        .then((resp) => {
-          let transactions: TXRef[] = resp.txrefs;
-          console.log(transactions);
-          return { transactions: transactions };
-        })
-        .catch((err) => {
-          console.log(err);
-          return { transactions: null };
-        });
       break;
     }
     default:
       break;
   }
-  return { transactions: null };
+
+  return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
+    (resp: Address) => {
+      console.log(resp);
+      return { data: resp.txs };
+    }
+  );
 }
