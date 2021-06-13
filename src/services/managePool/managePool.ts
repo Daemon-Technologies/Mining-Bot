@@ -59,7 +59,8 @@ export async function getPoolContributors(
   cycle: number
 ): Promise<{ data: Tx[] }> {
   let baseURL = sidecarURLXenon;
-  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress");
+  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
+  // let pooledBtcAddress = "tb1q46cjfj593k0dz44arfpfdlz3j24n5jqdad0xu9";
 
   const { startBlock, endBlock } = getCycleBlocks(cycle);
 
@@ -67,7 +68,7 @@ export async function getPoolContributors(
     case "Xenon": {
       //TODO: remember to add before and after
       //   baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}&limit=2000`;
-      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=2000`;
+      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50`;
       break;
     }
     case "Mainnet": {

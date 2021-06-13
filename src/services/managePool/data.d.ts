@@ -33,7 +33,14 @@ export interface TxInput {
   wallet_token?: string;
 }
 
-export interface TxOutput {}
+export interface TxOutput {
+  value: number;
+  script: string;
+  addresses: string[];
+  script_type?: string;
+  data_hex?: string;
+  data_string?: string;
+}
 
 export interface Tx {
   block_height: number;
