@@ -6,73 +6,65 @@ const {
   sidecarURLXenon,
   sidecarURLMainnet,
   bitcoinTestnet3,
-  bitcoinMainnet,
+  bitcoinMainnet2,
   firstStackingBlock,
 } = require("@/services/constants");
 
-export async function getCurrentCycle() {
+export async function getCurrentCycle(): Promise<{ cycle: number }> {
   let baseURL = sidecarURLXenon;
 
   switch (getNetworkFromStorage()) {
-    case "Xenon": {
+    case "Xenon":
       baseURL = bitcoinTestnet3;
-      return request(`${baseURL}`, { method: "GET", timeout: 6000 })
-        .then((resp) => {
-          let height: number = resp.height;
-          return { cycle: Math.ceil((height - firstStackingBlock) / 2100) };
-        })
-        .catch((err) => {
-          console.log(err);
-          return { cycle: -1 };
-        });
-    }
-    case "Mainnet": {
-      baseURL = "https://api.blockcypher.com/v1/btc/main";
-      return request(`${baseURL}`, {
-        method: "GET",
-        timeout: 6000,
-      })
-        .then((resp) => {
-          console.log(resp);
-          let height: number = resp.height;
-          return { cycle: Math.ceil((height - firstStackingBlock) / 2100) };
-        })
-        .catch((err) => {
-          console.log(err);
-          return { cycle: -1 };
-        });
-    }
+      break;
+    case "Mainnet":
+      baseURL = bitcoinMainnet2;
+      break;
     default:
       break;
   }
-  return { cycle: -1 };
+
+  return request(`${baseURL}`, { method: "GET", timeout: 6000 })
+    .then((resp) => {
+      let height: number = resp.height;
+      return { cycle: Math.ceil((height - firstStackingBlock) / 2100) };
+    })
+    .catch((err) => {
+      console.log(err);
+      return { cycle: -1 };
+    });
 }
 
-export function getCycleBlocks(cycle: number) {
+export function getCycleBlocks(cycle: number): {
+  startBlock: number;
+  endBlock: number;
+} {
   return {
     startBlock: firstStackingBlock + (cycle - 1) * 2100,
     endBlock: firstStackingBlock + cycle * 2100,
   };
 }
 
-export async function getPoolContributors(
-  cycle: number
-): Promise<{ data: Tx[] }> {
+// gets pool contributors between blocks
+export async function getPoolContributorsHelper(
+  startBlock: number,
+  endBlock: number
+): Promise<Address> {
   let baseURL = sidecarURLXenon;
   let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
-  // let pooledBtcAddress = "tb1q46cjfj593k0dz44arfpfdlz3j24n5jqdad0xu9";
-
-  const { startBlock, endBlock } = getCycleBlocks(cycle);
+  // stx mainnet miner
 
   switch (getNetworkFromStorage()) {
     case "Xenon": {
       //TODO: remember to add before and after
       //   baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}&limit=2000`;
-      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50`;
+      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50&before=${endBlock}&after=${startBlock}`;
+      // baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50`;
       break;
     }
     case "Mainnet": {
-      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}`;
+      let pooledBtcAddress = "1BFfc2e6Kk82ut7S3C5yaN3pWRxEFRLLu5";
+      baseURL = `${bitcoinMainnet2}/addrs/${pooledBtcAddress}/full?limit=50&before=${endBlock}&after=${startBlock}`;
       break;
     }
     default:
@@ -82,7 +74,37 @@ export async function getPoolContributors(
   return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
     (resp: Address) => {
       console.log(resp);
-      return { data: resp.txs };
+      return resp;
     }
   );
+}
+
+export async function getPoolContributors(
+  cycle: number
+): Promise<{ data: Tx[] }> {
+  let hasMore = true;
+  let transactions: Tx[] = [];
+
+  let { startBlock, endBlock } = getCycleBlocks(cycle);
+
+  while (hasMore) {
+    try {
+      const addressResult = await getPoolContributorsHelper(
+        startBlock,
+        endBlock
+      );
+      if (addressResult.txs.length > 0) {
+        const [lastTx] = addressResult.txs.slice(-1);
+        endBlock = lastTx.block_height;
+        transactions = [...transactions, ...addressResult.txs];
+      }
+
+      hasMore = addressResult.hasMore!;
+      // hasMore = false;
+    } catch (error) {
+      hasMore = false;
+    }
+  }
+
+  return { data: transactions };
 }
