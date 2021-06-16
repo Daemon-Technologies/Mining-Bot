@@ -27,15 +27,20 @@ const PoolContributerTable: React.FC<{}> = () => {
   ];
 
   return (
-    <ProTable<PoolContributerInfo>
-      headerTitle={
-        <FormattedMessage id="pool.title" defaultMessage="Pool Contributors" />
-      }
-      columns={poolContributerColumns}
-      //TODO: finish rest of this table like request and rowkey
-      request={() => queryPoolContributerInfo()}
-      rowKey={"address"}
-    />
+    <>
+      <ProTable<PoolContributerInfo>
+        headerTitle={
+          <FormattedMessage
+            id="pool.title"
+            defaultMessage="Pool Contributors"
+          />
+        }
+        columns={poolContributerColumns}
+        //TODO: finish rest of this table like request and rowkey
+        request={() => queryPoolContributerInfo()}
+        rowKey={"address"}
+      />
+    </>
   );
 };
 

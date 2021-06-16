@@ -24,15 +24,12 @@ export async function getCurrentCycle(): Promise<{ cycle: number }> {
       break;
   }
 
-  return request(`${baseURL}`, { method: "GET", timeout: 6000 })
-    .then((resp) => {
+  return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
+    (resp) => {
       let height: number = resp.height;
       return { cycle: Math.ceil((height - firstStackingBlock) / 2100) };
-    })
-    .catch((err) => {
-      console.log(err);
-      return { cycle: -1 };
-    });
+    }
+  );
 }
 
 export function getCycleBlocks(cycle: number): {

@@ -7,8 +7,10 @@ import {
   Divider,
   Form,
   Input,
+  InputNumber,
   Select,
   Switch,
+  message,
 } from "antd";
 
 import { queryAccount } from "@/services/wallet/account";
@@ -17,14 +19,17 @@ import { showMessage, switchConfigProviderLocale } from "@/services/locale";
 import FormItem from "antd/lib/form/FormItem";
 import { FormattedMessage } from "react-intl";
 import PoolContributerTable from "./component/PoolContributerTable";
+import { getCurrentCycle } from "@/services/managePool/managePool";
 export interface FormValueType {
   poolBtcAddress: string;
+  poolStartCycle: number;
 }
 
 const TableList: React.FC<{}> = () => {
   const { Option } = Select;
   const [formVals, setFormVals] = useState<FormValueType>({
     poolBtcAddress: localStorage.getItem("pooledBtcAddress") ?? "",
+    poolStartCycle: parseInt(localStorage.getItem("poolStartCycle") ?? ""),
   });
 
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -32,8 +37,14 @@ const TableList: React.FC<{}> = () => {
 
   const onSubmit = async () => {
     const fieldsValue: FormValueType = await form.validateFields();
+    console.log(fieldsValue);
     setFormVals({ ...formVals, ...fieldsValue });
     localStorage.setItem("pooledBtcAddress", fieldsValue.poolBtcAddress);
+    localStorage.setItem(
+      "poolStartCycle",
+      fieldsValue.poolStartCycle.toString()
+    );
+    message.success("Successfully saved!");
   };
 
   const [isPooling, setIsPooling] = useState<boolean>(
@@ -55,7 +66,10 @@ const TableList: React.FC<{}> = () => {
           <Form
             form={form}
             layout="vertical"
-            initialValues={{ poolBtcAddress: formVals.poolBtcAddress }}
+            initialValues={{
+              poolBtcAddress: formVals.poolBtcAddress,
+              poolStartCycle: formVals.poolStartCycle,
+            }}
           >
             <FormItem
               name="poolBtcAddress"
@@ -81,6 +95,21 @@ const TableList: React.FC<{}> = () => {
                   );
                 })}
               </Select>
+            </FormItem>
+            <FormItem
+              name="poolStartCycle"
+              label={showMessage("TODO", "Cycle that Pool Started In")}
+              rules={[
+                {
+                  required: true,
+                  message: showMessage(
+                    "TODO",
+                    "Cycle that Pool Started In is Required"
+                  ),
+                },
+              ]}
+            >
+              <InputNumber min={0} />
             </FormItem>
             <FormItem>
               <Button onClick={() => onSubmit()} type="primary">
