@@ -21,5 +21,7 @@ export default {
     'pool.address': "Address",
     'pool.contribution': "Contribution",
     'pool.title': "Pool Contributors",
-    'pool.transaction': "Transaction"
+    'pool.transaction': "Transaction",
+    'pool.cycleContribution': "Cycle",
+    'pool.blockContribution': "Block",
 };

@@ -21,7 +21,9 @@ export default {
     // TODO
     'pool.address': "",
     'pool.contribution': "",
-    'pool.title': ""
-
+    'pool.title': "",
+    'pool.transaction': "",
+    'pool.cycleContribution': "",
+    'pool.blockContribution': "",
 
 };
