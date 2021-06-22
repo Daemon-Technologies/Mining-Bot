@@ -23,8 +23,8 @@ const isTransactionContribution = (transaction: Tx): boolean => {
 export default () => {
   let [poolContributerInfoState, setPoolContributerInfoState] =
     useState<PoolContributerInfoState>();
-  const queryPoolContributerInfo = async () => {
-    const { cycle } = await getCurrentCycle();
+  const queryPoolContributerInfo = async (cycle: number) => {
+    //     const { cycle } = await getCurrentCycle();
     // console.log(cycle);
     const transactions = await getPoolContributors(cycle);
     let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
@@ -60,7 +60,7 @@ export default () => {
       // return { address: transaction.address, contribution: transaction.value };
     });
     // setPoolContributerInfoState({ poolContributerInfoList: res });
-    return { data: res };
+    return { data: res, success: true };
   };
 
   return {

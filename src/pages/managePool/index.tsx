@@ -35,6 +35,8 @@ const TableList: React.FC<{}> = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState<boolean>(true);
 
+  const [currentCycle, setCurrentCycle] = useState(1);
+
   const onSubmit = async () => {
     const fieldsValue: FormValueType = await form.validateFields();
     console.log(fieldsValue);
@@ -55,6 +57,10 @@ const TableList: React.FC<{}> = () => {
     queryAccount(1).then(({ data }) => {
       setAccounts(data);
       setLoadingAccounts(false);
+    });
+
+    getCurrentCycle().then(({ cycle }) => {
+      setCurrentCycle(cycle);
     });
   }, []);
 
@@ -109,7 +115,7 @@ const TableList: React.FC<{}> = () => {
                 },
               ]}
             >
-              <InputNumber min={0} />
+              <InputNumber min={1} />
             </FormItem>
             <FormItem>
               <Button onClick={() => onSubmit()} type="primary">
@@ -141,7 +147,7 @@ const TableList: React.FC<{}> = () => {
         </Card>
         {isPooling && renderForm()}
         {isPooling && <Divider />}
-        {isPooling && <PoolContributerTable />}
+        {isPooling && <PoolContributerTable cycle={currentCycle} />}
       </ConfigProvider>
     </PageContainer>
   );

@@ -1,15 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
 import { BlockInfo, TxInfo } from "@/services/publicdata/data";
-import { Tag } from "antd";
+import { Tag, Card, InputNumber } from "antd";
 import { getBlockInfo, getTxsInfo } from "@/services/publicdata/chainInfo";
 import { PoolContributerInfo } from "@/services/managePool/data";
+import { showMessage } from "@/services/locale";
 
-const PoolContributerTable: React.FC<{}> = () => {
+interface PoolContributerTableProps {
+  cycle: number;
+}
+const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
+  cycle,
+}) => {
   const { queryPoolContributerInfo } = useModel(
     "managePool.poolContributerInfo"
   );
+
+  const [selectedCycle, setSelectedCycle] = useState(cycle);
+
+  useEffect(() => {
+    setSelectedCycle(cycle);
+  }, [cycle]);
   const poolContributerColumns: ProColumns<PoolContributerInfo>[] = [
     {
       title: <FormattedMessage id="pool.address" defaultMessage="Address" />,
@@ -28,6 +40,14 @@ const PoolContributerTable: React.FC<{}> = () => {
 
   return (
     <>
+      <Card bordered={false}>
+        View Contributors for Cycle: 
+        <InputNumber
+          min={1}
+          value={selectedCycle}
+          onChange={setSelectedCycle}
+        />
+      </Card>
       <ProTable<PoolContributerInfo>
         headerTitle={
           <FormattedMessage
@@ -36,8 +56,7 @@ const PoolContributerTable: React.FC<{}> = () => {
           />
         }
         columns={poolContributerColumns}
-        //TODO: finish rest of this table like request and rowkey
-        request={() => queryPoolContributerInfo()}
+        request={() => queryPoolContributerInfo(selectedCycle)}
         rowKey={"address"}
       />
     </>
