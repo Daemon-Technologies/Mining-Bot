@@ -53,6 +53,9 @@ export default () => {
             res.push({
               address: input.addresses[0], // TODO: deal with edge case where input has multiple addresses?
               contribution: weightedContribution / balanceCoef,
+              transactionHash: transaction.hash,
+              cycleContribution: cycle,
+              blockContribution: transaction.block_height,
             });
           }
         }

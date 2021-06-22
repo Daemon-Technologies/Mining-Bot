@@ -20,5 +20,6 @@ export default {
     'block.info.txType': 'TX Type',
     'pool.address': "Address",
     'pool.contribution': "Contribution",
-    'pool.title': "Pool Contributors"
+    'pool.title': "Pool Contributors",
+    'pool.transaction': "Transaction"
 };

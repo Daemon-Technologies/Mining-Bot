@@ -55,7 +55,7 @@ export async function getPoolContributorsHelper(
     case "Xenon": {
       //TODO: remember to add before and after
       //   baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}&limit=2000`;
-      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50&before=${endBlock}&after=${startBlock}`;
+      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50&before=${endBlock}&after=${startBlock}&confidence=99`;
       // baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50`;
       break;
     }
@@ -83,6 +83,7 @@ export async function getPoolContributors(
   let transactions: Tx[] = [];
 
   let { startBlock, endBlock } = getCycleBlocks(cycle);
+  console.log(`querying blocks ${startBlock} to ${endBlock}`);
 
   while (hasMore) {
     try {
