@@ -42,6 +42,21 @@ export function getCycleBlocks(cycle: number): {
   };
 }
 
+export function getPoolStartCycleBlocks(): {
+  startBlock: number;
+  endBlock: number;
+} {
+  let poolStartCycle = localStorage.getItem("poolStartCycle");
+  if (poolStartCycle) {
+    return getCycleBlocks(parseInt(poolStartCycle));
+  } else {
+    return {
+      startBlock: firstStackingBlock,
+      endBlock: firstStackingBlock + 2100,
+    };
+  }
+}
+
 // gets pool contributors between blocks
 export async function getPoolContributorsHelper(
   startBlock: number,
@@ -68,6 +83,7 @@ export async function getPoolContributorsHelper(
       break;
   }
 
+  console.log(baseURL);
   return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
     (resp: Address) => {
       console.log(resp);
@@ -77,13 +93,11 @@ export async function getPoolContributorsHelper(
 }
 
 export async function getPoolContributors(
-  cycle: number
+  startBlock: number,
+  endBlock: number
 ): Promise<{ data: Tx[] }> {
   let hasMore = true;
   let transactions: Tx[] = [];
-
-  let { startBlock, endBlock } = getCycleBlocks(cycle);
-  console.log(`querying blocks ${startBlock} to ${endBlock}`);
 
   while (hasMore) {
     try {

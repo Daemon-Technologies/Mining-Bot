@@ -25,5 +25,4 @@ export default {
     'pool.transaction': "",
     'pool.cycleContribution': "",
     'pool.blockContribution': "",
-
 };

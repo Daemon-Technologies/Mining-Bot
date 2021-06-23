@@ -20,7 +20,8 @@ const TableList: React.FC<{}> = () => {
   }, []);
 
   useEffect(() => {
-    getPoolContributors(currentCycle).then((transactions) => {
+    const { startBlock, endBlock } = getCycleBlocks(currentCycle);
+    getPoolContributors(startBlock, endBlock).then((transactions) => {
       if (transactions) {
         console.log(transactions);
       }
@@ -32,7 +33,7 @@ const TableList: React.FC<{}> = () => {
         <div>joinPool</div>
         <div>Cycle #{currentCycle}</div>
         <div>
-          From block {getCycleBlocks(currentCycle).startBlock} to 
+          From block {getCycleBlocks(currentCycle).startBlock} to
           {getCycleBlocks(currentCycle).endBlock}
         </div>
       </ConfigProvider>

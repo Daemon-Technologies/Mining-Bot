@@ -102,6 +102,6 @@ export interface PoolContributerInfo {
   address: string;
   contribution: number;
   transactionHash: string;
-  lastCycleContribution?: number;
-  lastBlockContribution?: number;
+  cycleContribution: number;
+  blockContribution: number;
 }
