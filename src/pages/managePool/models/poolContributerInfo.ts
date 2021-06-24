@@ -5,19 +5,19 @@ import {
   getCycleForBlock,
   getPoolContributors,
 } from "@/services/managePool/managePool";
-import { pick } from "lodash";
 import { useState } from "react";
 export interface PoolContributerInfoState {
   poolContributerInfoList: PoolContributerInfo[];
 }
 
 // used for saving to local storage. btcAddress => PoolContributorInfo[]
-export interface PoolContributors {
+export interface LocalPoolContributors {
   [key: string]: PoolContributerInfo[];
 }
 
 const { balanceCoef } = require("@/services/constants");
 
+// used to check if transaction is an input to the address
 const isTransactionContribution = (transaction: Tx): boolean => {
   let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
   for (const input of transaction.inputs) {
@@ -28,12 +28,38 @@ const isTransactionContribution = (transaction: Tx): boolean => {
   return true;
 };
 
+// if transaction positive, this was an input / contribution, else output / spent on mining
+const getTransactionValue = (
+  pooledBtcAddress: string,
+  transaction: Tx
+): number => {
+  let value = 0;
+  for (const input of transaction.inputs) {
+    if (input.addresses && input.addresses.includes(pooledBtcAddress)) {
+      value -= input.output_value;
+    }
+  }
+  for (const output of transaction.outputs) {
+    if (output.addresses && output.addresses.includes(pooledBtcAddress)) {
+      value += output.value;
+    }
+  }
+  // if this was an output, we also paid the fees
+  if (value < 0) {
+    value -= transaction.fees;
+  }
+  return value;
+};
+
+// used to get pool contributer info from local storage
+// cached so you don't have to requery tx
 const getLocalPoolContributorInfo = (): PoolContributerInfo[] => {
   let poolContributors = localStorage.getItem("poolContributors");
   let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
 
   if (poolContributors) {
-    let poolContributorsMap: PoolContributors = JSON.parse(poolContributors);
+    let poolContributorsMap: LocalPoolContributors =
+      JSON.parse(poolContributors);
     if (pooledBtcAddress in poolContributorsMap) {
       return poolContributorsMap[pooledBtcAddress];
     }
@@ -41,6 +67,8 @@ const getLocalPoolContributorInfo = (): PoolContributerInfo[] => {
   return [];
 };
 
+// used to set pool contributor info from local storage
+// cached so you don't have to requery tx
 const setLocalPoolContributorInfo = (contributions: PoolContributerInfo[]) => {
   let poolContributors = localStorage.getItem("poolContributors");
   let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
@@ -73,49 +101,49 @@ export default () => {
 
       let txHashes = new Set(res.map((o) => o.transactionHash));
       transactions.data.map((transaction) => {
-        let contribution = 0;
-
-        if (
-          !isTransactionContribution(transaction) ||
-          txHashes.has(transaction.hash) ||
-          transaction.block_height == -1
-        ) {
+        // if we already stored this transaction or its not confirmed yet, skip
+        if (txHashes.has(transaction.hash) || transaction.block_height == -1) {
           return;
         }
 
-        // if our pooled btc address is in a transaction output, we count this as a contribution
-        for (const output of transaction.outputs) {
-          if (output.addresses && output.addresses.includes(pooledBtcAddress)) {
-            contribution = output.value;
-            // sometimes there are two inputs in a transaction, we weigh contribution based on value of inputs
-            const totalInputvalue = transaction.inputs.reduce(
-              (prev, next) => prev + next.output_value,
-              0
-            );
-
-            for (const input of transaction.inputs) {
-              let weightedContribution =
-                contribution * (input.output_value / totalInputvalue);
-              res.push({
-                address: input.addresses[0], // TODO: deal with edge case where input has multiple addresses?
-                contribution: weightedContribution / balanceCoef,
-                transactionHash: transaction.hash,
-                cycleContribution: getCycleForBlock(transaction.block_height),
-                blockContribution: transaction.block_height,
-              });
-            }
+        let contribution = getTransactionValue(pooledBtcAddress, transaction);
+        if (contribution > 0) {
+          // sometimes the inputs can have multiple addresses, so we weigh contributions based on each address input
+          const totalInputvalue = transaction.inputs.reduce(
+            (prev, next) => prev + next.output_value,
+            0
+          );
+          for (const input of transaction.inputs) {
+            let weightedContribution =
+              contribution * (input.output_value / totalInputvalue);
+            res.push({
+              address: input.addresses[0], // TODO: deal with edge case where input has multiple addresses?
+              contribution: weightedContribution / balanceCoef,
+              transactionHash: transaction.hash,
+              cycleContribution: getCycleForBlock(transaction.block_height),
+              blockContribution: transaction.block_height,
+              isContribution: true,
+            });
           }
+        } else {
+          res.push({
+            address: "output",
+            contribution: contribution / balanceCoef,
+            transactionHash: transaction.hash,
+            cycleContribution: getCycleForBlock(transaction.block_height),
+            blockContribution: transaction.block_height,
+            isContribution: false,
+          });
         }
-        // return { address: transaction.address, contribution: transaction.value };
       });
     }
-    // setPoolContributerInfoState({ poolContributerInfoList: res });
 
     setLocalPoolContributorInfo(res);
     res = res.filter(
       (contribution) =>
         contribution.blockContribution >= startBlock &&
-        contribution.blockContribution <= endBlock
+        contribution.blockContribution <= endBlock &&
+        contribution.isContribution
     );
 
     return { data: res, success: true };

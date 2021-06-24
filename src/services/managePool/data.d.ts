@@ -104,4 +104,5 @@ export interface PoolContributerInfo {
   transactionHash: string;
   cycleContribution: number;
   blockContribution: number;
+  isContribution: boolean;
 }

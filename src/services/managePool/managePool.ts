@@ -10,6 +10,10 @@ const {
   firstStackingBlock,
 } = require("@/services/constants");
 
+export interface LocalTxs {
+  [key: string]: Tx[];
+}
+
 export async function getCurrentCycle(): Promise<{ cycle: number }> {
   let baseURL = sidecarURLXenon;
 
@@ -116,8 +120,8 @@ export async function getPoolContributors(
       }
 
       hasMore = addressResult.hasMore!;
-      // hasMore = false;
     } catch (error) {
+      console.log(error);
       hasMore = false;
     }
   }
