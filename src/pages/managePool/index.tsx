@@ -29,7 +29,7 @@ const TableList: React.FC<{}> = () => {
   const { Option } = Select;
   const [formVals, setFormVals] = useState<FormValueType>({
     poolBtcAddress: localStorage.getItem("pooledBtcAddress") ?? "",
-    poolStartCycle: parseInt(localStorage.getItem("poolStartCycle") ?? ""),
+    poolStartCycle: parseInt(localStorage.getItem("poolStartCycle") ?? "-1"),
   });
 
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -61,6 +61,9 @@ const TableList: React.FC<{}> = () => {
 
     getCurrentCycle().then(({ cycle }) => {
       setCurrentCycle(cycle);
+      if (formVals.poolStartCycle == -1) {
+        setFormVals({ ...formVals, ...{ poolCycleStart: cycle } });
+      }
     });
   }, []);
 
