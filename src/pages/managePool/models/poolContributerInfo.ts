@@ -4,29 +4,14 @@ import {
   getCycleBlocks,
   getCycleForBlock,
   getPoolContributors,
+  PoolContributerInfoState,
+  LocalPoolContributors,
+  getLocalPoolContributorInfo,
+  setLocalPoolContributorInfo,
 } from "@/services/managePool/managePool";
 import { useState } from "react";
-export interface PoolContributerInfoState {
-  poolContributerInfoList: PoolContributerInfo[];
-}
-
-// used for saving to local storage. btcAddress => PoolContributorInfo[]
-export interface LocalPoolContributors {
-  [key: string]: PoolContributerInfo[];
-}
 
 const { balanceCoef } = require("@/services/constants");
-
-// used to check if transaction is an input to the address
-const isTransactionContribution = (transaction: Tx): boolean => {
-  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
-  for (const input of transaction.inputs) {
-    if (input.addresses && input.addresses.includes(pooledBtcAddress)) {
-      return false;
-    }
-  }
-  return true;
-};
 
 // if transaction positive, this was an input / contribution, else output / spent on mining
 const getTransactionValue = (
@@ -49,40 +34,6 @@ const getTransactionValue = (
     value -= transaction.fees;
   }
   return value;
-};
-
-// used to get pool contributer info from local storage
-// cached so you don't have to requery tx
-const getLocalPoolContributorInfo = (): PoolContributerInfo[] => {
-  let poolContributors = localStorage.getItem("poolContributors");
-  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
-
-  if (poolContributors) {
-    let poolContributorsMap: LocalPoolContributors =
-      JSON.parse(poolContributors);
-    if (pooledBtcAddress in poolContributorsMap) {
-      return poolContributorsMap[pooledBtcAddress];
-    }
-  }
-  return [];
-};
-
-// used to set pool contributor info from local storage
-// cached so you don't have to requery tx
-const setLocalPoolContributorInfo = (contributions: PoolContributerInfo[]) => {
-  let poolContributors = localStorage.getItem("poolContributors");
-  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
-  let poolContributorsMap = {};
-  if (poolContributors && pooledBtcAddress) {
-    poolContributorsMap = JSON.parse(poolContributors);
-  }
-  if (pooledBtcAddress) {
-    poolContributorsMap[pooledBtcAddress] = contributions;
-    localStorage.setItem(
-      "poolContributors",
-      JSON.stringify(poolContributorsMap)
-    );
-  }
 };
 
 export default () => {

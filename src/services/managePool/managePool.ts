@@ -1,7 +1,7 @@
 import { getNetworkFromStorage } from "@/utils/utils";
 import request from "umi-request";
-import { Address, Tx } from "./data";
-
+import { Address, Tx, PoolContributerInfo } from "./data";
+import { message } from "antd";
 const {
   sidecarURLXenon,
   sidecarURLMainnet,
@@ -10,8 +10,13 @@ const {
   firstStackingBlock,
 } = require("@/services/constants");
 
-export interface LocalTxs {
-  [key: string]: Tx[];
+export interface PoolContributerInfoState {
+  poolContributerInfoList: PoolContributerInfo[];
+}
+
+// used for saving to local storage. btcAddress => PoolContributorInfo[]
+export interface LocalPoolContributors {
+  [key: string]: PoolContributerInfo[];
 }
 
 export async function getCurrentCycle(): Promise<{ cycle: number }> {
@@ -65,6 +70,42 @@ export function getCycleForBlock(blockHeight: number): number {
   return Math.floor((blockHeight - firstStackingBlock) / 2100) + 1;
 }
 
+// used to get pool contributer info from local storage
+// cached so you don't have to requery tx
+export const getLocalPoolContributorInfo = (): PoolContributerInfo[] => {
+  let poolContributors = localStorage.getItem("poolContributors");
+  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
+
+  if (poolContributors) {
+    let poolContributorsMap: LocalPoolContributors =
+      JSON.parse(poolContributors);
+    if (pooledBtcAddress in poolContributorsMap) {
+      return poolContributorsMap[pooledBtcAddress];
+    }
+  }
+  return [];
+};
+
+// used to set pool contributor info from local storage
+// cached so you don't have to requery tx
+export const setLocalPoolContributorInfo = (
+  contributions: PoolContributerInfo[]
+) => {
+  let poolContributors = localStorage.getItem("poolContributors");
+  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
+  let poolContributorsMap = {};
+  if (poolContributors && pooledBtcAddress) {
+    poolContributorsMap = JSON.parse(poolContributors);
+  }
+  if (pooledBtcAddress) {
+    poolContributorsMap[pooledBtcAddress] = contributions;
+    localStorage.setItem(
+      "poolContributors",
+      JSON.stringify(poolContributorsMap)
+    );
+  }
+};
+
 // gets pool contributors between blocks
 export async function getPoolContributorsHelper(
   startBlock: number,
@@ -107,6 +148,12 @@ export async function getPoolContributors(
   let hasMore = true;
   let transactions: Tx[] = [];
 
+  // TODO: if you get rate limited halfway through, you'll have the most recent
+  // transactions cached but you'll be missing the transactions starting
+  // from startBlock. Then when you try again later, it'll only query from
+  // the highest cached transaction to end block, so you'll still be missing the
+  // middle transactions. either find a way to fix this, or return an empty array
+  // if any error occurs
   while (hasMore) {
     try {
       const addressResult = await getPoolContributorsHelper(
@@ -122,6 +169,7 @@ export async function getPoolContributors(
       hasMore = addressResult.hasMore!;
     } catch (error) {
       console.log(error);
+      message.error("Failed to get newest pool contributors");
       hasMore = false;
     }
   }
