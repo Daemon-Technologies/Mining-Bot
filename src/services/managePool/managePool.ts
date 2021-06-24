@@ -57,6 +57,10 @@ export function getPoolStartCycleBlocks(): {
   }
 }
 
+export function getCycleForBlock(blockHeight: number): number {
+  return Math.floor((blockHeight - firstStackingBlock) / 2100) + 1;
+}
+
 // gets pool contributors between blocks
 export async function getPoolContributorsHelper(
   startBlock: number,

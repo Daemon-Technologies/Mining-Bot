@@ -2,6 +2,7 @@ import { PoolContributerInfo, Tx } from "@/services/managePool/data";
 import {
   getCurrentCycle,
   getCycleBlocks,
+  getCycleForBlock,
   getPoolContributors,
 } from "@/services/managePool/managePool";
 import { pick } from "lodash";
@@ -67,47 +68,47 @@ export default () => {
     // get highest height from local info
     const highestHeight = Math.max(...res.map((o) => o.blockContribution));
 
-    const transactions = await getPoolContributors(highestHeight, endBlock);
+    if (endBlock > highestHeight) {
+      const transactions = await getPoolContributors(highestHeight, endBlock);
 
-    let txHashes = new Set(res.map((o) => o.transactionHash));
-    console.log(txHashes);
-    transactions.data.map((transaction) => {
-      let sender = "";
-      let contribution = 0;
-      console.log(transaction.hash);
+      let txHashes = new Set(res.map((o) => o.transactionHash));
+      transactions.data.map((transaction) => {
+        let contribution = 0;
 
-      if (
-        !isTransactionContribution(transaction) ||
-        txHashes.has(transaction.hash)
-      ) {
-        return;
-      }
+        if (
+          !isTransactionContribution(transaction) ||
+          txHashes.has(transaction.hash) ||
+          transaction.block_height == -1
+        ) {
+          return;
+        }
 
-      // if our pooled btc address is in a transaction output, we count this as a contribution
-      for (const output of transaction.outputs) {
-        if (output.addresses && output.addresses.includes(pooledBtcAddress)) {
-          contribution = output.value;
-          // sometimes there are two inputs in a transaction, we weigh contribution based on value of inputs
-          const totalInputvalue = transaction.inputs.reduce(
-            (prev, next) => prev + next.output_value,
-            0
-          );
+        // if our pooled btc address is in a transaction output, we count this as a contribution
+        for (const output of transaction.outputs) {
+          if (output.addresses && output.addresses.includes(pooledBtcAddress)) {
+            contribution = output.value;
+            // sometimes there are two inputs in a transaction, we weigh contribution based on value of inputs
+            const totalInputvalue = transaction.inputs.reduce(
+              (prev, next) => prev + next.output_value,
+              0
+            );
 
-          for (const input of transaction.inputs) {
-            let weightedContribution =
-              contribution * (input.output_value / totalInputvalue);
-            res.push({
-              address: input.addresses[0], // TODO: deal with edge case where input has multiple addresses?
-              contribution: weightedContribution / balanceCoef,
-              transactionHash: transaction.hash,
-              cycleContribution: cycle,
-              blockContribution: transaction.block_height,
-            });
+            for (const input of transaction.inputs) {
+              let weightedContribution =
+                contribution * (input.output_value / totalInputvalue);
+              res.push({
+                address: input.addresses[0], // TODO: deal with edge case where input has multiple addresses?
+                contribution: weightedContribution / balanceCoef,
+                transactionHash: transaction.hash,
+                cycleContribution: getCycleForBlock(transaction.block_height),
+                blockContribution: transaction.block_height,
+              });
+            }
           }
         }
-      }
-      // return { address: transaction.address, contribution: transaction.value };
-    });
+        // return { address: transaction.address, contribution: transaction.value };
+      });
+    }
     // setPoolContributerInfoState({ poolContributerInfoList: res });
 
     setLocalPoolContributorInfo(res);
