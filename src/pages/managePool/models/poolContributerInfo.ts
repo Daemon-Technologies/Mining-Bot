@@ -11,6 +11,7 @@ import {
   getBalanceAtBlock,
   getBalance,
 } from "@/services/managePool/managePool";
+import { b58ToC32 } from "c32check";
 import { useState } from "react";
 
 const { balanceCoef } = require("@/services/constants");
@@ -73,8 +74,10 @@ export default () => {
           for (const input of transaction.inputs) {
             let weightedContribution =
               contribution * (input.output_value / totalInputvalue);
+	      // https://github.com/blockstack/cli-blockstack/blob/master/src/cli.ts
             res.push({
               address: input.addresses[0], // TODO: deal with edge case where input has multiple addresses?
+              stxAddress: input.addresses[0], // b58ToC32(input.addresses[0]),
               contribution: weightedContribution / balanceCoef,
               transactionHash: transaction.hash,
               cycleContribution: getCycleForBlock(transaction.block_height),
@@ -85,6 +88,7 @@ export default () => {
         } else {
           res.push({
             address: "output",
+            stxAddress: "output",
             contribution: contribution / balanceCoef,
             transactionHash: transaction.hash,
             cycleContribution: getCycleForBlock(transaction.block_height),

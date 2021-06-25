@@ -100,6 +100,7 @@ export interface Address {
 }
 export interface PoolContributerInfo {
   address: string;
+  stxAddress: string;
   contribution: number;
   transactionHash: string;
   cycleContribution: number;

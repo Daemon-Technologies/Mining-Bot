@@ -20,6 +20,7 @@ export default {
     'block.info.txType': '交易类型',
     // TODO
     'pool.address': "",
+    'pool.stxAddress': "",
     'pool.contribution': "",
     'pool.title': "",
     'pool.transaction': "",

@@ -19,6 +19,7 @@ export default {
     'block.info.feeRate': 'Fee Rate',
     'block.info.txType': 'TX Type',
     'pool.address': "Address",
+    'pool.stxAddress': "STX Address",
     'pool.contribution': "Contribution",
     'pool.title': "Pool Contributors",
     'pool.transaction': "Transaction",

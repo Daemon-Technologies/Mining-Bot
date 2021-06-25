@@ -37,6 +37,10 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
       dataIndex: "address",
     },
     {
+      title: <FormattedMessage id="pool.stxAddress" defaultMessage="STX Address" />,
+      dataIndex: "stxAddress",
+    },
+    {
       title: (
         <FormattedMessage
           id="pool.contribution"
