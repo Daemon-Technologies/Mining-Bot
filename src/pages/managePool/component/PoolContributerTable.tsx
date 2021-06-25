@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
 import { BlockInfo, TxInfo } from "@/services/publicdata/data";
-import { Tag, Card, InputNumber, Button } from "antd";
+import { Tag, Card, InputNumber, Button, Table } from "antd";
 import { getBlockInfo, getTxsInfo } from "@/services/publicdata/chainInfo";
 import { PoolContributerInfo } from "@/services/managePool/data";
 import { showMessage } from "@/services/locale";
@@ -30,6 +30,7 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
   useEffect(() => {
     setSelectedCycle(cycle);
   }, [cycle]);
+
   const poolContributerColumns: ProColumns<PoolContributerInfo>[] = [
     {
       title: <FormattedMessage id="pool.address" defaultMessage="Address" />,
@@ -110,6 +111,20 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
         rowKey={"address"}
         manualRequest={true}
         params={{ selectedCycle }}
+        summary={(contributions) => {
+          let total = 0;
+          for (const contribution of contributions) {
+            total += contribution.contribution;
+          }
+          return (
+            <Table.Summary.Row>
+              <Table.Summary.Cell index={0}>
+                Total contributed
+              </Table.Summary.Cell>
+              <Table.Summary.Cell index={1}>{total}</Table.Summary.Cell>
+            </Table.Summary.Row>
+          );
+        }}
       />
     </>
   );

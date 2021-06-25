@@ -8,6 +8,7 @@ const {
   bitcoinTestnet3,
   bitcoinMainnet2,
   firstStackingBlock,
+  balanceCoef,
 } = require("@/services/constants");
 
 export interface PoolContributerInfoState {
@@ -106,6 +107,54 @@ export const setLocalPoolContributorInfo = (
   }
 };
 
+export async function getBalance(): Promise<number> {
+  let baseURL = sidecarURLXenon;
+  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
+
+  switch (getNetworkFromStorage()) {
+    case "Xenon": {
+      //TODO: remember to add before and after
+      //   baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}&limit=2000`;
+      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/balance`;
+      // baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50`;
+      break;
+    }
+    case "Mainnet": {
+      let pooledBtcAddress = "1BFfc2e6Kk82ut7S3C5yaN3pWRxEFRLLu5";
+      baseURL = `${bitcoinMainnet2}/addrs/${pooledBtcAddress}/balance`;
+      break;
+    }
+    default:
+      break;
+  }
+  return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
+    (resp: Address) => {
+      console.log(resp);
+      return resp.balance / balanceCoef;
+    }
+  );
+}
+
+// async function to get the balance? or change result of queryPoolContributerInfo
+export function getBalanceAtBlock(
+  blockHeight: number,
+  currentBalance: number
+): number {
+  let balance = currentBalance;
+  let transactions = getLocalPoolContributorInfo();
+  let index = 0;
+  let transaction = transactions[index];
+  while (
+    index < transactions.length &&
+    transaction.blockContribution >= blockHeight
+  ) {
+    balance -= transaction.contribution;
+    index += 1;
+    transaction = transactions[index];
+  }
+  return balance;
+}
+
 // gets pool contributors between blocks
 export async function getPoolContributorsHelper(
   startBlock: number,
@@ -144,9 +193,10 @@ export async function getPoolContributorsHelper(
 export async function getPoolContributors(
   startBlock: number,
   endBlock: number
-): Promise<{ data: Tx[] }> {
+): Promise<{ transactions: Tx[]; balance: number }> {
   let hasMore = true;
   let transactions: Tx[] = [];
+  let balance = -1;
 
   // TODO: if you get rate limited halfway through, you'll have the most recent
   // transactions cached but you'll be missing the transactions starting
@@ -160,6 +210,11 @@ export async function getPoolContributors(
         startBlock,
         endBlock
       );
+
+      if (balance == -1) {
+        balance = addressResult.balance;
+      }
+
       if (addressResult.txs.length > 0) {
         const [lastTx] = addressResult.txs.slice(-1);
         endBlock = lastTx.block_height;
@@ -174,5 +229,5 @@ export async function getPoolContributors(
     }
   }
 
-  return { data: transactions };
+  return { transactions, balance };
 }

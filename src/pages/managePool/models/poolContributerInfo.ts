@@ -8,6 +8,8 @@ import {
   LocalPoolContributors,
   getLocalPoolContributorInfo,
   setLocalPoolContributorInfo,
+  getBalanceAtBlock,
+  getBalance,
 } from "@/services/managePool/managePool";
 import { useState } from "react";
 
@@ -42,16 +44,20 @@ export default () => {
   const queryPoolContributerInfo = async (cycle: number) => {
     let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
     let res: PoolContributerInfo[] = getLocalPoolContributorInfo();
-    let { startBlock, endBlock } = getCycleBlocks(cycle);
+    let { startBlock, endBlock } = getCycleBlocks(cycle - 1);
 
     // get highest height from local info
     const highestHeight = Math.max(...res.map((o) => o.blockContribution));
+    let currentBalance = 0;
 
     if (endBlock > highestHeight) {
-      const transactions = await getPoolContributors(highestHeight, endBlock);
+      let { transactions, balance } = await getPoolContributors(
+        highestHeight,
+        endBlock
+      );
 
       let txHashes = new Set(res.map((o) => o.transactionHash));
-      transactions.data.map((transaction) => {
+      transactions.map((transaction) => {
         // if we already stored this transaction or its not confirmed yet, skip
         if (txHashes.has(transaction.hash) || transaction.block_height == -1) {
           return;
@@ -87,6 +93,9 @@ export default () => {
           });
         }
       });
+      currentBalance = balance / balanceCoef;
+    } else {
+      currentBalance = await getBalance();
     }
 
     setLocalPoolContributorInfo(res);
@@ -97,6 +106,8 @@ export default () => {
         contribution.isContribution
     );
 
+    let balanceAtEndOfCycle = getBalanceAtBlock(endBlock, currentBalance);
+    console.log("at the end of block", endBlock, "had", balanceAtEndOfCycle);
     return { data: res, success: true };
   };
 
