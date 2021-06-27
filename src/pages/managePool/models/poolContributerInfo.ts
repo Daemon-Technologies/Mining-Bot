@@ -13,8 +13,9 @@ import {
 } from "@/services/managePool/managePool";
 import { b58ToC32 } from "c32check";
 import { useState } from "react";
-
+import { getNetworkFromStorage } from "@/utils/utils";
 const { balanceCoef } = require("@/services/constants");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
 
 // if transaction positive, this was an input / contribution, else output / spent on mining
 const getTransactionValue = (
@@ -37,6 +38,30 @@ const getTransactionValue = (
     value -= transaction.fees;
   }
   return value;
+};
+
+// taken from BlockstackNetwork
+const coerceAddress = (address: string) => {
+  const { hash, version } = bitcoinjs_lib_1.address.fromBase58Check(address);
+  const scriptHashes = [
+    bitcoinjs_lib_1.networks.bitcoin.scriptHash,
+    bitcoinjs_lib_1.networks.testnet.scriptHash,
+  ];
+  const pubKeyHashes = [
+    bitcoinjs_lib_1.networks.bitcoin.pubKeyHash,
+    bitcoinjs_lib_1.networks.testnet.pubKeyHash,
+  ];
+  let coercedVersion;
+  if (scriptHashes.indexOf(version) >= 0) {
+    coercedVersion = bitcoinjs_lib_1.networks.bitcoin.scriptHash;
+  } else if (pubKeyHashes.indexOf(version) >= 0) {
+    coercedVersion = bitcoinjs_lib_1.networks.bitcoin.pubKeyHash;
+  } else {
+    throw new Error(
+      `Unrecognized address version number ${version} in ${address}`
+    );
+  }
+  return bitcoinjs_lib_1.address.toBase58Check(hash, coercedVersion);
 };
 
 export default () => {
@@ -74,10 +99,27 @@ export default () => {
           for (const input of transaction.inputs) {
             let weightedContribution =
               contribution * (input.output_value / totalInputvalue);
-	      // https://github.com/blockstack/cli-blockstack/blob/master/src/cli.ts
+            let address = input.addresses[0];
+            let stxAddress = input.addresses[0];
+            // BECH32 not supported
+            try {
+              switch (getNetworkFromStorage()) {
+                case "Xenon": {
+                  address = coerceAddress(address);
+                  break;
+                }
+                case "Mainnet":
+                  break;
+                default:
+                  break;
+              }
+              stxAddress = b58ToC32(address);
+            } catch (err) {
+              stxAddress = "UNSUPPORTED";
+            }
             res.push({
-              address: input.addresses[0], // TODO: deal with edge case where input has multiple addresses?
-              stxAddress: input.addresses[0], // b58ToC32(input.addresses[0]),
+              address: address, // TODO: deal with edge case where input has multiple addresses?
+              stxAddress: stxAddress, // b58ToC32(input.addresses[0]),
               contribution: weightedContribution / balanceCoef,
               transactionHash: transaction.hash,
               cycleContribution: getCycleForBlock(transaction.block_height),

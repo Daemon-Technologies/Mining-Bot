@@ -35,10 +35,14 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
     {
       title: <FormattedMessage id="pool.address" defaultMessage="Address" />,
       dataIndex: "address",
+      copyable: true,
     },
     {
-      title: <FormattedMessage id="pool.stxAddress" defaultMessage="STX Address" />,
+      title: (
+        <FormattedMessage id="pool.stxAddress" defaultMessage="STX Address" />
+      ),
       dataIndex: "stxAddress",
+      copyable: true,
     },
     {
       title: (
@@ -122,7 +126,7 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
           }
           return (
             <Table.Summary.Row>
-              <Table.Summary.Cell index={0}>
+              <Table.Summary.Cell index={0} colSpan={2}>
                 Total contributed
               </Table.Summary.Cell>
               <Table.Summary.Cell index={1}>{total}</Table.Summary.Cell>
