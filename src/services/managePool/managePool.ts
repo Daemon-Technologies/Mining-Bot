@@ -182,8 +182,6 @@ export function getBalanceAtBlock(blockHeight: number): number {
   let transactions = getLocalPoolContributorInfo();
   let index = 0;
   let transaction = transactions[index];
-  console.log("blockHeight", blockHeight);
-  console.log("transaction height", transaction.blockContribution);
   while (
     index < transactions.length &&
     transaction.blockContribution >= blockHeight
