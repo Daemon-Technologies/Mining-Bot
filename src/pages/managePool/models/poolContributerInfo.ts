@@ -10,6 +10,8 @@ import {
   setLocalPoolContributorInfo,
   getBalanceAtBlock,
   getBalance,
+  setLocalPoolBalances,
+  getLocalPoolBalance,
 } from "@/services/managePool/managePool";
 import { b58ToC32 } from "c32check";
 import { useState } from "react";
@@ -152,7 +154,13 @@ export default () => {
         contribution.isContribution
     );
 
-    let balanceAtEndOfCycle = getBalanceAtBlock(endBlock, currentBalance);
+    // sometimes API will return 0 tx for address, so only change local pool balance if we have a valid response
+    if (currentBalance > 0) {
+      setLocalPoolBalances(currentBalance);
+    } else {
+      currentBalance = getLocalPoolBalance();
+    }
+    let balanceAtEndOfCycle = getBalanceAtBlock(endBlock);
     console.log("at the end of block", endBlock, "had", balanceAtEndOfCycle);
     return { data: res, success: true };
   };

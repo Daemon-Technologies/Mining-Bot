@@ -7,6 +7,11 @@ import { getBlockInfo, getTxsInfo } from "@/services/publicdata/chainInfo";
 import { PoolContributerInfo } from "@/services/managePool/data";
 import { showMessage } from "@/services/locale";
 import { getNetworkFromStorage } from "@/utils/utils";
+import {
+  getBalanceAtBlock,
+  getCycleBlocks,
+  getLocalPoolBalance,
+} from "@/services/managePool/managePool";
 const {
   sidecarURLXenon,
   sidecarURLMainnet,
@@ -124,13 +129,24 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
           for (const contribution of contributions) {
             total += contribution.contribution;
           }
+
+          const { endBlock } = getCycleBlocks(selectedCycle-1);
+          const balance = getBalanceAtBlock(endBlock);
           return (
-            <Table.Summary.Row>
-              <Table.Summary.Cell index={0} colSpan={2}>
-                Total contributed
-              </Table.Summary.Cell>
-              <Table.Summary.Cell index={1}>{total}</Table.Summary.Cell>
-            </Table.Summary.Row>
+            <>
+              <Table.Summary.Row>
+                <Table.Summary.Cell index={0} colSpan={2}>
+                  Total Contributed In Last Cycle
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={1}>{total}</Table.Summary.Cell>
+              </Table.Summary.Row>
+              <Table.Summary.Row>
+                <Table.Summary.Cell index={0} colSpan={2}>
+                  Total Remaining At End of Last Cycle
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={1}>{balance}</Table.Summary.Cell>
+              </Table.Summary.Row>
+            </>
           );
         }}
       />

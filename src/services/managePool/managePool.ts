@@ -20,6 +20,10 @@ export interface LocalPoolContributors {
   [key: string]: PoolContributerInfo[];
 }
 
+export interface LocalPoolBalances {
+  [key: string]: number;
+}
+
 export async function getCurrentCycle(): Promise<{ cycle: number }> {
   let baseURL = sidecarURLXenon;
 
@@ -71,6 +75,37 @@ export function getCycleForBlock(blockHeight: number): number {
   return Math.floor((blockHeight - firstStackingBlock) / 2100) + 1;
 }
 
+// used to get pool balance from local storage
+// cached so you don't have to requery
+export const getLocalPoolBalance = (): number => {
+  let poolBalances = localStorage.getItem("poolBalances");
+  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
+
+  if (poolBalances) {
+    let poolBalancesMap: LocalPoolBalances = JSON.parse(poolBalances);
+    if (pooledBtcAddress in poolBalancesMap) {
+      return poolBalancesMap[pooledBtcAddress];
+    }
+  }
+  return 0;
+};
+
+// used to set pool balance from in local storage
+// cached so you don't have to requery
+
+export const setLocalPoolBalances = (balance: number) => {
+  let poolBalances = localStorage.getItem("poolBalances");
+  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
+  let poolBalancesMap = {};
+  if (poolBalances && pooledBtcAddress) {
+    poolBalancesMap = JSON.parse(poolBalances);
+  }
+  if (pooledBtcAddress) {
+    poolBalancesMap[pooledBtcAddress] = balance;
+    localStorage.setItem("poolBalances", JSON.stringify(poolBalancesMap));
+  }
+};
+
 // used to get pool contributer info from local storage
 // cached so you don't have to requery tx
 export const getLocalPoolContributorInfo = (): PoolContributerInfo[] => {
@@ -87,7 +122,7 @@ export const getLocalPoolContributorInfo = (): PoolContributerInfo[] => {
   return [];
 };
 
-// used to set pool contributor info from local storage
+// used to set pool contributor info in local storage
 // cached so you don't have to requery tx
 export const setLocalPoolContributorInfo = (
   contributions: PoolContributerInfo[]
@@ -99,7 +134,9 @@ export const setLocalPoolContributorInfo = (
     poolContributorsMap = JSON.parse(poolContributors);
   }
   if (pooledBtcAddress) {
-    poolContributorsMap[pooledBtcAddress] = contributions;
+    poolContributorsMap[pooledBtcAddress] = contributions.sort((a, b) =>
+      a.blockContribution < b.blockContribution ? 1 : -1
+    );
     localStorage.setItem(
       "poolContributors",
       JSON.stringify(poolContributorsMap)
@@ -107,6 +144,7 @@ export const setLocalPoolContributorInfo = (
   }
 };
 
+// sometimes the api will return 0 balance and 0 tx, so just return -1 if that happens
 export async function getBalance(): Promise<number> {
   let baseURL = sidecarURLXenon;
   let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
@@ -130,24 +168,27 @@ export async function getBalance(): Promise<number> {
   return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
     (resp: Address) => {
       console.log(resp);
+      if (resp.n_tx == 0 && getLocalPoolBalance() > 0) {
+        return -1;
+      }
       return resp.balance / balanceCoef;
     }
   );
 }
 
 // async function to get the balance? or change result of queryPoolContributerInfo
-export function getBalanceAtBlock(
-  blockHeight: number,
-  currentBalance: number
-): number {
-  let balance = currentBalance;
+export function getBalanceAtBlock(blockHeight: number): number {
+  let balance = getLocalPoolBalance();
   let transactions = getLocalPoolContributorInfo();
   let index = 0;
   let transaction = transactions[index];
+  console.log("blockHeight", blockHeight);
+  console.log("transaction height", transaction.blockContribution);
   while (
     index < transactions.length &&
     transaction.blockContribution >= blockHeight
   ) {
+    console.log("transaction height", transaction.blockContribution);
     balance -= transaction.contribution;
     index += 1;
     transaction = transactions[index];
@@ -181,7 +222,6 @@ export async function getPoolContributorsHelper(
       break;
   }
 
-  console.log(baseURL);
   return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
     (resp: Address) => {
       console.log(resp);
