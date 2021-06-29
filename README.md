@@ -28,11 +28,10 @@ For cycle ![](https://latex.codecogs.com/png.latex?n):
 
 - If you contribute during multiple cycles, your total reward percentage is the sum of your reward percentages per contribution.
 
-Essentially, your reward for any given cycle will be weighted based on how much you contributed divided by the total amount remaining at the end of each cycle. As time goes on, bitcoin will be spent on mining and more contributors will join the pool, so your reward percentage will go down unless you contribute more.
 
 ### Example:
 
-Pool begins mining in cycle #10. Any BTC sent to the specified address before cycle #10 begins is counted as a contribution.
+Pool begins mining in cycle #10. Any BTC sent to the specified address during cycle #9 is counted as a contribution.
 
 ### Before Cycle #10
 
