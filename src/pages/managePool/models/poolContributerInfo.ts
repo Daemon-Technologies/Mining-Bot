@@ -12,10 +12,13 @@ import {
   getBalance,
   setLocalPoolBalances,
   getLocalPoolBalance,
+  getPoolStartCycleBlocks,
+  getCycleContributions,
 } from "@/services/managePool/managePool";
 import { b58ToC32 } from "c32check";
 import { useState } from "react";
 import { getNetworkFromStorage } from "@/utils/utils";
+import { message } from "antd";
 const { balanceCoef } = require("@/services/constants");
 const bitcoinjs_lib_1 = require("bitcoinjs-lib");
 
@@ -72,10 +75,14 @@ export default () => {
   const queryPoolContributerInfo = async (cycle: number) => {
     let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
     let res: PoolContributerInfo[] = getLocalPoolContributorInfo();
-    let { startBlock, endBlock } = getCycleBlocks(cycle - 1);
+    let { endBlock } = getCycleBlocks(cycle - 1);
 
     // get highest height from local info
-    const highestHeight = Math.max(...res.map((o) => o.blockContribution));
+    let highestHeight = Math.max(...res.map((o) => o.blockContribution));
+    // if no saved transactions yet, set start block as the pool cycle start block
+    if (highestHeight < 0) {
+      highestHeight = getPoolStartCycleBlocks().startBlock;
+    }
     let currentBalance = 0;
 
     if (endBlock > highestHeight) {
@@ -84,7 +91,7 @@ export default () => {
         endBlock
       );
 
-      let txHashes = new Set(res.map((o) => o.transactionHash));
+      let txHashes = new Set(res.map((t) => t.transactionHash));
       transactions.map((transaction) => {
         // if we already stored this transaction or its not confirmed yet, skip
         if (txHashes.has(transaction.hash) || transaction.block_height == -1) {
@@ -127,6 +134,7 @@ export default () => {
               cycleContribution: getCycleForBlock(transaction.block_height),
               blockContribution: transaction.block_height,
               isContribution: true,
+              rewardPercentage: 0,
             });
           }
         } else {
@@ -138,21 +146,14 @@ export default () => {
             cycleContribution: getCycleForBlock(transaction.block_height),
             blockContribution: transaction.block_height,
             isContribution: false,
+            rewardPercentage: 0,
           });
         }
       });
       currentBalance = balance / balanceCoef;
     } else {
-      currentBalance = await getBalance();
+      //       currentBalance = await getBalance();
     }
-
-    setLocalPoolContributorInfo(res);
-    res = res.filter(
-      (contribution) =>
-        contribution.blockContribution >= startBlock &&
-        contribution.blockContribution <= endBlock &&
-        contribution.isContribution
-    );
 
     // sometimes API will return 0 tx for address, so only change local pool balance if we have a valid response
     if (currentBalance > 0) {
@@ -160,8 +161,60 @@ export default () => {
     } else {
       currentBalance = getLocalPoolBalance();
     }
-    let balanceAtEndOfCycle = getBalanceAtBlock(endBlock);
-    console.log("at the end of block", endBlock, "had", balanceAtEndOfCycle);
+
+    let poolStartCycle = parseInt(
+      localStorage.getItem("poolStartCycle") ?? "-1"
+    );
+    if (poolStartCycle == -1) {
+      message.error("poolStartCycle cannot be -1");
+    }
+
+    // cache of reward percentages per contribution
+    let cache = {};
+    // sort from earlier contribution to later contribution
+    res = res
+      .filter(
+        (contribution) => contribution.cycleContribution >= poolStartCycle - 1
+      )
+      .sort((a, b) => (a.blockContribution > b.blockContribution ? 1 : -1));
+    let currentCycle = poolStartCycle;
+    for (let contribution of res) {
+      if (!contribution.isContribution) {
+        continue;
+      }
+      currentCycle = contribution.cycleContribution + 1;
+      const totalBtcContributedLastCycle = getCycleContributions(
+        currentCycle - 1
+      ); //X
+      const { endBlock } = getCycleBlocks(currentCycle - 1);
+      const totalBtcAtEndOfLastCycle = getBalanceAtBlock(endBlock); // Y
+      const totalBtcRemainingInPool =
+        totalBtcAtEndOfLastCycle - totalBtcContributedLastCycle; // Z
+      if (contribution.transactionHash in cache) {
+        cache[contribution.transactionHash] =
+          (cache[contribution.transactionHash] * totalBtcRemainingInPool) /
+          totalBtcAtEndOfLastCycle;
+      } else {
+        cache[contribution.transactionHash] =
+          contribution.contribution / totalBtcAtEndOfLastCycle;
+      }
+      contribution.rewardPercentage = cache[contribution.transactionHash];
+    }
+
+    res = res.sort((a, b) =>
+      a.blockContribution > b.blockContribution ? 1 : -1
+    );
+    setLocalPoolContributorInfo(res);
+
+    const { startBlock } = getCycleBlocks(poolStartCycle - 1);
+
+    res = res.filter(
+      (contribution) =>
+        contribution.blockContribution >= startBlock &&
+        contribution.blockContribution <= endBlock &&
+        contribution.isContribution
+    );
+
     return { data: res, success: true };
   };
 

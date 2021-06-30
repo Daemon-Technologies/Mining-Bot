@@ -176,22 +176,40 @@ export async function getBalance(): Promise<number> {
   );
 }
 
-// async function to get the balance? or change result of queryPoolContributerInfo
+// gets total BTC in the pool at a block
 export function getBalanceAtBlock(blockHeight: number): number {
   let balance = getLocalPoolBalance();
   let transactions = getLocalPoolContributorInfo();
   let index = 0;
   let transaction = transactions[index];
+  console.log(balance);
   while (
     index < transactions.length &&
     transaction.blockContribution >= blockHeight
   ) {
-    console.log("transaction height", transaction.blockContribution);
+    console.log(transaction);
     balance -= transaction.contribution;
     index += 1;
     transaction = transactions[index];
+    console.log(balance);
   }
   return balance;
+}
+
+export function getCycleContributions(cycle: number): number {
+  let transactions = getLocalPoolContributorInfo();
+  const { startBlock, endBlock } = getCycleBlocks(cycle);
+  let totalContributions = 0;
+  for (const transaction of transactions) {
+    if (
+      startBlock <= transaction.blockContribution &&
+      transaction.blockContribution <= endBlock &&
+      transaction.isContribution
+    ) {
+      totalContributions += transaction.contribution;
+    }
+  }
+  return totalContributions;
 }
 
 // gets pool contributors between blocks
@@ -220,6 +238,7 @@ export async function getPoolContributorsHelper(
       break;
   }
 
+  console.log(baseURL);
   return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
     (resp: Address) => {
       console.log(resp);

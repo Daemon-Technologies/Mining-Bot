@@ -10,6 +10,7 @@ import { getNetworkFromStorage } from "@/utils/utils";
 import {
   getBalanceAtBlock,
   getCycleBlocks,
+  getCycleContributions,
   getLocalPoolBalance,
 } from "@/services/managePool/managePool";
 const {
@@ -41,6 +42,7 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
       title: <FormattedMessage id="pool.address" defaultMessage="Address" />,
       dataIndex: "address",
       copyable: true,
+      ellipsis: true,
     },
     {
       title: (
@@ -48,6 +50,7 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
       ),
       dataIndex: "stxAddress",
       copyable: true,
+      ellipsis: true,
     },
     {
       title: (
@@ -100,6 +103,15 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
         );
       },
     },
+    {
+      title: (
+        <FormattedMessage
+          id="pool.rewardPercentage"
+          defaultMessage="Reward %"
+        />
+      ),
+      dataIndex: "rewardPercentage",
+    },
   ];
 
   return (
@@ -125,12 +137,13 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
         manualRequest={true}
         params={{ selectedCycle }}
         summary={(contributions) => {
-          let total = 0;
-          for (const contribution of contributions) {
-            total += contribution.contribution;
-          }
+          //   let total = 0;
+          //   for (const contribution of contributions) {
+          //     total += contribution.contribution;
+          //   }
+          let total = getCycleContributions(selectedCycle - 1);
 
-          const { endBlock } = getCycleBlocks(selectedCycle-1);
+          const { endBlock } = getCycleBlocks(selectedCycle - 1);
           const balance = getBalanceAtBlock(endBlock);
           return (
             <>

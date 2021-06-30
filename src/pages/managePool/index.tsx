@@ -39,7 +39,6 @@ const TableList: React.FC<{}> = () => {
 
   const onSubmit = async () => {
     const fieldsValue: FormValueType = await form.validateFields();
-    console.log(fieldsValue);
     setFormVals({ ...formVals, ...fieldsValue });
     localStorage.setItem("pooledBtcAddress", fieldsValue.poolBtcAddress);
     localStorage.setItem(

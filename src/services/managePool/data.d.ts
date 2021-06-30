@@ -106,4 +106,5 @@ export interface PoolContributerInfo {
   cycleContribution: number;
   blockContribution: number;
   isContribution: boolean;
+  rewardPercentage: number;
 }
