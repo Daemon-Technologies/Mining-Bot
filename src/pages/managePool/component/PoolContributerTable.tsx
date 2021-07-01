@@ -133,7 +133,7 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
         }
         columns={poolContributerColumns}
         request={() => queryPoolContributerInfo(selectedCycle)}
-        rowKey={"address"}
+        rowKey={"transactionHash"}
         manualRequest={true}
         params={{ selectedCycle }}
         summary={(contributions) => {
@@ -151,13 +151,17 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
                 <Table.Summary.Cell index={0} colSpan={2}>
                   Total Contributed In Last Cycle
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={1}>{total}</Table.Summary.Cell>
+                <Table.Summary.Cell index={1}>
+                  {total.toFixed(4)}
+                </Table.Summary.Cell>
               </Table.Summary.Row>
               <Table.Summary.Row>
                 <Table.Summary.Cell index={0} colSpan={2}>
                   Total Remaining At End of Last Cycle
                 </Table.Summary.Cell>
-                <Table.Summary.Cell index={1}>{balance}</Table.Summary.Cell>
+                <Table.Summary.Cell index={1}>
+                  {balance.toFixed(4)}
+                </Table.Summary.Cell>
               </Table.Summary.Row>
             </>
           );

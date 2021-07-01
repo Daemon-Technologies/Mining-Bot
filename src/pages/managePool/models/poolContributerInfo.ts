@@ -179,31 +179,38 @@ export default () => {
       .sort((a, b) => (a.blockContribution > b.blockContribution ? 1 : -1));
     let currentCycle = poolStartCycle;
     for (let contribution of res) {
-      if (!contribution.isContribution) {
+      if (
+        !contribution.isContribution ||
+        contribution.cycleContribution >= cycle
+      ) {
         continue;
       }
       currentCycle = contribution.cycleContribution + 1;
-      const totalBtcContributedLastCycle = getCycleContributions(
-        currentCycle - 1
-      ); //X
-      const { endBlock } = getCycleBlocks(currentCycle - 1);
-      const totalBtcAtEndOfLastCycle = getBalanceAtBlock(endBlock); // Y
-      const totalBtcRemainingInPool =
-        totalBtcAtEndOfLastCycle - totalBtcContributedLastCycle; // Z
-      if (contribution.transactionHash in cache) {
-        cache[contribution.transactionHash] =
-          (cache[contribution.transactionHash] * totalBtcRemainingInPool) /
-          totalBtcAtEndOfLastCycle;
-      } else {
-        cache[contribution.transactionHash] =
-          contribution.contribution / totalBtcAtEndOfLastCycle;
+      for (currentCycle; currentCycle <= cycle; currentCycle += 1) {
+        const totalBtcContributedLastCycle = getCycleContributions(
+          currentCycle - 1
+        ); //X
+        const { endBlock } = getCycleBlocks(currentCycle - 1);
+        const totalBtcAtEndOfLastCycle = getBalanceAtBlock(endBlock); // Y
+        const totalBtcRemainingInPool =
+          totalBtcAtEndOfLastCycle - totalBtcContributedLastCycle; // Z
+        if (contribution.transactionHash in cache) {
+          cache[contribution.transactionHash] =
+            (cache[contribution.transactionHash] * totalBtcRemainingInPool) /
+            totalBtcAtEndOfLastCycle;
+        } else {
+          cache[contribution.transactionHash] =
+            contribution.contribution / totalBtcAtEndOfLastCycle;
+        }
       }
-      contribution.rewardPercentage = cache[contribution.transactionHash];
+      contribution.rewardPercentage =
+        cache[contribution.transactionHash].toFixed(4);
     }
 
-    res = res.sort((a, b) =>
-      a.blockContribution > b.blockContribution ? 1 : -1
-    );
+    res = res
+      .slice()
+      .sort((a, b) => (a.blockContribution > b.blockContribution ? 1 : -1));
+    console.log(res);
     setLocalPoolContributorInfo(res);
 
     const { startBlock } = getCycleBlocks(poolStartCycle - 1);
@@ -214,6 +221,7 @@ export default () => {
         contribution.blockContribution <= endBlock &&
         contribution.isContribution
     );
+    console.log(res.slice());
 
     return { data: res, success: true };
   };
