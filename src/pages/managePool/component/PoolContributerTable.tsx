@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
 import { BlockInfo, TxInfo } from "@/services/publicdata/data";
-import { Tag, Card, InputNumber, Button, Table } from "antd";
+import { Tag, Card, InputNumber, Button, Table, Tooltip } from "antd";
 import { getBlockInfo, getTxsInfo } from "@/services/publicdata/chainInfo";
 import { PoolContributerInfo } from "@/services/managePool/data";
 import { showMessage } from "@/services/locale";
@@ -117,12 +117,22 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
   return (
     <>
       <Card bordered={false}>
-        View Contributors for Cycle:
-        <InputNumber
-          min={1}
-          value={selectedCycle}
-          onChange={setSelectedCycle}
-        />
+        <div style={{ display: "flex" }}>
+          <div style={{ margin: "8px" }}>
+            {showMessage("TODO", "View Contributors for Cycle:")}
+            <InputNumber
+              min={1}
+              value={selectedCycle}
+              onChange={setSelectedCycle}
+            />
+          </div>
+          <div style={{ margin: "8px" }}>
+            {showMessage("TODO", "Send Rewards")}
+            <Tooltip title="ayo">
+              <Button type="primary">Send Rewards</Button>
+            </Tooltip>
+          </div>
+        </div>
       </Card>
       <ProTable<PoolContributerInfo>
         headerTitle={
@@ -137,10 +147,6 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
         manualRequest={true}
         params={{ selectedCycle }}
         summary={(contributions) => {
-          //   let total = 0;
-          //   for (const contribution of contributions) {
-          //     total += contribution.contribution;
-          //   }
           let total = getCycleContributions(selectedCycle - 1);
 
           const { endBlock } = getCycleBlocks(selectedCycle - 1);

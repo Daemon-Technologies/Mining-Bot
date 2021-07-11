@@ -158,7 +158,7 @@ export async function getBalance(): Promise<number> {
       break;
     }
     case "Mainnet": {
-      let pooledBtcAddress = "1BFfc2e6Kk82ut7S3C5yaN3pWRxEFRLLu5";
+//       let pooledBtcAddress = "1BFfc2e6Kk82ut7S3C5yaN3pWRxEFRLLu5";
       baseURL = `${bitcoinMainnet2}/addrs/${pooledBtcAddress}/balance`;
       break;
     }
@@ -227,7 +227,6 @@ export async function getPoolContributorsHelper(
       break;
     }
     case "Mainnet": {
-      let pooledBtcAddress = "1BFfc2e6Kk82ut7S3C5yaN3pWRxEFRLLu5";
       baseURL = `${bitcoinMainnet2}/addrs/${pooledBtcAddress}/full?limit=50&before=${endBlock}&after=${startBlock}`;
       break;
     }
