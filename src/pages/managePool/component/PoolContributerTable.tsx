@@ -51,7 +51,7 @@ const PoolContributerTable: React.FC<{}> = () => {
         "Can only send rewards after 100 blocks after end of last cycle"
       );
     }
-    return "";
+    return "Not implemented yet";
   };
 
   const disabledReason = getDisabledReason();
@@ -152,7 +152,8 @@ const PoolContributerTable: React.FC<{}> = () => {
           />
         </div>
 
-        {canSendRewards() && (
+        {/* {canSendRewards() && ( */}
+        {false && (
           <div style={{ display: "flex", alignItems: "center" }}>
             <div style={{ marginRight: "8px" }}>
               {showMessage("TODO", "STX to send: ")}
@@ -166,6 +167,7 @@ const PoolContributerTable: React.FC<{}> = () => {
             </div>
             <div>
               <Tooltip title={disabledReason}>
+                {/*TODO: add functionality for send many  */}
                 <Button type="primary" disabled={disabledReason != ""}>
                   Send Rewards
                 </Button>
