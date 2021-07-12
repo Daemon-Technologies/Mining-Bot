@@ -9,18 +9,18 @@ import {
   getLocalPoolContributorInfo,
   setLocalPoolContributorInfo,
   getBalanceAtBlock,
-  getBalance,
   setLocalPoolBalances,
   getLocalPoolBalance,
   getPoolStartCycleBlocks,
   getCycleContributions,
 } from "@/services/managePool/managePool";
-import { b58ToC32 } from "c32check";
 import { useState } from "react";
-import { getNetworkFromStorage } from "@/utils/utils";
 import { message } from "antd";
-const { balanceCoef } = require("@/services/constants");
+import { getStxAddressFromPublicKey } from "@/services/wallet/key";
+import { getNetworkFromStorage } from "@/utils/utils";
+const { btcBalanceCoef } = require("@/services/constants");
 const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+import { b58ToC32 } from "c32check";
 
 // if transaction positive, this was an input / contribution, else output / spent on mining
 const getTransactionValue = (
@@ -43,30 +43,6 @@ const getTransactionValue = (
     value -= transaction.fees;
   }
   return value;
-};
-
-// taken from BlockstackNetwork
-const coerceAddress = (address: string) => {
-  const { hash, version } = bitcoinjs_lib_1.address.fromBase58Check(address);
-  const scriptHashes = [
-    bitcoinjs_lib_1.networks.bitcoin.scriptHash,
-    bitcoinjs_lib_1.networks.testnet.scriptHash,
-  ];
-  const pubKeyHashes = [
-    bitcoinjs_lib_1.networks.bitcoin.pubKeyHash,
-    bitcoinjs_lib_1.networks.testnet.pubKeyHash,
-  ];
-  let coercedVersion;
-  if (scriptHashes.indexOf(version) >= 0) {
-    coercedVersion = bitcoinjs_lib_1.networks.bitcoin.scriptHash;
-  } else if (pubKeyHashes.indexOf(version) >= 0) {
-    coercedVersion = bitcoinjs_lib_1.networks.bitcoin.pubKeyHash;
-  } else {
-    throw new Error(
-      `Unrecognized address version number ${version} in ${address}`
-    );
-  }
-  return bitcoinjs_lib_1.address.toBase58Check(hash, coercedVersion);
 };
 
 export default () => {
@@ -112,16 +88,6 @@ export default () => {
             let stxAddress = input.addresses[0];
             // BECH32 not supported
             try {
-              switch (getNetworkFromStorage()) {
-                case "Xenon": {
-                  address = coerceAddress(address);
-                  break;
-                }
-                case "Mainnet":
-                  break;
-                default:
-                  break;
-              }
               stxAddress = b58ToC32(address);
             } catch (err) {
               stxAddress = "UNSUPPORTED";
@@ -129,7 +95,7 @@ export default () => {
             res.push({
               address: address, // TODO: deal with edge case where input has multiple addresses?
               stxAddress: stxAddress, // b58ToC32(input.addresses[0]),
-              contribution: weightedContribution / balanceCoef,
+              contribution: weightedContribution / btcBalanceCoef,
               transactionHash: transaction.hash,
               cycleContribution: getCycleForBlock(transaction.block_height),
               blockContribution: transaction.block_height,
@@ -141,7 +107,7 @@ export default () => {
           res.push({
             address: "output",
             stxAddress: "output",
-            contribution: contribution / balanceCoef,
+            contribution: contribution / btcBalanceCoef,
             transactionHash: transaction.hash,
             cycleContribution: getCycleForBlock(transaction.block_height),
             blockContribution: transaction.block_height,
@@ -150,7 +116,7 @@ export default () => {
           });
         }
       });
-      currentBalance = balance / balanceCoef;
+      currentBalance = balance / btcBalanceCoef;
     } else {
       //       currentBalance = await getBalance();
     }

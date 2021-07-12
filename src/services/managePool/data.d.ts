@@ -108,3 +108,37 @@ export interface PoolContributerInfo {
   isContribution: boolean;
   rewardPercentage: number;
 }
+
+export interface StxBalance {
+  balance: string;
+  total_sent: string;
+  total_received: string;
+  total_fees_sent: string;
+  total_miner_rewards_received: string;
+  lock_tx_id: string;
+  locked: string;
+  lock_height: integer;
+  burnchain_lock_height: integer;
+  burnchain_unlock_height: integer;
+}
+
+export interface StxBalances {
+  stx: StxBalance;
+}
+
+export interface BtcInfo {
+  name: string;
+  height: number;
+  hash: string;
+  time: string;
+  latest_url: string;
+  previous_hash: string;
+  previous_url: string;
+  peer_count: number;
+  high_fee_per_kb: number;
+  medium_fee_per_kb: number;
+  low_fee_per_kb: number;
+  unconfirmed_count: number;
+  last_fork_height?: number;
+  last_fork_hash?: string;
+}

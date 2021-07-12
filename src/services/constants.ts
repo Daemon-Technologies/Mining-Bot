@@ -51,5 +51,7 @@ module.exports = {
   // pooling 
   firstStackingBlock: 668050,
 
-  balanceCoef : 100000000
+  btcBalanceCoef: 100000000,
+  stxBalanceCoef: 1000000
+  
 }

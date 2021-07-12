@@ -6,7 +6,7 @@ import { message } from 'antd';
 import { aes256Encrypt, keyGen } from '@/utils/utils';
 import { showMessage } from "@/services/locale";
 
-const { btcType, stxType } = require('@/services/constants');
+const { btcType, stxType, btcBalanceCoef } = require('@/services/constants');
 
 const { sidecarURLXenon, sidecarURLMainnet, bitcoinTestnet3, bitcoinMainnet } = require('@/services/constants')
 
@@ -53,36 +53,35 @@ export async function getStxBalance(stxAddress: string) {
 
 export async function getBtcBalance(btcAddress: string) {
   let baseURL = sidecarURLXenon;
-  let balanceCoef = 1;
   // https://api.blockcypher.com/v1/btc/test3/addrs/mzYBtAjNzuEvEMAp2ahx8oT9kWWvb5L2Rj/balance
   switch (getNetworkFromStorage()) {
     //{"balance":0}
     case "Xenon": {
       baseURL = `${bitcoinTestnet3}/addrs/${btcAddress}/balance`
       //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
-      balanceCoef = 100000000
       return request(`${baseURL}`, {
         method: "GET",
         timeout: 6000,
       }).then((resp) => {
-        return { 'balance': (resp.final_balance / balanceCoef).toString() };
+        return { 'balance': (resp.final_balance / btcBalanceCoef).toString() };
       }).catch(err => {
         console.log(err)
+	message.error("Failed to get Btc balance");
         return { 'balance': 'NaN' };
       });
     }
     case "Mainnet": {
       baseURL = `${bitcoinMainnet}/balance?active=${btcAddress}&cors=true`;
       //`${sidecarURLXenon}/v1/faucets/btc/${btcAddress}`;
-      balanceCoef = 100000000
       return request(`${baseURL}`, {
         method: "GET",
         timeout: 10000,
     
       }).then((resp) => {
-        return { 'balance': (resp[`${btcAddress}`].final_balance / balanceCoef).toString() };
+        return { 'balance': (resp[`${btcAddress}`].final_balance / btcBalanceCoef).toString() };
       }).catch(err => {
         console.log(err)
+	message.error("Failed to get Btc balance");
         return { 'balance': 'NaN' };
       });
     }

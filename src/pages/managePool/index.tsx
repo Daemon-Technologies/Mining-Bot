@@ -19,7 +19,6 @@ import { showMessage, switchConfigProviderLocale } from "@/services/locale";
 import FormItem from "antd/lib/form/FormItem";
 import { FormattedMessage } from "react-intl";
 import PoolContributerTable from "./component/PoolContributerTable";
-import { getCurrentCycle } from "@/services/managePool/managePool";
 export interface FormValueType {
   poolBtcAddress: string;
   poolStartCycle: number;
@@ -35,7 +34,6 @@ const TableList: React.FC<{}> = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState<boolean>(true);
 
-  const [currentCycle, setCurrentCycle] = useState(1);
 
   const onSubmit = async () => {
     const fieldsValue: FormValueType = await form.validateFields();
@@ -58,12 +56,6 @@ const TableList: React.FC<{}> = () => {
       setLoadingAccounts(false);
     });
 
-    getCurrentCycle().then(({ cycle }) => {
-      setCurrentCycle(cycle);
-      if (formVals.poolStartCycle == -1) {
-        setFormVals({ ...formVals, ...{ poolCycleStart: cycle } });
-      }
-    });
   }, []);
 
   const renderForm = () => {
@@ -149,7 +141,7 @@ const TableList: React.FC<{}> = () => {
         </Card>
         {isPooling && renderForm()}
         {isPooling && <Divider />}
-        {isPooling && <PoolContributerTable cycle={currentCycle} />}
+        {isPooling && <PoolContributerTable />}
       </ConfigProvider>
     </PageContainer>
   );

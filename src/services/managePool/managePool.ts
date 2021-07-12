@@ -1,6 +1,6 @@
 import { getNetworkFromStorage } from "@/utils/utils";
 import request from "umi-request";
-import { Address, Tx, PoolContributerInfo } from "./data";
+import { Address, Tx, PoolContributerInfo, BtcInfo } from "./data";
 import { message } from "antd";
 const {
   sidecarURLXenon,
@@ -8,7 +8,7 @@ const {
   bitcoinTestnet3,
   bitcoinMainnet2,
   firstStackingBlock,
-  balanceCoef,
+  btcBalanceCoef,
 } = require("@/services/constants");
 
 export interface PoolContributerInfoState {
@@ -144,38 +144,6 @@ export const setLocalPoolContributorInfo = (
   }
 };
 
-// sometimes the api will return 0 balance and 0 tx, so just return -1 if that happens
-export async function getBalance(): Promise<number> {
-  let baseURL = sidecarURLXenon;
-  let pooledBtcAddress = localStorage.getItem("pooledBtcAddress")!;
-
-  switch (getNetworkFromStorage()) {
-    case "Xenon": {
-      //TODO: remember to add before and after
-      //   baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}&limit=2000`;
-      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/balance`;
-      // baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50`;
-      break;
-    }
-    case "Mainnet": {
-//       let pooledBtcAddress = "1BFfc2e6Kk82ut7S3C5yaN3pWRxEFRLLu5";
-      baseURL = `${bitcoinMainnet2}/addrs/${pooledBtcAddress}/balance`;
-      break;
-    }
-    default:
-      break;
-  }
-  return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
-    (resp: Address) => {
-      console.log(resp);
-      if (resp.n_tx == 0 && getLocalPoolBalance() > 0) {
-        return -1;
-      }
-      return resp.balance / balanceCoef;
-    }
-  );
-}
-
 // gets total BTC in the pool at a block
 export function getBalanceAtBlock(blockHeight: number): number {
   let balance = getLocalPoolBalance();
@@ -209,6 +177,29 @@ export function getCycleContributions(cycle: number): number {
   return totalContributions;
 }
 
+export async function getBtcHeight(): Promise<number> {
+  let baseURL = sidecarURLXenon;
+
+  switch (getNetworkFromStorage()) {
+    case "Xenon": {
+      baseURL = `${bitcoinTestnet3}`;
+      break;
+    }
+    case "Mainnet": {
+      baseURL = `${bitcoinMainnet2}`;
+      break;
+    }
+    default:
+      break;
+  }
+  return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
+    (resp: BtcInfo) => {
+      console.log(resp);
+      return resp.height;
+    }
+  );
+}
+
 // gets pool contributors between blocks
 export async function getPoolContributorsHelper(
   startBlock: number,
@@ -222,7 +213,7 @@ export async function getPoolContributorsHelper(
     case "Xenon": {
       //TODO: remember to add before and after
       //   baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}?before=${endBlock}&after=${startBlock}&limit=2000`;
-      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50&before=${endBlock}&after=${startBlock}&confidence=99`;
+      baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50&before=${endBlock}&after=${startBlock}&confidence=99&token=18b85235d6544c67932698c98ed17317`;
       // baseURL = `${bitcoinTestnet3}/addrs/${pooledBtcAddress}/full?limit=50`;
       break;
     }
@@ -233,7 +224,6 @@ export async function getPoolContributorsHelper(
     default:
       break;
   }
-
   console.log(baseURL);
   return request(`${baseURL}`, { method: "GET", timeout: 6000 }).then(
     (resp: Address) => {

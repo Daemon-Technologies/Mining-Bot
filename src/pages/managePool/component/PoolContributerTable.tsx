@@ -1,41 +1,67 @@
 import React, { useEffect, useState } from "react";
 import ProTable, { ProColumns } from "@ant-design/pro-table";
 import { FormattedMessage, useModel } from "umi";
-import { BlockInfo, TxInfo } from "@/services/publicdata/data";
-import { Tag, Card, InputNumber, Button, Table, Tooltip } from "antd";
-import { getBlockInfo, getTxsInfo } from "@/services/publicdata/chainInfo";
-import { PoolContributerInfo } from "@/services/managePool/data";
+import { Card, InputNumber, Button, Table, Tooltip } from "antd";
+import { PoolContributerInfo, StxBalances } from "@/services/managePool/data";
 import { showMessage } from "@/services/locale";
 import { getNetworkFromStorage } from "@/utils/utils";
 import {
   getBalanceAtBlock,
   getCycleBlocks,
   getCycleContributions,
-  getLocalPoolBalance,
+  getBtcHeight,
 } from "@/services/managePool/managePool";
-const {
-  sidecarURLXenon,
-  sidecarURLMainnet,
-  bitcoinTestnet3,
-  bitcoinMainnet2,
-  firstStackingBlock,
-} = require("@/services/constants");
+import { getStxBalance } from "@/services/wallet/account";
+import { getCurrentCycle } from "@/services/managePool/managePool";
+const { bitcoinTestnet3, stxBalanceCoef } = require("@/services/constants");
+import { b58ToC32 } from "c32check";
 
-interface PoolContributerTableProps {
-  cycle: number;
-}
-const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
-  cycle,
-}) => {
+const PoolContributerTable: React.FC<{}> = () => {
   const { queryPoolContributerInfo } = useModel(
     "managePool.poolContributerInfo"
   );
 
-  const [selectedCycle, setSelectedCycle] = useState(cycle);
+  const [currentCycle, setCurrentCycle] = useState(-1);
+  const [selectedCycle, setSelectedCycle] = useState(currentCycle);
+  const [stxBalance, setStxBalance] = useState(0);
+  const [currentBtcHeight, setBtcHeight] = useState(0);
 
   useEffect(() => {
-    setSelectedCycle(cycle);
-  }, [cycle]);
+    let pooledBtcAddress = localStorage.getItem("pooledBtcAddress");
+    if (pooledBtcAddress) {
+      getStxBalance(b58ToC32(pooledBtcAddress)).then((resp: StxBalances) =>
+        setStxBalance(parseFloat(resp.stx.balance) / stxBalanceCoef)
+      );
+    }
+
+    getCurrentCycle().then(({ cycle }) => {
+      setCurrentCycle(cycle);
+      setSelectedCycle(cycle);
+    });
+
+    getBtcHeight().then((height) => setBtcHeight(height));
+  }, []);
+
+  const getDisabledReason = (): string => {
+    // TODO: if rewards were already sent out, disable button
+    const { endBlock } = getCycleBlocks(currentCycle - 1);
+    if (currentBtcHeight < endBlock + 100) {
+      return showMessage(
+        "TODO",
+        "Can only send rewards after 100 blocks after end of last cycle"
+      );
+    }
+    return "";
+  };
+
+  const disabledReason = getDisabledReason();
+
+  const canSendRewards = (): boolean => {
+    if (selectedCycle != currentCycle - 1) {
+      return false;
+    }
+    return true;
+  };
 
   const poolContributerColumns: ProColumns<PoolContributerInfo>[] = [
     {
@@ -117,22 +143,36 @@ const PoolContributerTable: React.FC<PoolContributerTableProps> = ({
   return (
     <>
       <Card bordered={false}>
-        <div style={{ display: "flex" }}>
-          <div style={{ margin: "8px" }}>
-            {showMessage("TODO", "View Contributors for Cycle:")}
-            <InputNumber
-              min={1}
-              value={selectedCycle}
-              onChange={setSelectedCycle}
-            />
-          </div>
-          <div style={{ margin: "8px" }}>
-            {showMessage("TODO", "Send Rewards")}
-            <Tooltip title="ayo">
-              <Button type="primary">Send Rewards</Button>
-            </Tooltip>
-          </div>
+        <div style={{ marginBottom: "8px" }}>
+          {showMessage("TODO", "View Contributors for Cycle:")}
+          <InputNumber
+            min={1}
+            value={selectedCycle}
+            onChange={setSelectedCycle}
+          />
         </div>
+
+        {canSendRewards() && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ marginRight: "8px" }}>
+              {showMessage("TODO", "STX to send: ")}
+            </div>
+            <div style={{ marginRight: "8px" }}>
+              <InputNumber
+                min={0}
+                value={stxBalance}
+                onChange={setStxBalance}
+              />
+            </div>
+            <div>
+              <Tooltip title={disabledReason}>
+                <Button type="primary" disabled={disabledReason != ""}>
+                  Send Rewards
+                </Button>
+              </Tooltip>
+            </div>
+          </div>
+        )}
       </Card>
       <ProTable<PoolContributerInfo>
         headerTitle={
