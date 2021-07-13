@@ -170,7 +170,7 @@ export default () => {
         }
       }
       contribution.rewardPercentage =
-        cache[contribution.transactionHash].toFixed(4);
+        cache[contribution.transactionHash].toFixed(4) * 100;
     }
 
     res = res
