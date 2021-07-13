@@ -53,7 +53,7 @@ export default defineConfig({
     {
       path: '/wallet',
       name: 'wallet',
-      icon: 'TeamOutlined',
+      icon: 'WalletOutlined',
       component: './wallet',
     },
     {
@@ -68,6 +68,18 @@ export default defineConfig({
       icon: 'UnorderedListOutlined',
       component: './sysConf',
     },
+    {
+      path: '/managePool',
+      name: 'managePool',
+      icon: 'TeamOutlined',
+      component: './managePool'
+    },
+//     {
+//       path: '/joinPool',
+//       name: 'joinPool',
+//       icon: 'UserAddOutlined',
+//       component: './joinPool'
+//     },
     {
       path: '/',
       redirect: `/publicData`,

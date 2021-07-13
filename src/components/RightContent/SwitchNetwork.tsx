@@ -41,6 +41,7 @@ const SwitchNetwork: React.FC<PageProps> = () => {
                 setNetworkName("Xenon");
                 message.info(`Switch to Xenon network`);
                 changeNetworkDAO("Xenon");
+		localStorage.removeItem("pooledBtcAddress")
                 window.location.reload();
                 // switchPage('Xenon');
                 break;
@@ -48,6 +49,7 @@ const SwitchNetwork: React.FC<PageProps> = () => {
             case "Mainnet": {
                 setNetworkName("Mainnet");
                 message.info(`Switch to Mainnet network`);
+		localStorage.removeItem("pooledBtcAddress")
                 changeNetworkDAO("Mainnet");
                 window.location.reload();
                 // switchPage('Xenon');

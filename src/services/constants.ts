@@ -12,6 +12,7 @@ module.exports = {
   //Bitcoin endpoint
   bitcoinTestnet3: 'https://api.blockcypher.com/v1/btc/test3',
   bitcoinMainnet: 'https://blockchain.info',
+  bitcoinMainnet2: 'https://api.blockcypher.com/v1/btc/main',
 
   explorerURL: 'https://testnet-explorer.blockstack.org',
   binanceAPIURL: 'https://api.binance.com/api/v3',
@@ -46,4 +47,11 @@ module.exports = {
   // address type
   btcType: 1,
   stxType: 2,
+
+  // pooling 
+  firstStackingBlock: 668050,
+
+  btcBalanceCoef: 100000000,
+  stxBalanceCoef: 1000000
+  
 }

@@ -1,0 +1,74 @@
+{
+  "1NG4ZgJaGrvDLuyxgdjVWaeaZbvnS8EhQn": [
+    {
+      "address": "output",
+      "stxAddress": "output",
+      "contribution": -0.1,
+      "transactionHash": "6666666666666666666666666666666666666666666666666666666666666666",
+      "cycleContribution": 12,
+      "blockContribution": 691162,
+      "isContribution": false,
+      "rewardPercentage": 0
+    },
+    {
+      "address": "39jfi6BLYyTvBCFBKGF1bpEgixJgV7mVaM",
+      "stxAddress": "SM1C42R9QVG4B9VW5F1WGCF7QDQ8ZXBKS53ZZ0T0N",
+      "contribution": 0.4,
+      "transactionHash": "5555555555555555555555555555555555555555555555555555555555555555",
+      "cycleContribution": 12,
+      "blockContribution": 691155,
+      "isContribution": true,
+      "rewardPercentage": 0
+    },
+    {
+      "address": "output",
+      "stxAddress": "output",
+      "contribution": -0.1,
+      "transactionHash": "4444444444444444444444444444444444444444444444444444444444444444",
+      "cycleContribution": 11,
+      "blockContribution": 689051,
+      "isContribution": false,
+      "rewardPercentage": 0
+    },
+    {
+      "address": "38noJXruF8E5mNFL4q6FHrEVbnHwGu6sQn",
+      "stxAddress": "SM16Y1NT3WFQK1KB1VNJKB2MF2C1AYTSRH6PTMA5A",
+      "contribution": 0.9,
+      "transactionHash": "3333333333333333333333333333333333333333333333333333333333333333",
+      "cycleContribution": 10,
+      "blockContribution": 689048,
+      "isContribution": true,
+      "rewardPercentage": 0
+    },
+    {
+      "address": "output",
+      "stxAddress": "output",
+      "contribution": -0.1,
+      "transactionHash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "cycleContribution": 10,
+      "blockContribution": 689040,
+      "isContribution": false,
+      "rewardPercentage": 0
+    },
+    {
+      "address": "38noJXruF8E5mNFL4q6FHrEVbnHwGu6sQn",
+      "stxAddress": "SM16Y1NT3WFQK1KB1VNJKB2MF2C1AYTSRH6PTMA5A",
+      "contribution": 0.9,
+      "transactionHash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "cycleContribution": 9,
+      "blockContribution": 686910,
+      "isContribution": true,
+      "rewardPercentage": 0
+    },
+    {
+      "address": "39jfi6BLYyTvBCFBKGF1bpEgixJgV7mVaM",
+      "stxAddress": "SM1C42R9QVG4B9VW5F1WGCF7QDQ8ZXBKS53ZZ0T0N",
+      "contribution": 0.1,
+      "transactionHash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "cycleContribution": 9,
+      "blockContribution": 686900,
+      "isContribution": true,
+      "rewardPercentage": 0
+    }
+  ]
+}

@@ -139,3 +139,8 @@ export function getNetworkFromStorage() {
   let network = localStorage.getItem('network')
   return (network === null ? 'Xenon' : network)
 }
+
+export function isPooling(): boolean {
+  return localStorage.getItem("isPooling") !== "true" ||
+  !localStorage.getItem("pooledBtcAddress") 
+}
