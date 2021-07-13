@@ -28,7 +28,6 @@ For cycle ![](https://latex.codecogs.com/png.latex?n):
 
 - If you contribute during multiple cycles, your total reward percentage is the sum of your reward percentages per contribution.
 
-
 ### Example:
 
 Pool begins mining in cycle #10. Any BTC sent to the specified address during cycle #9 is counted as a contribution.
@@ -80,22 +79,6 @@ For example:
 - ![](https://latex.codecogs.com/png.latex?n=13)
 - You contribute another 0.4 BTC to the pool
 - For example, let's say by the end of cycle #12, another 0.1 BTC has been spent on mining, so there is now 2 BTC before cycle #13 (![](https://latex.codecogs.com/png.latex?X_{12}=0.4,Y_{12}=2,Z_{12}=2.0-0.4=1.6)).
-- Your contribution during cycle 12 gives you a cycle 13 reward percentage of ![](https://latex.codecogs.com/png.latex?P_{13}=P_{12}\frac{Z_{12}}{Y_{12}}=0.05*\frac{1.6}{2.0}=0.04) 
-- Your contribution during cycle 9 gives you a cycle 13 reward percentage of ![](https://latex.codecogs.com/png.latex?P_{13}=\frac{c_{12}}{Y_{12}}=\frac{0.4}{2.0}=0.2) 
+- Your contribution during cycle 12 gives you a cycle 13 reward percentage of ![](https://latex.codecogs.com/png.latex?P_{13}=P_{12}\frac{Z_{12}}{Y_{12}}=0.05*\frac{1.6}{2.0}=0.04)
+- Your contribution during cycle 9 gives you a cycle 13 reward percentage of ![](https://latex.codecogs.com/png.latex?P_{13}=\frac{c_{12}}{Y_{12}}=\frac{0.4}{2.0}=0.2)
 - Your total reward percentage will be 0.04 + 0.2 = 0.24 of all mining rewards in cycle 13.
-
-### Manage Pool
-
-On this page, you can manage a stacks mining pool. You should be able to:
-
-- Define the btc address you want to pool on. Other people will send their btc to this address.
-- See who has contributed to your pool.
-- See how much time left in the "cycle".
-
-### Join Pool
-
-On this page, you can see the mining pool you joined. You should be able to:
-
-- enter a bitcoin address to join their pool
-- you can also specify how many bitcoin you want to send every "cycle"
-- see how much remaining time for this "cycle"

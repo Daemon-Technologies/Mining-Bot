@@ -74,12 +74,12 @@ export default defineConfig({
       icon: 'TeamOutlined',
       component: './managePool'
     },
-    {
-      path: '/joinPool',
-      name: 'joinPool',
-      icon: 'UserAddOutlined',
-      component: './joinPool'
-    },
+//     {
+//       path: '/joinPool',
+//       name: 'joinPool',
+//       icon: 'UserAddOutlined',
+//       component: './joinPool'
+//     },
     {
       path: '/',
       redirect: `/publicData`,
